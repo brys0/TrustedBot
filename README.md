@@ -1,1 +1,3 @@
-DiscordMusicBot
+# DiscordMusicBot
+
+Musikbot für Discord

@@ -1,0 +1,66 @@
+/*public static void createAllTextPerVoice(JDA api) {
+		Guild s = api.getGuildById(Main.serverID);
+		List<Category> cats = s.getCategoriesByName("Text for Voice", false);
+		if (cats.isEmpty()) {
+			ArrayList<Permission> perms = new ArrayList<>();
+			perms.add(Permission.MESSAGE_READ);
+			perms.add(Permission.MESSAGE_HISTORY);
+			perms.add(Permission.VOICE_CONNECT);
+			s.getController().createCategory("Text for Voice").addPermissionOverride(s.getPublicRole(), null, perms).complete();
+		}
+		for (VoiceChannel svc : s.getVoiceChannels()) {
+			createTextPerVoice(api, svc);
+		}
+	}
+
+	public static void createTextPerVoice(JDA api, String voiceName) {
+		Guild s = api.getGuildById(Main.serverID);
+		if (Main.tfvBlacklist.contains(voiceName.toLowerCase()))
+			return;
+		if (s.getTextChannelsByName(transformVoiceChannelName(voiceName), false).isEmpty()) {
+			List<Category> cats = s.getCategoriesByName("Text for Voice", false);
+			if (cats.isEmpty()) {
+				ArrayList<Permission> perms = new ArrayList<>();
+				perms.add(Permission.MESSAGE_READ);
+				perms.add(Permission.MESSAGE_HISTORY);
+				perms.add(Permission.VOICE_CONNECT);
+				s.getController().createCategory("Text for Voice").addPermissionOverride(s.getPublicRole(), null, perms).complete();
+			}
+			Category c = s.getCategoriesByName("Text for Voice", false).get(0);
+			c.createTextChannel(transformVoiceChannelName(voiceName)).setTopic("Textchannel für '" + voiceName + "'").complete();
+		} else {
+			s.getTextChannelsByName(transformVoiceChannelName(voiceName), false).get(0).getManager().setTopic("Textchannel für '" + voiceName + "'").complete();
+		}
+	}
+
+	public static void createTextPerVoice(JDA api, VoiceChannel svc) {
+		createTextPerVoice(api, svc.getName());
+	}
+
+	public static void deleteTextPerVoice(JDA api, String voiceName) {
+		Guild s = api.getGuildById(Main.serverID);
+		if (!s.getTextChannelsByName(transformVoiceChannelName(voiceName), false).isEmpty()) {
+			s.getTextChannelsByName(transformVoiceChannelName(voiceName), false).get(0).delete().complete();
+		}
+	}
+
+	public static void deleteTextPerVoice(JDA api, VoiceChannel svc) {
+		deleteTextPerVoice(api, svc.getName());
+	}
+
+	public static void renameTextPerVoice(JDA api, String oldName, String newName) {
+		Guild s = api.getGuildById(Main.serverID);
+		if (!s.getTextChannelsByName(transformVoiceChannelName(oldName), false).isEmpty()) {
+			s.getTextChannelsByName(transformVoiceChannelName(oldName), false).get(0).getManager().setName(transformVoiceChannelName(newName)).complete();
+		}
+	}
+
+	public static String transformVoiceChannelName(String voicechannelName) {
+		String vc = voicechannelName.replace(" ", "-");
+		vc = vc.replaceAll("[^A-Za-z0-9-_]", "");
+		vc = vc.toLowerCase();
+		if (vc.charAt(vc.length() - 1) == '-') {
+			vc = vc.substring(0, vc.length() - 1);
+		}
+		return vc;
+	}*/
