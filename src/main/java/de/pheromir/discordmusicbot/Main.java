@@ -2,10 +2,7 @@ package de.pheromir.discordmusicbot;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
@@ -35,6 +32,7 @@ import de.pheromir.discordmusicbot.commands.VolumeCommand;
 import de.pheromir.discordmusicbot.config.Configuration;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
 import de.pheromir.discordmusicbot.handler.GuildMusicManager;
+import de.pheromir.discordmusicbot.helper.GuildConfig;
 import de.pheromir.discordmusicbot.listener.VoiceChannelListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -48,18 +46,16 @@ public class Main {
 	public static String adminID = "00000000";
 	public static EventWaiter waiter = new EventWaiter();
 	public static AudioPlayerManager playerManager;
-	public static Map<Long, GuildMusicManager> musicManagers;
-	public static ArrayList<String> djs = new ArrayList<>();
-	public static int volume = 100;
+	public static HashMap<Long, GuildMusicManager> musicManagers;
+	public static HashMap<Long, GuildConfig> guildConfigs;
 	public static String giphyKey = "none";
 	public static String youtubeKey = "none";
-	
 
 	public static void main(String[] args) {
-		
+
 		/* CONFIG ERSTELLEN / AUSLESEN */
 		createConfig();
-		
+
 		if (token.equals("00000000")) {
 			System.out.println("FEHLER: Ungültiger Token.");
 			return;
@@ -71,12 +67,11 @@ public class Main {
 		builder.useHelpBuilder(false);
 		builder.setOwnerId(adminID);
 
-		
 		builder.addCommand(new StatusCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
 		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand());
 		builder.addCommands(new GoogleCommand());
-		if(!giphyKey.equals("none") && !giphyKey.isEmpty()) {
+		if (!giphyKey.equals("none") && !giphyKey.isEmpty()) {
 			builder.addCommands(new RandomCommand());
 		}
 
@@ -94,16 +89,14 @@ public class Main {
 			System.out.println("-----------------------------------");
 
 			musicManagers = new HashMap<>();
+			guildConfigs = new HashMap<>();
+			loadAllGuildConfigs(jda);
 
-		    playerManager = new DefaultAudioPlayerManager();
-		    AudioSourceManagers.registerRemoteSources(playerManager);
-		    AudioSourceManagers.registerLocalSource(playerManager);
-				
-		    
-		} catch (LoginException e) {
-			System.out.println("FEHLER BEIM START DER JDA: ");
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+			playerManager = new DefaultAudioPlayerManager();
+			AudioSourceManagers.registerRemoteSources(playerManager);
+			AudioSourceManagers.registerLocalSource(playerManager);
+
+		} catch (LoginException | InterruptedException e) {
 			System.out.println("FEHLER BEIM START DER JDA: ");
 			e.printStackTrace();
 		}
@@ -111,7 +104,10 @@ public class Main {
 	}
 
 	public static void createConfig() {
-		File configFile = new File("config.yml");
+		File dir = new File("config");
+		if (!dir.exists())
+			dir.mkdir();
+		File configFile = new File("config//config.yml");
 		YamlConfiguration yaml = new YamlConfiguration();
 		if (!configFile.exists()) {
 			try {
@@ -121,8 +117,6 @@ public class Main {
 				cfg.set("AdminID", "00000000");
 				cfg.set("API-Keys.YouTube", "none");
 				cfg.set("API-Keys.Giphy", "none");
-				cfg.set("Music.DJs", Arrays.asList("00000000000", "111111111111"));
-				cfg.set("Music.Volume", 100);
 				yaml.save(cfg, configFile);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -133,10 +127,8 @@ public class Main {
 			Configuration cfg = yaml.load(configFile);
 			token = cfg.getString("Token");
 			adminID = cfg.getString("AdminID");
-			volume = cfg.getInt("Music.Volume");
 			giphyKey = cfg.getString("API-Keys.Giphy");
 			youtubeKey = cfg.getString("API-Keys.YouTube");
-			djs = (ArrayList<String>) cfg.getStringList("Music.DJs");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -147,7 +139,7 @@ public class Main {
 		GuildMusicManager musicManager = musicManagers.get(guildId);
 
 		if (musicManager == null) {
-			musicManager = new GuildMusicManager(playerManager, volume, guild);
+			musicManager = new GuildMusicManager(playerManager, getGuildConfig(guild).getVolume(), guild);
 			musicManagers.put(guildId, musicManager);
 		}
 
@@ -155,4 +147,21 @@ public class Main {
 
 		return musicManager;
 	}
+
+	public static void loadAllGuildConfigs(JDA jda) {
+		for(Guild g : jda.getGuilds()) {
+			guildConfigs.put(g.getIdLong(), getGuildConfig(g));
+		}
+	}
+
+	public static GuildConfig getGuildConfig(Guild g) {
+		if (guildConfigs.containsKey(g.getIdLong())) {
+			return guildConfigs.get(g.getIdLong());
+		} else {
+			GuildConfig gc = new GuildConfig(g);
+			guildConfigs.put(g.getIdLong(), gc);
+			return gc;
+		}
+	}
+
 }

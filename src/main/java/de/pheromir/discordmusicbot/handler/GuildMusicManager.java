@@ -1,15 +1,12 @@
 package de.pheromir.discordmusicbot.handler;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 
-import de.pheromir.discordmusicbot.config.Configuration;
-import de.pheromir.discordmusicbot.config.YamlConfiguration;
+import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.helper.Suggestion;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
@@ -31,6 +28,8 @@ public class GuildMusicManager {
 	public boolean autoPause = false;
 	
 	public HashMap<User, ArrayList<Suggestion>> suggestions;
+	
+	private Guild guild;
 
 	/**
 	 * Creates a player and a track scheduler.
@@ -39,6 +38,7 @@ public class GuildMusicManager {
 	 *            Audio player manager to use for creating the player.
 	 */
 	public GuildMusicManager(AudioPlayerManager manager, int volume, Guild g) {
+		guild = g;
 		player = manager.createPlayer();
 		scheduler = new TrackScheduler(player, g);
 		player.addListener(scheduler);
@@ -48,15 +48,7 @@ public class GuildMusicManager {
 
 	public void setVolume(int vol) {
 		player.setVolume(vol);
-		File configFile = new File("config.yml");
-		YamlConfiguration yaml = new YamlConfiguration();
-		try {
-			Configuration cfg = yaml.load(configFile);
-			cfg.set("Music.Volume", vol);
-			yaml.save(cfg, configFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Main.getGuildConfig(guild).setVolume(vol);
 	}
 	
 	public void setAutoPause(boolean pause) {

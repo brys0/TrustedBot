@@ -34,7 +34,7 @@ public class SkipCommand extends Command {
 			if(index >= m.scheduler.getRequestedTitles().size()) {
 				e.reply("Bitte eine gültige Zahl angeben.");
 			}
-			if (!Main.djs.contains(e.getAuthor().getId()) && !e.isOwner() && m.scheduler.getRequestedTitles().get(index).getRequestor() != e.getAuthor()) {
+			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner() && m.scheduler.getRequestedTitles().get(index).getRequestor() != e.getAuthor()) {
 				e.reply("Du kannst nur Songs skippen, die du selbst hinzugefügt hast.");
 				return;
 			}

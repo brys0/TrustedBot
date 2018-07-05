@@ -17,7 +17,7 @@ public class PauseCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (e.getAuthor().isBot())
 			return;
-		if (!Main.djs.contains(e.getAuthor().getId()) && !e.isOwner()) {
+		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()) {
 			e.reply("Du musst ein DJ sein um den Bot pausieren zu können.");
 			return;
 		}

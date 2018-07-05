@@ -18,7 +18,11 @@ public class VolumeCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (e.getAuthor().isBot())
 			return;
-		if (!Main.djs.contains(e.getAuthor().getId()) && !e.isOwner()) {
+		if(e.getArgs().isEmpty()) {
+			e.reply("Derzeitige Lautstärke: "+Main.getGuildAudioPlayer(e.getGuild()).player.getVolume());
+			return;
+		}
+		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()) {
 			e.reply("Du musst ein DJ sein um die Lautstärke anpassen zu können");
 			return;
 		}
