@@ -17,6 +17,7 @@ public class RandomCommand extends Command {
 		this.name = "random";
 		this.help = "Zeigt ein zufälliges Gif";
 		this.guildOnly = false;
+		this.category = new Category("RandomImage");
 	}
 
 	@Override
