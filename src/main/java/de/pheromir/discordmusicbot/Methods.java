@@ -97,5 +97,51 @@ public class Methods {
 		}
 		return 0;
 	}
+	
+	public static boolean doesTwitchUserExist(String twitchname) {
+		try {
+			URL obj = new URL("https://api.twitch.tv/helix/users?login="+twitchname);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestProperty("User-Agent", "Mozilla/5.0");
+			con.setRequestProperty("client-id", Main.twitchKey);
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			JSONObject res = new JSONObject(response.toString());
+			if(res.getJSONArray("data").length() == 0) {
+				return false;
+			} return true;
+			
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static JSONObject getStreamInfo(String twitchname) {
+		try {
+			URL obj = new URL("https://api.twitch.tv/kraken/streams/"+twitchname);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestProperty("User-Agent", "Mozilla/5.0");
+			con.setRequestProperty("client-id", Main.twitchKey);
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			JSONObject res = new JSONObject(response.toString());
+			return res;
+			
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+	}
 
 }

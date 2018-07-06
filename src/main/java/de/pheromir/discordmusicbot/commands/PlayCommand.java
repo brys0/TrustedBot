@@ -50,9 +50,6 @@ public class PlayCommand extends Command {
 		if (vc == null) {
 			e.reply("Du musst dich in einem VoiceChannel befinden.");
 		}
-		if (!e.getSelfMember().hasPermission(vc, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)) {
-			e.reply("Ich habe keine Rechte in deinem Channel Musik abzuspielen.");
-		}
 
 		AudioManager audioManager = e.getGuild().getAudioManager();
 		GuildMusicManager musicManager = Main.getGuildAudioPlayer(e.getGuild());

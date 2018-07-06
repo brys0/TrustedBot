@@ -6,6 +6,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.handler.GuildMusicManager;
 import de.pheromir.discordmusicbot.helper.QueueTrack;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 public class ResumeCommand extends Command {
@@ -21,8 +22,8 @@ public class ResumeCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (e.getAuthor().isBot())
 			return;
-		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()) {
-			e.reply("Du musst ein DJ sein um den Bot pausieren zu können.");
+		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner() && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			e.reply("Du musst mind. ein DJ sein um den Bot wieder starten zu können.");
 			return;
 		}
 		GuildMusicManager musicManager = Main.getGuildAudioPlayer(e.getGuild());

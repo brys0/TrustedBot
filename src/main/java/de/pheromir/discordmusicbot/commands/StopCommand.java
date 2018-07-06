@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
+import net.dv8tion.jda.core.Permission;
 
 public class StopCommand extends Command {
 
@@ -17,8 +18,8 @@ public class StopCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (e.getAuthor().isBot())
 			return;
-		if(!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()) {
-			e.reply("Du musst ein DJ sein um den Bot stoppen zu können.");
+		if(!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			e.reply("Du musst mind. DJ sein um den Bot stoppen zu können.");
 			return;
 		}
 		

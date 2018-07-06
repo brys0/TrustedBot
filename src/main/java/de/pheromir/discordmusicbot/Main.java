@@ -2,7 +2,9 @@ package de.pheromir.discordmusicbot;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
 
 import javax.security.auth.login.LoginException;
 
@@ -12,6 +14,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 
+import de.pheromir.discordmusicbot.commands.DJAddCommand;
+import de.pheromir.discordmusicbot.commands.DJRemoveCommand;
 import de.pheromir.discordmusicbot.commands.GoogleCommand;
 import de.pheromir.discordmusicbot.commands.HugCommand;
 import de.pheromir.discordmusicbot.commands.KissCommand;
@@ -28,11 +32,13 @@ import de.pheromir.discordmusicbot.commands.ResumeCommand;
 import de.pheromir.discordmusicbot.commands.SkipCommand;
 import de.pheromir.discordmusicbot.commands.StatusCommand;
 import de.pheromir.discordmusicbot.commands.StopCommand;
+import de.pheromir.discordmusicbot.commands.TwitchCommand;
 import de.pheromir.discordmusicbot.commands.VolumeCommand;
 import de.pheromir.discordmusicbot.config.Configuration;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
 import de.pheromir.discordmusicbot.handler.GuildMusicManager;
 import de.pheromir.discordmusicbot.helper.GuildConfig;
+import de.pheromir.discordmusicbot.helper.TwitchCheckTimer;
 import de.pheromir.discordmusicbot.listener.VoiceChannelListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -50,6 +56,10 @@ public class Main {
 	public static HashMap<Long, GuildConfig> guildConfigs;
 	public static String giphyKey = "none";
 	public static String youtubeKey = "none";
+	public static String twitchKey = "none";
+	public static ArrayList<String> generalTwitchList = new ArrayList<>();
+	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
+	public static JDA jda;
 
 	public static void main(String[] args) {
 
@@ -69,16 +79,20 @@ public class Main {
 
 		builder.addCommand(new StatusCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
-		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand());
+		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(),
+			new DJAddCommand(), new DJRemoveCommand());
 		builder.addCommands(new GoogleCommand());
 		if (!giphyKey.equals("none") && !giphyKey.isEmpty()) {
 			builder.addCommands(new RandomCommand());
+		}
+		if(!twitchKey.equals("none") && !twitchKey.isEmpty()) {
+			builder.addCommands(new TwitchCommand());
 		}
 
 		builder.setEmojis("\u2705", "\u26A0", "\u274C");
 		try {
 			/* BOT STARTEN */
-			JDA jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
+			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
 
 			/* EVENTS */
@@ -90,14 +104,19 @@ public class Main {
 
 			musicManagers = new HashMap<>();
 			guildConfigs = new HashMap<>();
-			loadAllGuildConfigs(jda);
+			loadAllGuildConfigs();
+			renewGeneralTwitchList();
+			if(!twitchKey.equals("none") && !twitchKey.isEmpty()) {
+				Timer t = new Timer();
+				t.schedule(new TwitchCheckTimer(), 10*1000, 5*60*1000);
+			}
 
 			playerManager = new DefaultAudioPlayerManager();
 			AudioSourceManagers.registerRemoteSources(playerManager);
 			AudioSourceManagers.registerLocalSource(playerManager);
 
 		} catch (LoginException | InterruptedException e) {
-			System.out.println("FEHLER BEIM START DER JDA: ");
+			System.out.println("Fehler beim Start des Bots: ");
 			e.printStackTrace();
 		}
 
@@ -117,6 +136,7 @@ public class Main {
 				cfg.set("AdminID", "00000000");
 				cfg.set("API-Keys.YouTube", "none");
 				cfg.set("API-Keys.Giphy", "none");
+				cfg.set("API-Keys.Twitch", "none");
 				yaml.save(cfg, configFile);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -129,6 +149,7 @@ public class Main {
 			adminID = cfg.getString("AdminID");
 			giphyKey = cfg.getString("API-Keys.Giphy");
 			youtubeKey = cfg.getString("API-Keys.YouTube");
+			twitchKey = cfg.getString("API-Keys.Twitch");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -148,8 +169,8 @@ public class Main {
 		return musicManager;
 	}
 
-	public static void loadAllGuildConfigs(JDA jda) {
-		for(Guild g : jda.getGuilds()) {
+	public static void loadAllGuildConfigs() {
+		for (Guild g : jda.getGuilds()) {
 			guildConfigs.put(g.getIdLong(), getGuildConfig(g));
 		}
 	}
@@ -161,6 +182,16 @@ public class Main {
 			GuildConfig gc = new GuildConfig(g);
 			guildConfigs.put(g.getIdLong(), gc);
 			return gc;
+		}
+	}
+	
+	public static void renewGeneralTwitchList() {
+		for(Guild g : jda.getGuilds()) {
+			for(String str : getGuildConfig(g).getTwitchList().keySet()) {
+				if(!generalTwitchList.contains(str)) {
+					generalTwitchList.add(str);
+				}
+			}
 		}
 	}
 

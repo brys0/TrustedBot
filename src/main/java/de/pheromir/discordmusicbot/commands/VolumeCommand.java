@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
+import net.dv8tion.jda.core.Permission;
 
 public class VolumeCommand extends Command {
 
@@ -22,8 +23,8 @@ public class VolumeCommand extends Command {
 			e.reply("Derzeitige Lautstärke: "+Main.getGuildAudioPlayer(e.getGuild()).player.getVolume());
 			return;
 		}
-		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()) {
-			e.reply("Du musst ein DJ sein um die Lautstärke anpassen zu können");
+		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			e.reply("Du musst mind. DJ sein um die Lautstärke anpassen zu können");
 			return;
 		}
 
