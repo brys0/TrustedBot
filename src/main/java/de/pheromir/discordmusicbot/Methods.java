@@ -20,6 +20,10 @@ import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
 
 public class Methods {
+	
+	/*
+	 * GENERAL JSON HTTP CONNECTIONS
+	 */
 
 	public static JSONObject HttpRequest(String url) {
 		try {
@@ -35,11 +39,15 @@ public class Methods {
 			in.close();
 			JSONObject myResponse = new JSONObject(response.toString());
 			return myResponse;
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
+	
+	/*
+	 * RANDOM GIFS FROM GIPHY
+	 */
 
 	public static JSONObject GiphySearchRequest(String url, String tag) {
 		try {
@@ -56,11 +64,15 @@ public class Methods {
 			in.close();
 			JSONObject myResponse = new JSONObject(response.toString());
 			return myResponse;
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
+	
+	/*
+	 * CONVERT TIMEMILLIS INTO A HH:mm:ss STRING
+	 */
 
 	public static String getTimeString(long millis) {
 		if (millis == Long.MAX_VALUE || millis == 0L)
@@ -73,6 +85,10 @@ public class Methods {
 		else
 			return String.format("%02d:%02d", minute, second);
 	}
+	
+	/*
+	 * CONVERT YOUTUBE DURATION TO TIMEMILLIS
+	 */
 
 	public static long getYoutubeDuration(String videoId) {
 		YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
@@ -92,11 +108,15 @@ public class Methods {
 			Video targetVideo = videoList.iterator().next();
 			return Duration.parse(targetVideo.getContentDetails().getDuration()).toMillis();
 
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return 0;
 	}
+	
+	/*
+	 * CHECK IF A TWITCH USER EXISTS
+	 */
 	
 	public static boolean doesTwitchUserExist(String twitchname) {
 		try {
@@ -116,11 +136,15 @@ public class Methods {
 				return false;
 			} return true;
 			
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
+	
+	/*
+	 * GET THE STREAM INFO OF A TWITCH USER, IF STREAMING
+	 */
 	
 	public static JSONObject getStreamInfo(String twitchname) {
 		try {
@@ -138,8 +162,8 @@ public class Methods {
 			JSONObject res = new JSONObject(response.toString());
 			return res;
 			
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

@@ -12,6 +12,7 @@ public class PauseCommand extends Command {
 		this.name = "pause";
 		this.help = "Musikwiedergabe pausieren";
 		this.guildOnly = true;
+		this.category = new Category("Music");
 	}
 
 	@Override

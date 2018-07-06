@@ -176,8 +176,8 @@ public abstract class Command {
 	 */
 	protected CooldownScope cooldownScope = CooldownScope.USER;
 
-	private final static String BOT_PERM = "%s I need the %s permission in this %s!";
-	private final static String USER_PERM = "%s You must have the %s permission in this %s to use that!";
+	private final static String BOT_PERM = "Ich benötige für diesen %s die `%s`-Berechtigung.";
+	private final static String USER_PERM = "Du benötigst für diesen %s die `%s`-Berechtigung.";
 
 	/**
 	 * The main body method of a {@link com.jagrosh.jdautilities.command.Command
@@ -234,14 +234,14 @@ public abstract class Command {
 
 		// is allowed check
 		if (event.isFromType(ChannelType.TEXT) && !isAllowed(event.getTextChannel())) {
-			terminate(event, "That command cannot be used in this channel!");
+			terminate(event, "Der Befehl kann in diesem Channel nicht genutzt werden.");
 			return;
 		}
 
 		// required role check
 		if (requiredRole != null)
 			if (!event.isFromType(ChannelType.TEXT) || event.getMember().getRoles().stream().noneMatch(r -> r.getName().equalsIgnoreCase(requiredRole))) {
-				terminate(event, event.getClient().getError() + " You must have a role called `" + requiredRole + "` to use that!");
+				terminate(event, "Du musst eine Rolle mit dem Namen `" + requiredRole + "` haben um den Befehl nutzen zu können.");
 				return;
 			}
 
@@ -253,21 +253,21 @@ public abstract class Command {
 					if (p.name().startsWith("VOICE")) {
 						VoiceChannel vc = event.getMember().getVoiceState().getChannel();
 						if (vc == null) {
-							terminate(event, event.getClient().getError() + " You must be in a voice channel to use that!");
+							terminate(event, "Du musst in einem VoiceChannel sein, um den Befehl nutzen zu können!");
 							return;
 						} else if (!event.getSelfMember().hasPermission(vc, p)) {
-							terminate(event, String.format(BOT_PERM, event.getClient().getError(), p.name(), "Voice Channel"));
+							terminate(event, String.format(BOT_PERM, "VoiceChannel", p.name()));
 							return;
 						}
 					} else {
 						if (!event.getSelfMember().hasPermission(event.getTextChannel(), p)) {
-							terminate(event, String.format(BOT_PERM, event.getClient().getError(), p.name(), "Channel"));
+							terminate(event, String.format(BOT_PERM, "Channel", p.name()));
 							return;
 						}
 					}
 				} else {
 					if (!event.getSelfMember().hasPermission(event.getTextChannel(), p)) {
-						terminate(event, String.format(BOT_PERM, event.getClient().getError(), p.name(), "Guild"));
+						terminate(event, String.format(BOT_PERM, "Server", p.name()));
 						return;
 					}
 				}
@@ -277,12 +277,12 @@ public abstract class Command {
 			for (Permission p : userPermissions) {
 				if (p.isChannel()) {
 					if (!event.getMember().hasPermission(event.getTextChannel(), p)) {
-						terminate(event, String.format(USER_PERM, event.getClient().getError(), p.name(), "Channel"));
+						terminate(event, String.format(USER_PERM, "Channel", p.name()));
 						return;
 					}
 				} else {
 					if (!event.getMember().hasPermission(p)) {
-						terminate(event, String.format(USER_PERM, event.getClient().getError(), p.name(), "Guild"));
+						terminate(event, String.format(USER_PERM, "Server", p.name()));
 						return;
 					}
 				}

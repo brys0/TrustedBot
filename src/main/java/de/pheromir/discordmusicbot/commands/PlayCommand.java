@@ -37,9 +37,10 @@ public class PlayCommand extends Command {
 
 	public PlayCommand() {
 		this.name = "play";
-		this.botPermissions = new Permission[] { Permission.VOICE_CONNECT, Permission.VOICE_SPEAK };
+		this.botPermissions = new Permission[] { Permission.VOICE_CONNECT, Permission.VOICE_SPEAK};
 		this.guildOnly = true;
 		this.help = "Titel zur Wiedergabeschlange hinzufügen.";
+		this.category = new Category("Music");
 	}
 
 	@Override
@@ -47,10 +48,6 @@ public class PlayCommand extends Command {
 		if (e.getAuthor().isBot())
 			return;
 		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
-		if (vc == null) {
-			e.reply("Du musst dich in einem VoiceChannel befinden.");
-		}
-
 		AudioManager audioManager = e.getGuild().getAudioManager();
 		GuildMusicManager musicManager = Main.getGuildAudioPlayer(e.getGuild());
 
@@ -62,7 +59,7 @@ public class PlayCommand extends Command {
 			}
 			return;
 		} else if (e.getArgs().isEmpty()) {
-			e.reply("Bitte einen Track angeben (z.B. Link / Youtube Suchbegriffe).");
+			e.reply("Bitte einen Track angeben (Link / Youtube Suchbegriffe).");
 			return;
 		}
 

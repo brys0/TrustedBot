@@ -12,6 +12,7 @@ public class StopCommand extends Command {
 		this.name = "stop";
 		this.help = "Musikwiedergabe stoppen";
 		this.guildOnly = true;
+		this.category = new Category("Music");
 	}
 	
 	@Override

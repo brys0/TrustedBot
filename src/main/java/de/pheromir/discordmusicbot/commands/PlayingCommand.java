@@ -39,6 +39,7 @@ public class PlayingCommand extends Command {
 		this.help = "";
 		this.guildOnly = true;
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
+		this.category = new Category("Music");
 	}
 
 	@Override

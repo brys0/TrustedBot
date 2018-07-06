@@ -13,6 +13,7 @@ public class VolumeCommand extends Command {
 		this.aliases = new String[] { "vol" };
 		this.help = "Musiklautstärke anpassen";
 		this.guildOnly = true;
+		this.category = new Category("Music");
 	}
 
 	@Override

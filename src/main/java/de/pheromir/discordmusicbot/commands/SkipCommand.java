@@ -13,6 +13,7 @@ public class SkipCommand extends Command {
 		this.name = "skip";
 		this.help = "Musiktrack überspringen";
 		this.guildOnly = true;
+		this.category = new Category("Music");
 	}
 
 	@Override

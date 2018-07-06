@@ -16,6 +16,7 @@ public class ResumeCommand extends Command {
 		this.aliases = new String[] {"unpause"};
 		this.help = "Musikwiedergabe fortsetzen";
 		this.guildOnly = true;
+		this.category = new Category("Music");
 	}
 
 	@Override
