@@ -95,6 +95,7 @@ public class GuildConfig {
 
 	public void setVolume(int vol) {
 		volume = vol;
+		player.setVolume(volume);
 		cfg.set("Music.Volume", vol);
 		try {
 			yaml.save(cfg, configFile);
