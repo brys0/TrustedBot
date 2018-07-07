@@ -36,7 +36,6 @@ import de.pheromir.discordmusicbot.commands.TwitchCommand;
 import de.pheromir.discordmusicbot.commands.VolumeCommand;
 import de.pheromir.discordmusicbot.config.Configuration;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
-import de.pheromir.discordmusicbot.handler.GuildMusicManager;
 import de.pheromir.discordmusicbot.helper.GuildConfig;
 import de.pheromir.discordmusicbot.helper.TwitchCheckTimer;
 import de.pheromir.discordmusicbot.listener.VoiceChannelListener;
@@ -52,7 +51,6 @@ public class Main {
 	public static String adminID = "00000000";
 	public static EventWaiter waiter = new EventWaiter();
 	public static AudioPlayerManager playerManager;
-	public static HashMap<Long, GuildMusicManager> musicManagers;
 	public static HashMap<Long, GuildConfig> guildConfigs;
 	public static String giphyKey = "none";
 	public static String youtubeKey = "none";
@@ -102,19 +100,19 @@ public class Main {
 			System.out.println("OWNERID: " + adminID);
 			System.out.println("-----------------------------------");
 
-			musicManagers = new HashMap<>();
 			guildConfigs = new HashMap<>();
+
+			playerManager = new DefaultAudioPlayerManager();
+			AudioSourceManagers.registerRemoteSources(playerManager);
+			AudioSourceManagers.registerLocalSource(playerManager);
+
 			loadAllGuildConfigs();
 			renewGeneralTwitchList();
 			if(!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 				Timer t = new Timer();
 				t.schedule(new TwitchCheckTimer(), 10*1000, 5*60*1000);
 			}
-
-			playerManager = new DefaultAudioPlayerManager();
-			AudioSourceManagers.registerRemoteSources(playerManager);
-			AudioSourceManagers.registerLocalSource(playerManager);
-
+			
 		} catch (LoginException | InterruptedException e) {
 			System.out.println("Fehler beim Start des Bots: ");
 			e.printStackTrace();
@@ -155,34 +153,24 @@ public class Main {
 		}
 	}
 
-	public static synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
-		long guildId = guild.getIdLong();
-		GuildMusicManager musicManager = musicManagers.get(guildId);
-
-		if (musicManager == null) {
-			musicManager = new GuildMusicManager(playerManager, getGuildConfig(guild).getVolume(), guild);
-			musicManagers.put(guildId, musicManager);
-		}
-
-		guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
-
-		return musicManager;
-	}
-
 	public static void loadAllGuildConfigs() {
 		for (Guild g : jda.getGuilds()) {
 			guildConfigs.put(g.getIdLong(), getGuildConfig(g));
 		}
 	}
 
-	public static GuildConfig getGuildConfig(Guild g) {
+	public static synchronized GuildConfig getGuildConfig(Guild g) {
+		GuildConfig cfg = null;
 		if (guildConfigs.containsKey(g.getIdLong())) {
-			return guildConfigs.get(g.getIdLong());
+			cfg = guildConfigs.get(g.getIdLong());
 		} else {
-			GuildConfig gc = new GuildConfig(g);
-			guildConfigs.put(g.getIdLong(), gc);
-			return gc;
+			cfg = new GuildConfig(g);
+			guildConfigs.put(g.getIdLong(), cfg);
 		}
+		
+		g.getAudioManager().setSendingHandler(cfg.getSendHandler());
+		
+		return cfg;
 	}
 	
 	public static void renewGeneralTwitchList() {

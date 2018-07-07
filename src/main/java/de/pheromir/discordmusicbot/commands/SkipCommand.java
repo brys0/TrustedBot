@@ -4,7 +4,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
-import de.pheromir.discordmusicbot.handler.GuildMusicManager;
+import de.pheromir.discordmusicbot.helper.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 
 public class SkipCommand extends Command {
@@ -20,7 +20,7 @@ public class SkipCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (e.getAuthor().isBot())
 			return;
-		GuildMusicManager m = Main.getGuildAudioPlayer(e.getGuild());
+		GuildConfig m = Main.getGuildConfig(e.getGuild());
 
 		if (e.getArgs().isEmpty()) {
 			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner() && m.scheduler.getCurrentRequester() != e.getAuthor()

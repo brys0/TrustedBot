@@ -21,7 +21,7 @@ public class VolumeCommand extends Command {
 		if (e.getAuthor().isBot())
 			return;
 		if(e.getArgs().isEmpty()) {
-			e.reply("Derzeitige Lautstärke: "+Main.getGuildAudioPlayer(e.getGuild()).player.getVolume());
+			e.reply("Derzeitige Lautstärke: "+Main.getGuildConfig(e.getGuild()).player.getVolume());
 			return;
 		}
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
@@ -36,7 +36,7 @@ public class VolumeCommand extends Command {
 			e.reply("Ungültiger Wert.");
 			return;
 		}
-		Main.getGuildAudioPlayer(e.getGuild()).setVolume(vol);
+		Main.getGuildConfig(e.getGuild()).setVolume(vol);
 		e.reactSuccess();
 
 	}

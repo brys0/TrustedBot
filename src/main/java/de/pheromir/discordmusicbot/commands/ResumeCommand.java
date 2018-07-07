@@ -4,7 +4,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
-import de.pheromir.discordmusicbot.handler.GuildMusicManager;
+import de.pheromir.discordmusicbot.helper.GuildConfig;
 import de.pheromir.discordmusicbot.helper.QueueTrack;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -27,12 +27,11 @@ public class ResumeCommand extends Command {
 			e.reply("Du musst mind. ein DJ sein um den Bot wieder starten zu können.");
 			return;
 		}
-		GuildMusicManager musicManager = Main.getGuildAudioPlayer(e.getGuild());
+		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 		
 		if(musicManager.player.getPlayingTrack() != null && musicManager.player.getPlayingTrack().getDuration() == Long.MAX_VALUE) {
 			musicManager.scheduler.setCurrentTrack(new QueueTrack(musicManager.player.getPlayingTrack().makeClone(), musicManager.scheduler.getCurrentRequester()));
 			musicManager.player.startTrack(musicManager.player.getPlayingTrack().makeClone(), false);
-//			musicManager.scheduler.cancelAndRenewTimer();
 		}
 		musicManager.player.setPaused(false);
 		musicManager.setAutoPause(false);

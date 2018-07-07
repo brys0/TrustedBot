@@ -7,7 +7,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
-import de.pheromir.discordmusicbot.handler.GuildMusicManager;
+import de.pheromir.discordmusicbot.helper.GuildConfig;
 import de.pheromir.discordmusicbot.helper.QueueTrack;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -29,7 +29,7 @@ public class PlaylistCommand extends Command {
 		if (e.getAuthor().isBot())
 			return;
 
-		GuildMusicManager musicManager = Main.getGuildAudioPlayer(e.getGuild());
+		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 		ArrayList<QueueTrack> titles = musicManager.scheduler.getRequestedTitles();
 
 		if (e.getArgs().equalsIgnoreCase("clear")) {

@@ -24,7 +24,7 @@ public class PauseCommand extends Command {
 			return;
 		}
 		
-		Main.getGuildAudioPlayer(e.getGuild()).player.setPaused(true);
+		Main.getGuildConfig(e.getGuild()).player.setPaused(true);
 		e.reactSuccess();
 	}
 }

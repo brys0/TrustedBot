@@ -16,6 +16,7 @@ public class TwitchCommand extends Command {
 		this.name = "twitch";
 		this.help = "Twitchbenachrichtungen für einen Streamer im Channel de-/aktivieren.";
 		this.arguments = "<Username>";
+		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
 		this.guildOnly = true;
 	}
 
@@ -24,11 +25,6 @@ public class TwitchCommand extends Command {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
-
-		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.");
-			return;
-		}
 
 		if (args.length == 0) {
 			ArrayList<String> streams = new ArrayList<>();

@@ -20,7 +20,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
-import de.pheromir.discordmusicbot.handler.GuildMusicManager;
+import de.pheromir.discordmusicbot.helper.GuildConfig;
 import de.pheromir.discordmusicbot.helper.IcecastMeta;
 import de.pheromir.discordmusicbot.helper.YouTubeTitleCache;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -47,7 +47,7 @@ public class PlayingCommand extends Command {
 		if (e.getAuthor().isBot())
 			return;
 
-		GuildMusicManager m = Main.getGuildAudioPlayer(e.getGuild());
+		GuildConfig m = Main.getGuildConfig(e.getGuild());
 		AudioTrack track = m.player.getPlayingTrack();
 		if (track == null) {
 			e.reply("Derzeit wird nichts gespielt.");

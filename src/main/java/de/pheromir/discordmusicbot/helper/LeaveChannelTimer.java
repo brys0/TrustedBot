@@ -16,9 +16,9 @@ public class LeaveChannelTimer extends TimerTask {
 	@Override
 	public void run() {
 		g.getAudioManager().closeAudioConnection();
-		Main.getGuildAudioPlayer(g).setAutoPause(false);
-		Main.getGuildAudioPlayer(g).player.stopTrack();
-		Main.getGuildAudioPlayer(g).player.setPaused(false);
+		Main.getGuildConfig(g).setAutoPause(false);
+		Main.getGuildConfig(g).player.stopTrack();
+		Main.getGuildConfig(g).player.setPaused(false);
 		System.out.println("VoiceVerbindung in Guild "+g.getName()+" ("+g.getId()+") getrennt.");
 	}
 

@@ -6,10 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.config.Configuration;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
+import de.pheromir.discordmusicbot.handler.AudioPlayerSendHandler;
+import de.pheromir.discordmusicbot.handler.TrackScheduler;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.User;
 
 public class GuildConfig {
 
@@ -20,6 +25,10 @@ public class GuildConfig {
 	private List<Long> djs;
 	private HashMap<String, List<Long>> twitch;
 	private int volume;
+	public final AudioPlayer player;
+	public final TrackScheduler scheduler;
+	public boolean autoPause = false;
+	public HashMap<User, ArrayList<Suggestion>> suggestions;
 
 	public GuildConfig(Guild g) {
 		this.g = g;
@@ -49,6 +58,11 @@ public class GuildConfig {
 			e.printStackTrace();
 			cfg = null;
 		}
+		player = Main.playerManager.createPlayer();
+		scheduler = new TrackScheduler(player, g);
+		player.addListener(scheduler);
+		suggestions = new HashMap<>();
+		player.setVolume(volume);
 	}
 
 	public void removeDJ(Long longID) {
@@ -142,6 +156,14 @@ public class GuildConfig {
 
 	public HashMap<String, List<Long>> getTwitchList() {
 		return twitch;
+	}
+	
+	public void setAutoPause(boolean pause) {
+		this.autoPause = pause;
+	}
+	
+	public AudioPlayerSendHandler getSendHandler() {
+		return new AudioPlayerSendHandler(player);
 	}
 
 }

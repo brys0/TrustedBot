@@ -22,7 +22,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
-import de.pheromir.discordmusicbot.handler.GuildMusicManager;
+import de.pheromir.discordmusicbot.helper.GuildConfig;
 import de.pheromir.discordmusicbot.helper.Suggestion;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -49,12 +49,12 @@ public class PlayCommand extends Command {
 			return;
 		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
 		AudioManager audioManager = e.getGuild().getAudioManager();
-		GuildMusicManager musicManager = Main.getGuildAudioPlayer(e.getGuild());
+		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 
 		if (e.getArgs().isEmpty() && musicManager.player.isPaused()) {
 			musicManager.player.setPaused(false);
 			e.reply("Wiedergabe fortgesetzt.");
-			if (Main.getGuildAudioPlayer(e.getGuild()).player.getPlayingTrack() != null && !e.getGuild().getAudioManager().isConnected()) {
+			if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null && !e.getGuild().getAudioManager().isConnected()) {
 				e.getGuild().getAudioManager().openAudioConnection(vc);
 			}
 			return;

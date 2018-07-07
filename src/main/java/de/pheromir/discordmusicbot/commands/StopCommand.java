@@ -24,8 +24,8 @@ public class StopCommand extends Command {
 			return;
 		}
 		
-		Main.getGuildAudioPlayer(e.getGuild()).player.setPaused(false);
-		Main.getGuildAudioPlayer(e.getGuild()).player.stopTrack();
+		Main.getGuildConfig(e.getGuild()).player.setPaused(false);
+		Main.getGuildConfig(e.getGuild()).player.stopTrack();
 		e.reactSuccess();
 		e.getGuild().getAudioManager().closeAudioConnection();
 		
