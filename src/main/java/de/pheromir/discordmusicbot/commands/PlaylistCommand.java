@@ -33,7 +33,7 @@ public class PlaylistCommand extends Command {
 		ArrayList<QueueTrack> titles = musicManager.scheduler.getRequestedTitles();
 
 		if (e.getArgs().equalsIgnoreCase("clear")) {
-			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) || e.isOwner() || e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) || e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				musicManager.scheduler.clearQueue();
 				e.reactSuccess();
 				return;
@@ -41,7 +41,7 @@ public class PlaylistCommand extends Command {
 		}
 
 		if (e.getArgs().equalsIgnoreCase("repeat")) {
-			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) || e.isOwner() || e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) || e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				musicManager.scheduler.setRepeat(!musicManager.scheduler.getRepeat());
 				e.reply(musicManager.scheduler.getRepeat() ? "Die Warteschlange wiederholt sich nun." : "Die Warteschlange wiederholt sich nicht mehr.");
 				return;

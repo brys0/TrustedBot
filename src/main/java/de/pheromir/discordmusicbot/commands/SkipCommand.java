@@ -23,7 +23,7 @@ public class SkipCommand extends Command {
 		GuildConfig m = Main.getGuildConfig(e.getGuild());
 
 		if (e.getArgs().isEmpty()) {
-			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner() && m.scheduler.getCurrentRequester() != e.getAuthor()
+			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && m.scheduler.getCurrentRequester() != e.getAuthor()
 					&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				e.reply("Du kannst nur Songs skippen, die du selbst hinzugefügt hast.");
 				return;
