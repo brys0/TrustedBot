@@ -53,7 +53,7 @@ public class PlayingCommand extends Command {
 			e.reply("Derzeit wird nichts gespielt.");
 			return;
 		}
-		if (!track.getInfo().uri.contains("youtube")) {
+		if (!track.getInfo().uri.contains("youtube") || Main.youtubeKey.equals("none") || Main.youtubeKey.isEmpty()) {
 			boolean skip = false;
 			ArrayList<Field> fields = new ArrayList<>();
 			if (track.getDuration() == Long.MAX_VALUE) {
