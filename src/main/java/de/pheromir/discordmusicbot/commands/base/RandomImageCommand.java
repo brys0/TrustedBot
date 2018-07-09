@@ -25,7 +25,7 @@ public  abstract class RandomImageCommand extends Command {
 	
 	@Override
 	protected void execute(CommandEvent e) {
-		String imgUrl = Methods.HttpRequest(BASE_URL).getString(jsonKey);
+		String imgUrl = Methods.httpRequest(BASE_URL).getString(jsonKey);
 		e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT ? e.getSelfMember().getColor() : Color.BLUE).build());
 	}
 

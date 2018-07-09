@@ -27,6 +27,7 @@ import de.pheromir.discordmusicbot.commands.PauseCommand;
 import de.pheromir.discordmusicbot.commands.PlayCommand;
 import de.pheromir.discordmusicbot.commands.PlayingCommand;
 import de.pheromir.discordmusicbot.commands.PlaylistCommand;
+import de.pheromir.discordmusicbot.commands.R6Command;
 import de.pheromir.discordmusicbot.commands.RandomCommand;
 import de.pheromir.discordmusicbot.commands.ResumeCommand;
 import de.pheromir.discordmusicbot.commands.SkipCommand;
@@ -38,7 +39,6 @@ import de.pheromir.discordmusicbot.config.Configuration;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
 import de.pheromir.discordmusicbot.helper.GuildConfig;
 import de.pheromir.discordmusicbot.helper.TwitchCheckTimer;
-import de.pheromir.discordmusicbot.listener.VoiceChannelListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -86,6 +86,7 @@ public class Main {
 		if(!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
 		}
+		builder.addCommand(new R6Command());
 
 		builder.setEmojis("\u2705", "\u26A0", "\u274C");
 		try {
@@ -94,7 +95,7 @@ public class Main {
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
 
 			/* EVENTS */
-			jda.addEventListener(new VoiceChannelListener());
+			//jda.addEventListener(new VoiceChannelListener());
 
 			System.out.println("-----------------------------------");
 			System.out.println("OWNERID: " + adminID);

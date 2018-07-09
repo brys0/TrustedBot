@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.time.Duration;
 import java.util.List;
 
@@ -25,36 +24,12 @@ public class Methods {
 	 * GENERAL JSON HTTP CONNECTIONS
 	 */
 
-	public static JSONObject HttpRequest(String url) {
+	public static JSONObject httpRequest(String url) {
 		try {
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setReadTimeout(30000);
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-			JSONObject myResponse = new JSONObject(response.toString());
-			return myResponse;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	/*
-	 * RANDOM GIFS FROM GIPHY
-	 */
-
-	public static JSONObject GiphySearchRequest(String url, String tag) {
-		try {
-			URL obj = new URL(url + "?q=" + URLEncoder.encode(tag, "UTF-8") + "&rating=nsfw&limit=50");
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			con.setRequestProperty("api_key", Main.giphyKey);
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
 			StringBuffer response = new StringBuffer();
