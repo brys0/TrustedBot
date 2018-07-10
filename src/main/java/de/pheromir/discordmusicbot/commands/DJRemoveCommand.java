@@ -38,20 +38,20 @@ public class DJRemoveCommand extends Command {
 				Member mem = e.getGuild().getMemberById(id);
 				if (mem == null) {
 					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
-					return;
+					continue;
 				}
 				if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
 					e.reply(mem.getAsMention() + " ist gar kein DJ.");
-					return;
+					continue;
 				}
 				if (mem != null) {
 					e.reply(mem.getAsMention() + " ist nun kein DJ mehr.");
 					Main.getGuildConfig(e.getGuild()).removeDJ(Long.parseLong(id));
-					return;
+					continue;
 				}
 			}
 			e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
-			return;
+			continue;
 		}
 	}
 

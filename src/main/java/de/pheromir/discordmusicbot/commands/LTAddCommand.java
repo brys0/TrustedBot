@@ -33,20 +33,20 @@ public class LTAddCommand extends Command {
 				Member mem = e.getGuild().getMemberById(id);
 				if (mem == null) {
 					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
-					return;
+					continue;
 				}
 				if (Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(Long.parseLong(id))) {
 					e.reply(mem.getAsMention() + " hat bereits die Erlaubnis, längere Titel abzuspielen.");
-					return;
+					continue;
 				}
 				if (mem != null) {
 					e.reply(mem.getAsMention() + " hat nun die Erlaubnis, längere Titel abzuspielen.");
 					Main.getGuildConfig(e.getGuild()).addLongTitlesUser(Long.parseLong(id));
-					return;
+					continue;
 				}
 			}
 			e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
-			return;
+			continue;
 		}
 	}
 
