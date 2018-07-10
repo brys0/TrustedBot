@@ -19,6 +19,8 @@ import de.pheromir.discordmusicbot.commands.DJRemoveCommand;
 import de.pheromir.discordmusicbot.commands.GoogleCommand;
 import de.pheromir.discordmusicbot.commands.HugCommand;
 import de.pheromir.discordmusicbot.commands.KissCommand;
+import de.pheromir.discordmusicbot.commands.LTAddCommand;
+import de.pheromir.discordmusicbot.commands.LTRemoveCommand;
 import de.pheromir.discordmusicbot.commands.LewdCommand;
 import de.pheromir.discordmusicbot.commands.LizardCommand;
 import de.pheromir.discordmusicbot.commands.NekoCommand;
@@ -27,6 +29,7 @@ import de.pheromir.discordmusicbot.commands.PauseCommand;
 import de.pheromir.discordmusicbot.commands.PlayCommand;
 import de.pheromir.discordmusicbot.commands.PlayingCommand;
 import de.pheromir.discordmusicbot.commands.PlaylistCommand;
+import de.pheromir.discordmusicbot.commands.R6ClearCommand;
 import de.pheromir.discordmusicbot.commands.R6Command;
 import de.pheromir.discordmusicbot.commands.RandomCommand;
 import de.pheromir.discordmusicbot.commands.ResumeCommand;
@@ -75,7 +78,7 @@ public class Main {
 		builder.useHelpBuilder(false);
 		builder.setOwnerId(adminID);
 
-		builder.addCommand(new StatusCommand());
+		builder.addCommands(new StatusCommand(), new R6ClearCommand(), new LTAddCommand(), new LTRemoveCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
 		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(),
 			new DJAddCommand(), new DJRemoveCommand());
@@ -86,7 +89,7 @@ public class Main {
 		if(!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
 		}
-		builder.addCommand(new R6Command());
+		builder.addCommands(new R6Command());
 
 		builder.setEmojis("\u2705", "\u26A0", "\u274C");
 		try {
@@ -94,12 +97,7 @@ public class Main {
 			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
 
-			/* EVENTS */
-			//jda.addEventListener(new VoiceChannelListener());
-
-			System.out.println("-----------------------------------");
 			System.out.println("OWNERID: " + adminID);
-			System.out.println("-----------------------------------");
 
 			guildConfigs = new HashMap<>();
 
@@ -136,6 +134,7 @@ public class Main {
 				cfg.set("API-Keys.YouTube", "none");
 				cfg.set("API-Keys.Giphy", "none");
 				cfg.set("API-Keys.Twitch", "none");
+				cfg.set("LongTitlesAllowed", new ArrayList<Long>());
 				yaml.save(cfg, configFile);
 			} catch (IOException e) {
 				e.printStackTrace();

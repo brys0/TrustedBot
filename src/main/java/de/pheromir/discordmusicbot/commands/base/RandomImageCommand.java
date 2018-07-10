@@ -1,6 +1,9 @@
 package de.pheromir.discordmusicbot.commands.base;
 
 import java.awt.Color;
+import java.io.IOException;
+
+import org.json.JSONException;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -25,8 +28,17 @@ public  abstract class RandomImageCommand extends Command {
 	
 	@Override
 	protected void execute(CommandEvent e) {
-		String imgUrl = Methods.httpRequest(BASE_URL).getString(jsonKey);
-		e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT ? e.getSelfMember().getColor() : Color.BLUE).build());
+		String imgUrl;
+		try {
+			imgUrl = Methods.httpRequest(BASE_URL).getString(jsonKey);
+			e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT ? e.getSelfMember().getColor() : Color.BLUE).build());
+		} catch (JSONException e1) {
+			e.reply("Es ist ein Fehler aufgetreten.");
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e.reply("Es ist ein Fehler aufgetreten.");
+			e1.printStackTrace();
+		}
 	}
 
 }

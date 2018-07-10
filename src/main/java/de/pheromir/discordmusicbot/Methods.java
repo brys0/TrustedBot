@@ -24,13 +24,15 @@ public class Methods {
 	 * GENERAL JSON HTTP CONNECTIONS
 	 */
 
-	public static JSONObject httpRequest(String url) {
+	public static JSONObject httpRequest(String url) throws IOException {
 		try {
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			con.setReadTimeout(30000);
+			con.setReadTimeout(60000);
+			con.setConnectTimeout(60000);
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			
 			String inputLine;
 			StringBuffer response = new StringBuffer();
 			while ((inputLine = in.readLine()) != null) {
@@ -40,9 +42,8 @@ public class Methods {
 			JSONObject myResponse = new JSONObject(response.toString());
 			return myResponse;
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		}
-		return null;
 	}
 	
 	/*

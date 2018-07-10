@@ -39,6 +39,10 @@ public class DJRemoveCommand extends Command {
 			if(m.find()) {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);
+				if(mem == null) {
+					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+					return;
+				}
 				if(!Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
 					e.reply(mem.getAsMention()+" ist gar kein DJ.");
 					return;

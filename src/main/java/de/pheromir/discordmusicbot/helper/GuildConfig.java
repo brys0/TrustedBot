@@ -19,16 +19,20 @@ import net.dv8tion.jda.core.entities.User;
 public class GuildConfig {
 
 	private Guild g;
+	
 	private File configFile;
 	private YamlConfiguration yaml;
 	private Configuration cfg;
-	private List<Long> djs;
-	private HashMap<String, List<Long>> twitch;
+	
 	private int volume;
 	public final AudioPlayer player;
 	public final TrackScheduler scheduler;
 	public boolean autoPause = false;
-	public HashMap<User, ArrayList<Suggestion>> suggestions;
+	private List<Long> djs;
+	private HashMap<User, ArrayList<Suggestion>> suggestions;
+	
+	private HashMap<String, List<Long>> twitch;
+	private List<Long> longTitlesUsers;
 
 	public GuildConfig(Guild g) {
 		this.g = g;
@@ -36,6 +40,7 @@ public class GuildConfig {
 		volume = 30;
 		yaml = new YamlConfiguration();
 		twitch = new HashMap<>();
+		longTitlesUsers = new ArrayList<>();
 		configFile = new File("config//" + this.g.getId() + ".yml");
 		try {
 			if (!configFile.exists()) {
@@ -43,11 +48,14 @@ public class GuildConfig {
 				cfg = yaml.load(configFile);
 				cfg.set("Music.DJs", djs);
 				cfg.set("Music.Volume", volume);
+				cfg.set("Music.LongTitlesUsers", longTitlesUsers);
+				cfg.set("Twitch", new ArrayList<>());
 				yaml.save(cfg, configFile);
 			} else {
 				cfg = yaml.load(configFile);
 				djs = cfg.getLongList("Music.DJs");
 				volume = cfg.getInt("Music.Volume");
+				longTitlesUsers = cfg.getLongList("Music.LongTitlesUsers");
 				if (cfg.getSection("Twitch") != null) {
 					for (String key : cfg.getSection("Twitch").getKeys()) {
 						twitch.put(key, cfg.getLongList("Twitch." + key));
@@ -159,12 +167,44 @@ public class GuildConfig {
 		return twitch;
 	}
 	
+	public List<Long> getLongTitlesUsers() {
+		return longTitlesUsers;
+	}
+	
+	public void addLongTitlesUser(Long id) {
+		if(!longTitlesUsers.contains(id)) {
+			longTitlesUsers.add(id);
+			cfg.set("Music.LongTitlesUsers", longTitlesUsers);
+			try {
+				yaml.save(cfg, configFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void removeLongTitlesUser(Long id) {
+		if(longTitlesUsers.contains(id)) {
+			longTitlesUsers.remove(id);
+			cfg.set("Music.LongTitlesUsers", longTitlesUsers);
+			try {
+				yaml.save(cfg, configFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void setAutoPause(boolean pause) {
 		this.autoPause = pause;
 	}
 	
 	public AudioPlayerSendHandler getSendHandler() {
 		return new AudioPlayerSendHandler(player);
+	}
+	
+	public HashMap<User, ArrayList<Suggestion>> getSuggestions() {
+		return suggestions;
 	}
 
 }

@@ -7,16 +7,16 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 
-public class DJAddCommand extends Command {
+public class LTAddCommand extends Command {
 
-	public DJAddCommand() {
-		this.name = "djadd";
-		this.help = "DJ-Rechte an eine Person vergeben.";
+	public LTAddCommand() {
+		this.name = "ltadd";
+		this.help = "Person erlauben, längere Titel abzuspielen.";
 		this.arguments = "<Person>";
 		this.guildOnly = true;
+		this.ownerCommand = true;
 	}
 
 	@Override
@@ -24,14 +24,9 @@ public class DJAddCommand extends Command {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
-
-		if(!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.");
-			return;
-		}
 		
 		if (args.length != 1) {
-			e.reply("Syntaxfehler. Verwendung: `!djadd <User-Mention>`");
+			e.reply("Syntaxfehler. Verwendung: `!ltadd <User-Mention>`");
 			return;
 		} else {
 			Pattern p = Pattern.compile("(\\d+)");
@@ -43,13 +38,13 @@ public class DJAddCommand extends Command {
 					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 					return;
 				}
-				if(Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention()+" ist bereits DJ.");
+				if(Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(Long.parseLong(id))) {
+					e.reply(mem.getAsMention()+" hat bereits die Erlaubnis, längere Titel abzuspielen.");
 					return;
 				}
 				if(mem != null) {
-					e.reply(mem.getAsMention()+" ist nun DJ.");
-					Main.getGuildConfig(e.getGuild()).addDJ(Long.parseLong(id));
+					e.reply(mem.getAsMention()+" hat nun die Erlaubnis, längere Titel abzuspielen.");
+					Main.getGuildConfig(e.getGuild()).addLongTitlesUser(Long.parseLong(id));
 					return;
 				}
 			}

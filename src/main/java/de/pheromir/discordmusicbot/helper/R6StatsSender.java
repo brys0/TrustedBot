@@ -1,6 +1,8 @@
 package de.pheromir.discordmusicbot.helper;
 
 import java.awt.Color;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.TimerTask;
@@ -26,16 +28,24 @@ public class R6StatsSender extends TimerTask {
 		RainbowSixStats stats = null;
 		if (!R6Command.statsCache.containsKey(args.toLowerCase()) || R6Command.statsCache.get(args.toLowerCase()).getValidUntil() < System.currentTimeMillis()) {
 			c.sendMessage("Frage Statistik ab..\nDies kann einen Moment dauern.").complete();
-			stats = new RainbowSixStats(args);
+				try {
+					stats = new RainbowSixStats(args);
+				} catch (NullPointerException | IOException e) {
+					if(e instanceof FileNotFoundException) {
+						c.sendMessage("Der Spieler scheint nicht zu existieren.").complete();
+					} else {
+						e.printStackTrace();
+						c.sendMessage("Die Statistik für den Spieler "+args+" konnte nicht abgerufen werden.").complete();
+					}
+					return;
+				}
+				R6Command.statsCache.put(args.toLowerCase(), stats);
 		} else {
 			LocalDateTime now = LocalDateTime.now();
 			now.minusHours(3);
 		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss");
 			c.sendMessage("Zwischengespeicherte Statistik vom "+formatter.format(now)+" Uhr.\nDie Statistiken werden spätestens nach drei Stunden neu abgefragt.").complete();
 			stats = R6Command.statsCache.get(args.toLowerCase());
-		}
-		if (!stats.isValid()) {
-			c.sendMessage("Für diesen Spieler konnte keine Statistik abgerufen werden.").complete();
 		}
 
 		EmbedBuilder emb = new EmbedBuilder();
