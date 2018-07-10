@@ -43,16 +43,15 @@ public class DJAddCommand extends Command {
 				if (Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
 					e.reply(mem.getAsMention() + " ist bereits DJ.");
 					continue;
-				}
-				if (mem != null) {
+				} else {
 					e.reply(mem.getAsMention() + " ist nun DJ.");
 					Main.getGuildConfig(e.getGuild()).addDJ(Long.parseLong(id));
 					continue;
 				}
+			} else {
+				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+				continue;
 			}
-			e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
-			continue;
 		}
 	}
-
 }

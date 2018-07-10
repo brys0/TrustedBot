@@ -38,16 +38,15 @@ public class LTRemoveCommand extends Command {
 				if (!Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(Long.parseLong(id))) {
 					e.reply(mem.getAsMention() + " hat gar keine Erlaubnis, längere Titel abzuspielen.");
 					continue;
-				}
-				if (mem != null) {
+				} else {
 					e.reply(mem.getAsMention() + " hat nun keine Erlaubnis mehr, längere Titel abzuspielen.");
 					Main.getGuildConfig(e.getGuild()).removeLongTitlesUser(Long.parseLong(id));
 					continue;
 				}
+			} else {
+				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+				continue;
 			}
-			e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
-			continue;
 		}
 	}
-
 }

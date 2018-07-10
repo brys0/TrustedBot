@@ -38,16 +38,15 @@ public class LTAddCommand extends Command {
 				if (Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(Long.parseLong(id))) {
 					e.reply(mem.getAsMention() + " hat bereits die Erlaubnis, längere Titel abzuspielen.");
 					continue;
-				}
-				if (mem != null) {
+				} else {
 					e.reply(mem.getAsMention() + " hat nun die Erlaubnis, längere Titel abzuspielen.");
 					Main.getGuildConfig(e.getGuild()).addLongTitlesUser(Long.parseLong(id));
-					continue;
 				}
+				continue;
+			} else {
+				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+				continue;
 			}
-			e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
-			continue;
 		}
 	}
-
 }
