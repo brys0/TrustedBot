@@ -20,8 +20,8 @@ public class VolumeCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (e.getAuthor().isBot())
 			return;
-		if(e.getArgs().isEmpty()) {
-			e.reply("Derzeitige Lautstärke: "+Main.getGuildConfig(e.getGuild()).player.getVolume());
+		if (e.getArgs().isEmpty()) {
+			e.reply("Derzeitige Lautstärke: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
 			return;
 		}
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {

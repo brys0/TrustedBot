@@ -16,7 +16,7 @@ public class TwitchCommand extends Command {
 		this.name = "twitch";
 		this.help = "Twitchbenachrichtungen für einen Streamer im Channel de-/aktivieren.";
 		this.arguments = "<Username>";
-		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
+		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.guildOnly = true;
 	}
 
@@ -40,10 +40,10 @@ public class TwitchCommand extends Command {
 			} else {
 				StringBuilder sb = new StringBuilder();
 				for (String str : streams) {
-					sb.append("`"+str + "`, ");
+					sb.append("`" + str + "`, ");
 				}
 				String msg = sb.substring(0, sb.length() - 2);
-				e.reply("In diesem Channel sind momentan Twitchbenachrichtigung für folgende Streamer aktiv: "+msg);
+				e.reply("In diesem Channel sind momentan Twitchbenachrichtigung für folgende Streamer aktiv: " + msg);
 				return;
 			}
 		}

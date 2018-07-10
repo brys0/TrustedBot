@@ -23,7 +23,7 @@ public class PauseCommand extends Command {
 			e.reply("Du musst mind. DJ sein um den Bot pausieren zu können.");
 			return;
 		}
-		
+
 		Main.getGuildConfig(e.getGuild()).player.setPaused(true);
 		e.reactSuccess();
 	}

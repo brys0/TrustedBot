@@ -1,11 +1,10 @@
 package de.pheromir.discordmusicbot.helper;
 
-
 public class Suggestion {
-	
+
 	private String title;
 	private String id;
-	
+
 	public Suggestion(String title, String id) {
 		this.title = title;
 		this.id = id;

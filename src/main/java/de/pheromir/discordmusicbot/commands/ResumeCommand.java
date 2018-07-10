@@ -13,7 +13,7 @@ public class ResumeCommand extends Command {
 
 	public ResumeCommand() {
 		this.name = "resume";
-		this.aliases = new String[] {"unpause"};
+		this.aliases = new String[] { "unpause" };
 		this.help = "Musikwiedergabe fortsetzen";
 		this.guildOnly = true;
 		this.category = new Category("Music");
@@ -28,14 +28,14 @@ public class ResumeCommand extends Command {
 			return;
 		}
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
-		
-		if(musicManager.player.getPlayingTrack() != null && musicManager.player.getPlayingTrack().getDuration() == Long.MAX_VALUE) {
+
+		if (musicManager.player.getPlayingTrack() != null && musicManager.player.getPlayingTrack().getDuration() == Long.MAX_VALUE) {
 			musicManager.scheduler.setCurrentTrack(new QueueTrack(musicManager.player.getPlayingTrack().makeClone(), musicManager.scheduler.getCurrentRequester()));
 			musicManager.player.startTrack(musicManager.player.getPlayingTrack().makeClone(), false);
 		}
 		musicManager.player.setPaused(false);
 		musicManager.setAutoPause(false);
-		if(musicManager.player.getPlayingTrack() != null && !e.getGuild().getAudioManager().isConnected()) {
+		if (musicManager.player.getPlayingTrack() != null && !e.getGuild().getAudioManager().isConnected()) {
 			VoiceChannel vc = e.getMember().getVoiceState().getChannel();
 			if (vc != null) {
 				e.getGuild().getAudioManager().openAudioConnection(vc);

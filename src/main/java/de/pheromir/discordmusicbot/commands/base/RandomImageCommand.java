@@ -13,11 +13,11 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 
-public  abstract class RandomImageCommand extends Command {
+public abstract class RandomImageCommand extends Command {
+
 	protected String BASE_URL;
 	protected String jsonKey;
-	
-	
+
 	public RandomImageCommand() {
 		this.name = "";
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS };
@@ -25,7 +25,7 @@ public  abstract class RandomImageCommand extends Command {
 		this.guildOnly = false;
 		this.category = new Category("RandomImage");
 	}
-	
+
 	@Override
 	protected void execute(CommandEvent e) {
 		String imgUrl;

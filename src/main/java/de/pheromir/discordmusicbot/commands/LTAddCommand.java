@@ -24,26 +24,26 @@ public class LTAddCommand extends Command {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
-		
+
 		if (args.length != 1) {
 			e.reply("Syntaxfehler. Verwendung: `!ltadd <User-Mention>`");
 			return;
 		} else {
 			Pattern p = Pattern.compile("(\\d+)");
 			Matcher m = p.matcher(e.getArgs());
-			if(m.find()) {
+			if (m.find()) {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);
-				if(mem == null) {
+				if (mem == null) {
 					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 					return;
 				}
-				if(Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention()+" hat bereits die Erlaubnis, längere Titel abzuspielen.");
+				if (Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(Long.parseLong(id))) {
+					e.reply(mem.getAsMention() + " hat bereits die Erlaubnis, längere Titel abzuspielen.");
 					return;
 				}
-				if(mem != null) {
-					e.reply(mem.getAsMention()+" hat nun die Erlaubnis, längere Titel abzuspielen.");
+				if (mem != null) {
+					e.reply(mem.getAsMention() + " hat nun die Erlaubnis, längere Titel abzuspielen.");
 					Main.getGuildConfig(e.getGuild()).addLongTitlesUser(Long.parseLong(id));
 					return;
 				}

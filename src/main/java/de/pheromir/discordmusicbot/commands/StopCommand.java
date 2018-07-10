@@ -14,23 +14,21 @@ public class StopCommand extends Command {
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
-	
+
 	@Override
 	protected void execute(CommandEvent e) {
 		if (e.getAuthor().isBot())
 			return;
-		if(!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("Du musst mind. DJ sein um den Bot stoppen zu können.");
 			return;
 		}
-		
+
 		Main.getGuildConfig(e.getGuild()).player.setPaused(false);
 		Main.getGuildConfig(e.getGuild()).player.stopTrack();
 		e.reactSuccess();
 		e.getGuild().getAudioManager().closeAudioConnection();
-		
+
 	}
-	
-	
 
 }

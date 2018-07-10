@@ -19,18 +19,18 @@ import net.dv8tion.jda.core.entities.User;
 public class GuildConfig {
 
 	private Guild g;
-	
+
 	private File configFile;
 	private YamlConfiguration yaml;
 	private Configuration cfg;
-	
+
 	private int volume;
 	public final AudioPlayer player;
 	public final TrackScheduler scheduler;
 	public boolean autoPause = false;
 	private List<Long> djs;
 	private HashMap<User, ArrayList<Suggestion>> suggestions;
-	
+
 	private HashMap<String, List<Long>> twitch;
 	private List<Long> longTitlesUsers;
 
@@ -166,13 +166,13 @@ public class GuildConfig {
 	public HashMap<String, List<Long>> getTwitchList() {
 		return twitch;
 	}
-	
+
 	public List<Long> getLongTitlesUsers() {
 		return longTitlesUsers;
 	}
-	
+
 	public void addLongTitlesUser(Long id) {
-		if(!longTitlesUsers.contains(id)) {
+		if (!longTitlesUsers.contains(id)) {
 			longTitlesUsers.add(id);
 			cfg.set("Music.LongTitlesUsers", longTitlesUsers);
 			try {
@@ -182,9 +182,9 @@ public class GuildConfig {
 			}
 		}
 	}
-	
+
 	public void removeLongTitlesUser(Long id) {
-		if(longTitlesUsers.contains(id)) {
+		if (longTitlesUsers.contains(id)) {
 			longTitlesUsers.remove(id);
 			cfg.set("Music.LongTitlesUsers", longTitlesUsers);
 			try {
@@ -194,15 +194,15 @@ public class GuildConfig {
 			}
 		}
 	}
-	
+
 	public void setAutoPause(boolean pause) {
 		this.autoPause = pause;
 	}
-	
+
 	public AudioPlayerSendHandler getSendHandler() {
 		return new AudioPlayerSendHandler(player);
 	}
-	
+
 	public HashMap<User, ArrayList<Suggestion>> getSuggestions() {
 		return suggestions;
 	}

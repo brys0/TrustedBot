@@ -80,13 +80,12 @@ public class Main {
 
 		builder.addCommands(new StatusCommand(), new R6ClearCommand(), new LTAddCommand(), new LTRemoveCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
-		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(),
-			new DJAddCommand(), new DJRemoveCommand());
+		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
 		builder.addCommands(new GoogleCommand());
 		if (!giphyKey.equals("none") && !giphyKey.isEmpty()) {
 			builder.addCommands(new RandomCommand());
 		}
-		if(!twitchKey.equals("none") && !twitchKey.isEmpty()) {
+		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
 		}
 		builder.addCommands(new R6Command());
@@ -107,11 +106,11 @@ public class Main {
 
 			loadAllGuildConfigs();
 			renewGeneralTwitchList();
-			if(!twitchKey.equals("none") && !twitchKey.isEmpty()) {
+			if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 				Timer t = new Timer();
-				t.schedule(new TwitchCheckTimer(), 10*1000, 5*60*1000);
+				t.schedule(new TwitchCheckTimer(), 10 * 1000, 5 * 60 * 1000);
 			}
-			
+
 		} catch (LoginException | InterruptedException e) {
 			System.out.println("Fehler beim Start des Bots: ");
 			e.printStackTrace();
@@ -134,7 +133,6 @@ public class Main {
 				cfg.set("API-Keys.YouTube", "none");
 				cfg.set("API-Keys.Giphy", "none");
 				cfg.set("API-Keys.Twitch", "none");
-				cfg.set("LongTitlesAllowed", new ArrayList<Long>());
 				yaml.save(cfg, configFile);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -167,16 +165,16 @@ public class Main {
 			cfg = new GuildConfig(g);
 			guildConfigs.put(g.getIdLong(), cfg);
 		}
-		
+
 		g.getAudioManager().setSendingHandler(cfg.getSendHandler());
-		
+
 		return cfg;
 	}
-	
+
 	public static void renewGeneralTwitchList() {
-		for(Guild g : jda.getGuilds()) {
-			for(String str : getGuildConfig(g).getTwitchList().keySet()) {
-				if(!generalTwitchList.contains(str)) {
+		for (Guild g : jda.getGuilds()) {
+			for (String str : getGuildConfig(g).getTwitchList().keySet()) {
+				if (!generalTwitchList.contains(str)) {
 					generalTwitchList.add(str);
 				}
 			}

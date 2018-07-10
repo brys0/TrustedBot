@@ -57,12 +57,12 @@ public class PlayingCommand extends Command {
 			boolean skip = false;
 			ArrayList<Field> fields = new ArrayList<>();
 			if (track.getDuration() == Long.MAX_VALUE) {
-				IcecastMeta icm = new IcecastMeta(track.getInfo().uri+".xspf");
+				IcecastMeta icm = new IcecastMeta(track.getInfo().uri + ".xspf");
 				if (!icm.getTitle().equals("Unbekannt (Fehler")) {
 					skip = true;
 					fields.add(new Field("Titel:", icm.getTitle(), false));
 					if (icm.getCurrentListeners() != -1) {
-						fields.add(new Field("Zuhörer:", icm.getCurrentListeners()+"", false));
+						fields.add(new Field("Zuhörer:", icm.getCurrentListeners() + "", false));
 					}
 				}
 			}
@@ -75,11 +75,11 @@ public class PlayingCommand extends Command {
 			b.setTitle(m.player.isPaused() ? "Pausiert:" : "Derzeit läuft:");
 			b.setColor(e.getSelfMember().getColor());
 			b.getFields().addAll(fields);
-			b.setFooter("Hinzugefügt von " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
-					? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
-					? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
-					: m.scheduler.getCurrentRequester().getName())
-			: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
+			b.setFooter("Hinzugefügt von "
+					+ (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
+							? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null ? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
+									: m.scheduler.getCurrentRequester().getName())
+							: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
 			e.reply(b.build());
 			return;
 		} else {
@@ -97,17 +97,17 @@ public class PlayingCommand extends Command {
 					fields.add(new Field("Kanal:", c.getChannel(), false));
 					fields.add(new Field("Dauer:", "[" + Methods.getTimeString(track.getPosition()) + "/" + c.getDurationString() + "]", false));
 					fields.add(new Field("Beschreibung:", c.getDescription(), false));
-					
+
 					EmbedBuilder b = new EmbedBuilder();
 					b.setThumbnail(c.getThumbnailURL());
 					b.setTitle(m.player.isPaused() ? "Pausiert: " : "Derzeit läuft: " + c.getTitle(), m.player.getPlayingTrack().getInfo().uri);
 					b.setColor(e.getSelfMember().getColor());
 					b.getFields().addAll(fields);
-					b.setFooter("Hinzugefügt von " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
-							? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
-							? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
-							: m.scheduler.getCurrentRequester().getName())
-					: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
+					b.setFooter("Hinzugefügt von "
+							+ (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
+									? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null ? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
+											: m.scheduler.getCurrentRequester().getName())
+									: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
 					e.reply(b.build());
 					return true;
 				}

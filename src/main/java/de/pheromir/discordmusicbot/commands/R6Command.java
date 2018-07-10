@@ -11,7 +11,7 @@ import de.pheromir.discordmusicbot.helper.RainbowSixStats;
 import net.dv8tion.jda.core.Permission;
 
 public class R6Command extends Command {
-	
+
 	public static HashMap<String, RainbowSixStats> statsCache = new HashMap<>();
 
 	public R6Command() {
@@ -26,12 +26,12 @@ public class R6Command extends Command {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
-		
-		if(args.length != 1) {
+
+		if (args.length != 1) {
 			e.reply("Syntaxfehler. Verwendung: !r6 <UPlay-Name>");
 			return;
 		}
-		
+
 		Timer timer = new Timer();
 		timer.schedule(new R6StatsSender(e.getChannel(), e.getArgs()), 100);
 	}

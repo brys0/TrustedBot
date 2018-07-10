@@ -40,12 +40,10 @@ public class ChatListener extends ListenerAdapter {
 
 		if (e.getMember().getUser() == e.getJDA().getSelfUser() && e.getMessage().getContentDisplay().contains("giphy") || e.getMessage().getContentDisplay().contains("!random")) {
 			e.getMessage().delete().queueAfter(5, TimeUnit.MINUTES);
-		} else
-		if (e.getMember().getUser() == e.getJDA().getSelfUser() && e.getMessage().getContentDisplay().contains("**Titelauswahl:**")) {
+		} else if (e.getMember().getUser() == e.getJDA().getSelfUser() && e.getMessage().getContentDisplay().contains("**Titelauswahl:**")) {
 			e.getMessage().delete().queueAfter(2, TimeUnit.MINUTES);
 		}
-		
-		
+
 	}
 
 }

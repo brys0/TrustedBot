@@ -25,30 +25,30 @@ public class DJAddCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		if(!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("Du hast keine Rechte für diesen Befehl.");
 			return;
 		}
-		
+
 		if (args.length != 1) {
 			e.reply("Syntaxfehler. Verwendung: `!djadd <User-Mention>`");
 			return;
 		} else {
 			Pattern p = Pattern.compile("(\\d+)");
 			Matcher m = p.matcher(e.getArgs());
-			if(m.find()) {
+			if (m.find()) {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);
-				if(mem == null) {
+				if (mem == null) {
 					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 					return;
 				}
-				if(Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention()+" ist bereits DJ.");
+				if (Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
+					e.reply(mem.getAsMention() + " ist bereits DJ.");
 					return;
 				}
-				if(mem != null) {
-					e.reply(mem.getAsMention()+" ist nun DJ.");
+				if (mem != null) {
+					e.reply(mem.getAsMention() + " ist nun DJ.");
 					Main.getGuildConfig(e.getGuild()).addDJ(Long.parseLong(id));
 					return;
 				}

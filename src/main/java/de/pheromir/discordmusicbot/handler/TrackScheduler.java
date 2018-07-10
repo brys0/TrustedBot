@@ -20,10 +20,10 @@ import net.dv8tion.jda.core.entities.User;
 public class TrackScheduler extends AudioEventAdapter {
 
 	private final AudioPlayer player;
-	//private ArrayList<AudioTrack> queue;
-	//private ArrayList<User> requestedBy;
+	// private ArrayList<AudioTrack> queue;
+	// private ArrayList<User> requestedBy;
 	private ArrayList<QueueTrack> queue;
-	//private User currentRequestor;
+	// private User currentRequestor;
 	private Timer timer;
 	private Guild g;
 	private boolean repeat;
@@ -36,8 +36,8 @@ public class TrackScheduler extends AudioEventAdapter {
 	public TrackScheduler(AudioPlayer player, Guild g) {
 		this.player = player;
 		this.queue = new ArrayList<>();
-		//this.requestedBy = new ArrayList<>();
-		//this.currentRequestor = null;
+		// this.requestedBy = new ArrayList<>();
+		// this.currentRequestor = null;
 		this.timer = new Timer();
 		this.g = g;
 		this.repeat = false;
@@ -52,12 +52,12 @@ public class TrackScheduler extends AudioEventAdapter {
 			cancelAndRenewTimer();
 		}
 	}
-	
+
 	@Override
 	public void onPlayerPause(AudioPlayer player) {
 		timer.schedule(new LeaveChannelTimer(this.g), (15 * 60 * 1000));
 	}
-	
+
 	@Override
 	public void onPlayerResume(AudioPlayer player) {
 		cancelAndRenewTimer();
@@ -70,7 +70,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			nextTrack();
 		}
 	}
-	
+
 	public void nextTrack() {
 		if (repeat) {
 			queue.add(new QueueTrack(currentTrack.getTrack().makeClone(), currentTrack.getRequestor()));

@@ -19,7 +19,7 @@ import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
 
 public class Methods {
-	
+
 	/*
 	 * GENERAL JSON HTTP CONNECTIONS
 	 */
@@ -32,7 +32,7 @@ public class Methods {
 			con.setConnectTimeout(60000);
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			
+
 			String inputLine;
 			StringBuffer response = new StringBuffer();
 			while ((inputLine = in.readLine()) != null) {
@@ -45,7 +45,7 @@ public class Methods {
 			throw e;
 		}
 	}
-	
+
 	/*
 	 * CONVERT TIMEMILLIS INTO A HH:mm:ss STRING
 	 */
@@ -61,7 +61,7 @@ public class Methods {
 		else
 			return String.format("%02d:%02d", minute, second);
 	}
-	
+
 	/*
 	 * CONVERT YOUTUBE DURATION TO TIMEMILLIS
 	 */
@@ -89,14 +89,14 @@ public class Methods {
 		}
 		return 0;
 	}
-	
+
 	/*
 	 * CHECK IF A TWITCH USER EXISTS
 	 */
-	
+
 	public static boolean doesTwitchUserExist(String twitchname) {
 		try {
-			URL obj = new URL("https://api.twitch.tv/helix/users?login="+twitchname);
+			URL obj = new URL("https://api.twitch.tv/helix/users?login=" + twitchname);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
 			con.setRequestProperty("client-id", Main.twitchKey);
@@ -108,23 +108,24 @@ public class Methods {
 			}
 			in.close();
 			JSONObject res = new JSONObject(response.toString());
-			if(res.getJSONArray("data").length() == 0) {
+			if (res.getJSONArray("data").length() == 0) {
 				return false;
-			} return true;
-			
+			}
+			return true;
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
+
 	/*
 	 * GET THE STREAM INFO OF A TWITCH USER, IF STREAMING
 	 */
-	
+
 	public static JSONObject getStreamInfo(String twitchname) {
 		try {
-			URL obj = new URL("https://api.twitch.tv/kraken/streams/"+twitchname);
+			URL obj = new URL("https://api.twitch.tv/kraken/streams/" + twitchname);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
 			con.setRequestProperty("client-id", Main.twitchKey);
@@ -137,7 +138,7 @@ public class Methods {
 			in.close();
 			JSONObject res = new JSONObject(response.toString());
 			return res;
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

@@ -69,7 +69,8 @@ public class PlaylistCommand extends Command {
 		for (int i = 0; i < titles.size(); i++) {
 			m.appendDescription("**[" + (i + 1) + "]** " + titles.get(i).getTrack().getInfo().title + ", *hinzugefügt von "
 					+ (e.getGuild().getMember(titles.get(i).getRequestor()) != null
-							? (e.getGuild().getMember(titles.get(i).getRequestor()).getNickname() != null ? e.getGuild().getMember(titles.get(i).getRequestor()).getNickname() : titles.get(i).getRequestor().getName())
+							? (e.getGuild().getMember(titles.get(i).getRequestor()).getNickname() != null ? e.getGuild().getMember(titles.get(i).getRequestor()).getNickname()
+									: titles.get(i).getRequestor().getName())
 							: titles.get(i).getRequestor().getName())
 					+ "*\n\n");
 		}

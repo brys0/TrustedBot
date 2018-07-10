@@ -1,8 +1,7 @@
 package de.pheromir.discordmusicbot.helper;
 
-
 public class RainbowSixStatsSeason {
-	
+
 	private int id;
 	private int wins;
 	private int losses;
@@ -12,8 +11,7 @@ public class RainbowSixStatsSeason {
 	private double nextRating;
 	private double prevRating;
 	private int rankId;
-	
-	
+
 	public RainbowSixStatsSeason(int id, int wins, int losses, int abandons, String region, double rating, double nextRating, double prevRating, int rankId) {
 		this.id = id;
 		this.wins = wins;
@@ -25,25 +23,25 @@ public class RainbowSixStatsSeason {
 		this.prevRating = prevRating;
 		this.rankId = rankId;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
 	public int getWins() {
 		return wins;
 	}
-	
+
 	public int getLosses() {
 		return losses;
 	}
-	
+
 	public int getAbandons() {
 		return abandons;
 	}
-	
+
 	public String getRegion() {
-		switch(region) {
+		switch (region) {
 			case "emea":
 				return "Europa";
 			case "apac":
@@ -54,21 +52,21 @@ public class RainbowSixStatsSeason {
 				return "Unbekannt";
 		}
 	}
-	
+
 	public double getRating() {
 		return rating;
 	}
-	
+
 	public double getNextRating() {
 		return nextRating;
 	}
-	
+
 	public double getPreviousRating() {
 		return prevRating;
 	}
-	
+
 	public String getRank() {
-		switch(rankId) {
+		switch (rankId) {
 			case 1:
 				return "Kupfer 4";
 			case 2:
@@ -113,9 +111,9 @@ public class RainbowSixStatsSeason {
 				return "Unranked";
 		}
 	}
-	
+
 	public String getSeason() {
-		switch(id) {
+		switch (id) {
 			case 1:
 				return "Black Ice";
 			case 2:

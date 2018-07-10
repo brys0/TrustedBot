@@ -32,7 +32,7 @@ public class IcecastMeta {
 			builder = factory.newDocumentBuilder();
 			doc = builder.parse(is);
 			xpathFactory = XPathFactory.newInstance();
-			
+
 			xpath = xpathFactory.newXPath();
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -71,7 +71,8 @@ public class IcecastMeta {
 					return Integer.parseInt(m.group(1));
 				} else
 					return -1;
-			} else return -1;
+			} else
+				return -1;
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}
