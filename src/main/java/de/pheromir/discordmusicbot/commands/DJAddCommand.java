@@ -30,12 +30,9 @@ public class DJAddCommand extends Command {
 			return;
 		}
 
-		if (args.length != 1) {
-			e.reply("Syntaxfehler. Verwendung: `!djadd <User-Mention>`");
-			return;
-		} else {
-			Pattern p = Pattern.compile("(\\d+)");
-			Matcher m = p.matcher(e.getArgs());
+		Pattern p = Pattern.compile("(\\d+)");
+		for (String arg : args) {
+			Matcher m = p.matcher(arg);
 			if (m.find()) {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);

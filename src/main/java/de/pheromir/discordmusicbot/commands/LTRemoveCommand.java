@@ -25,12 +25,9 @@ public class LTRemoveCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		if (args.length != 1) {
-			e.reply("Syntaxfehler. Verwendung: `!ltremove <User-Mention>`");
-			return;
-		} else {
+		for (String arg : args) {
 			Pattern p = Pattern.compile("(\\d+)");
-			Matcher m = p.matcher(e.getArgs());
+			Matcher m = p.matcher(arg);
 			if (m.find()) {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);

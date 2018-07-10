@@ -30,12 +30,9 @@ public class DJRemoveCommand extends Command {
 			return;
 		}
 
-		if (args.length != 1) {
-			e.reply("Syntaxfehler. Verwendung: `!djremove <User-Mention>`");
-			return;
-		} else {
+		for (String arg : args) {
 			Pattern p = Pattern.compile("(\\d+)");
-			Matcher m = p.matcher(e.getArgs());
+			Matcher m = p.matcher(arg);
 			if (m.find()) {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);
