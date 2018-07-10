@@ -93,7 +93,8 @@ public class Main {
 		builder.setEmojis("\u2705", "\u26A0", "\u274C");
 		try {
 			/* BOT STARTEN */
-			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
+			jda = new JDABuilder(
+					AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
 
 			System.out.println("OWNERID: " + adminID);

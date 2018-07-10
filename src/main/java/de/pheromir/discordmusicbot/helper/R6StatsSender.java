@@ -26,7 +26,8 @@ public class R6StatsSender extends TimerTask {
 	@Override
 	public void run() {
 		RainbowSixStats stats = null;
-		if (!R6Command.statsCache.containsKey(args.toLowerCase()) || R6Command.statsCache.get(args.toLowerCase()).getValidUntil() < System.currentTimeMillis()) {
+		if (!R6Command.statsCache.containsKey(args.toLowerCase())
+				|| R6Command.statsCache.get(args.toLowerCase()).getValidUntil() < System.currentTimeMillis()) {
 			c.sendMessage("Frage Statistik ab..\nDies kann einen Moment dauern.").complete();
 			try {
 				stats = new RainbowSixStats(args);
@@ -35,7 +36,8 @@ public class R6StatsSender extends TimerTask {
 					c.sendMessage("Der Spieler scheint nicht zu existieren.").complete();
 				} else {
 					e.printStackTrace();
-					c.sendMessage("Die Statistik für den Spieler " + args + " konnte nicht abgerufen werden.").complete();
+					c.sendMessage("Die Statistik für den Spieler " + args
+							+ " konnte nicht abgerufen werden.").complete();
 				}
 				return;
 			}
@@ -44,14 +46,16 @@ public class R6StatsSender extends TimerTask {
 			LocalDateTime now = LocalDateTime.now();
 			now.minusHours(3);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss");
-			c.sendMessage("Zwischengespeicherte Statistik vom " + formatter.format(now) + " Uhr.\nDie Statistiken werden spätestens nach drei Stunden neu abgefragt.").complete();
+			c.sendMessage("Zwischengespeicherte Statistik vom " + formatter.format(now)
+					+ " Uhr.\nDie Statistiken werden spätestens nach drei Stunden neu abgefragt.").complete();
 			stats = R6Command.statsCache.get(args.toLowerCase());
 		}
 
 		EmbedBuilder emb = new EmbedBuilder();
 		emb.setAuthor("Rainbow Six Siege Statistik für:");
 		emb.setTitle(stats.getUsername(), "https://r6db.com/player/" + stats.getUUID());
-		emb.setColor(c.getType() == ChannelType.TEXT ? ((TextChannel) c).getGuild().getSelfMember().getColor() : Color.BLUE);
+		emb.setColor(c.getType() == ChannelType.TEXT ? ((TextChannel) c).getGuild().getSelfMember().getColor()
+				: Color.BLUE);
 		emb.addField("~~-------------------~~", "**RANKED**", false);
 		emb.addField("Wins", stats.getRankedWins() + "", true);
 		emb.addField("Losses", stats.getRankedLosses() + "", true);
@@ -75,9 +79,11 @@ public class R6StatsSender extends TimerTask {
 			if (i++ > 3)
 				break;
 			EmbedBuilder semb = new EmbedBuilder();
-			semb.setColor(c.getType() == ChannelType.TEXT ? ((TextChannel) c).getGuild().getSelfMember().getColor() : Color.BLUE);
+			semb.setColor(c.getType() == ChannelType.TEXT ? ((TextChannel) c).getGuild().getSelfMember().getColor()
+					: Color.BLUE);
 			semb.setAuthor("Season-Statistik von " + stats.getUsername());
-			semb.setTitle("**Operation: " + season.getSeason() + "** (" + season.getId() + ")", "https://r6db.com/player/" + stats.getUUID());
+			semb.setTitle("**Operation: " + season.getSeason() + "** (" + season.getId()
+					+ ")", "https://r6db.com/player/" + stats.getUUID());
 			semb.setDescription("Region: " + season.getRegion());
 			semb.addField("Wins", season.getWins() + "", true);
 			semb.addField("Losses", season.getLosses() + "", true);

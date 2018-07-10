@@ -12,7 +12,8 @@ public class RainbowSixStatsSeason {
 	private double prevRating;
 	private int rankId;
 
-	public RainbowSixStatsSeason(int id, int wins, int losses, int abandons, String region, double rating, double nextRating, double prevRating, int rankId) {
+	public RainbowSixStatsSeason(int id, int wins, int losses, int abandons, String region, double rating,
+			double nextRating, double prevRating, int rankId) {
 		this.id = id;
 		this.wins = wins;
 		this.losses = losses;

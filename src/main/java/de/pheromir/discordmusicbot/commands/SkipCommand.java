@@ -23,7 +23,8 @@ public class SkipCommand extends Command {
 		GuildConfig m = Main.getGuildConfig(e.getGuild());
 
 		if (e.getArgs().isEmpty()) {
-			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && m.scheduler.getCurrentRequester() != e.getAuthor()
+			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
+					&& m.scheduler.getCurrentRequester() != e.getAuthor()
 					&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				e.reply("Du kannst nur Songs skippen, die du selbst hinzugefügt hast.");
 				return;
@@ -41,7 +42,8 @@ public class SkipCommand extends Command {
 			if (index >= m.scheduler.getRequestedTitles().size()) {
 				e.reply("Bitte eine gültige Zahl angeben.");
 			}
-			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner() && m.scheduler.getRequestedTitles().get(index).getRequestor() != e.getAuthor()
+			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()
+					&& m.scheduler.getRequestedTitles().get(index).getRequestor() != e.getAuthor()
 					&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				e.reply("Du kannst nur Songs skippen, die du selbst hinzugefügt hast.");
 				return;

@@ -47,7 +47,8 @@ public class TwitchCheckTimer extends TimerTask {
 					for (Guild g : Main.jda.getGuilds()) {
 						if (Main.getGuildConfig(g).getTwitchList().containsKey(twitchname)) {
 							for (Long chId : Main.getGuildConfig(g).getTwitchList().get(twitchname)) {
-								Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname + " ist nun auf " + url + " online!").embed(eb.build()).complete();
+								Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname
+										+ " ist nun auf " + url + " online!").embed(eb.build()).complete();
 							}
 						}
 					}

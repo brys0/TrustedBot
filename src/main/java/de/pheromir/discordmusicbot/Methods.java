@@ -67,11 +67,12 @@ public class Methods {
 	 */
 
 	public static long getYoutubeDuration(String videoId) {
-		YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
+		YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+				new HttpRequestInitializer() {
 
-			public void initialize(HttpRequest request) throws IOException {
-			}
-		}).setApplicationName("DiscordBot").build();
+					public void initialize(HttpRequest request) throws IOException {
+					}
+				}).setApplicationName("DiscordBot").build();
 
 		YouTube.Videos.List videoRequest;
 		try {

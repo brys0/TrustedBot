@@ -18,7 +18,9 @@ public class ChatListener extends ListenerAdapter {
 		if (e.getMember() == null)
 			return;
 		if (e.getMember().getUser() != e.getJDA().getSelfUser() && e.getGuild().getId().equals("392063800393728021")
-				&& (e.getMessage().getContentDisplay().contains("brb") || e.getMessage().getContentDisplay().contains("brb")) && !e.getMessage().getContentDisplay().startsWith("!")) {
+				&& (e.getMessage().getContentDisplay().contains("brb")
+						|| e.getMessage().getContentDisplay().contains("brb"))
+				&& !e.getMessage().getContentDisplay().startsWith("!")) {
 			if (!brbAmount.containsKey(e.getMember())) {
 				brbAmount.put(e.getMember(), 1);
 			} else {
@@ -26,11 +28,13 @@ public class ChatListener extends ListenerAdapter {
 			}
 			int amt = brbAmount.get(e.getMember());
 			if (amt == 1) {
-				e.getChannel().sendMessage("Verzieh dich mit deinem ekeligen " + (e.getMessage().getContentDisplay().contains("brb") ? "brb" : "bbl") + "!").queue();
+				e.getChannel().sendMessage("Verzieh dich mit deinem ekeligen "
+						+ (e.getMessage().getContentDisplay().contains("brb") ? "brb" : "bbl") + "!").queue();
 			} else if (amt == 2) {
 				e.getChannel().sendMessage("Provoziere mich nicht, " + e.getMember().getAsMention() + "!").queue();
 			} else {
-				e.getChannel().sendMessage(e.getMember().getAsMention() + " lernt wohl nicht aus seinen Fehlern. Adieu!").queue();
+				e.getChannel().sendMessage(e.getMember().getAsMention()
+						+ " lernt wohl nicht aus seinen Fehlern. Adieu!").queue();
 				brbAmount.remove(e.getMember());
 				if (e.getGuild().getMember(e.getJDA().getSelfUser()).canInteract(e.getMember())) {
 					e.getGuild().getController().kick(e.getMember(), "be right back").queue();
@@ -38,9 +42,11 @@ public class ChatListener extends ListenerAdapter {
 			}
 		}
 
-		if (e.getMember().getUser() == e.getJDA().getSelfUser() && e.getMessage().getContentDisplay().contains("giphy") || e.getMessage().getContentDisplay().contains("!random")) {
+		if (e.getMember().getUser() == e.getJDA().getSelfUser() && e.getMessage().getContentDisplay().contains("giphy")
+				|| e.getMessage().getContentDisplay().contains("!random")) {
 			e.getMessage().delete().queueAfter(5, TimeUnit.MINUTES);
-		} else if (e.getMember().getUser() == e.getJDA().getSelfUser() && e.getMessage().getContentDisplay().contains("**Titelauswahl:**")) {
+		} else if (e.getMember().getUser() == e.getJDA().getSelfUser()
+				&& e.getMessage().getContentDisplay().contains("**Titelauswahl:**")) {
 			e.getMessage().delete().queueAfter(2, TimeUnit.MINUTES);
 		}
 

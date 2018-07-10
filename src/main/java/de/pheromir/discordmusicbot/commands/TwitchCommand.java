@@ -52,16 +52,19 @@ public class TwitchCommand extends Command {
 			return;
 		} else {
 			GuildConfig cfg = Main.getGuildConfig(e.getGuild());
-			if (cfg.getTwitchList().containsKey(e.getArgs().toLowerCase()) && cfg.getTwitchList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
+			if (cfg.getTwitchList().containsKey(e.getArgs().toLowerCase())
+					&& cfg.getTwitchList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
 				cfg.removeTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
-				e.reply("Twitchbenachrichtigungen für " + e.getArgs().toLowerCase() + " sind in diesem Channel nun deaktiviert.");
+				e.reply("Twitchbenachrichtigungen für " + e.getArgs().toLowerCase()
+						+ " sind in diesem Channel nun deaktiviert.");
 			} else {
 				if (!Methods.doesTwitchUserExist(e.getArgs())) {
 					e.reply("Es scheint keinen Benutzer mit diesem Namen zu geben (oder es ist ein Fehler aufgetreten).");
 					return;
 				}
 				cfg.addTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
-				e.reply("Twitchbenachrichtigungen für " + e.getArgs().toLowerCase() + " sind in diesem Channel nun aktiviert.");
+				e.reply("Twitchbenachrichtigungen für " + e.getArgs().toLowerCase()
+						+ " sind in diesem Channel nun aktiviert.");
 			}
 			return;
 		}

@@ -24,7 +24,8 @@ public class VolumeCommand extends Command {
 			e.reply("Derzeitige Lautstärke: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
 			return;
 		}
-		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
+				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("Du musst mind. DJ sein um die Lautstärke anpassen zu können");
 			return;
 		}

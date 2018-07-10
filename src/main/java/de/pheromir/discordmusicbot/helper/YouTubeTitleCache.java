@@ -11,7 +11,8 @@ public class YouTubeTitleCache {
 	private String channel;
 	private String thumbnailUrl;
 
-	public YouTubeTitleCache(String id, String title, long duration, String description, String channel, String thumbnailUrl) {
+	public YouTubeTitleCache(String id, String title, long duration, String description, String channel,
+			String thumbnailUrl) {
 		this.id = id;
 		this.title = title;
 		this.duration = duration;

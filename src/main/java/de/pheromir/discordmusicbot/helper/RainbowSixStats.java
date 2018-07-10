@@ -99,7 +99,8 @@ public class RainbowSixStats {
 				double prevRat = ranking.getDouble("prev_rating");
 				int rank = ranking.getInt("rank");
 
-				RainbowSixStatsSeason s = new RainbowSixStatsSeason(seasonId, wins, losses, abandons, reg, rating, nextRat, prevRat, rank);
+				RainbowSixStatsSeason s = new RainbowSixStatsSeason(seasonId, wins, losses, abandons, reg, rating,
+						nextRat, prevRat, rank);
 				this.seasons.add(s);
 			}
 

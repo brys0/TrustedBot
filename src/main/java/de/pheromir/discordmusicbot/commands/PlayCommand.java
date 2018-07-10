@@ -54,7 +54,8 @@ public class PlayCommand extends Command {
 		if (e.getArgs().isEmpty() && musicManager.player.isPaused()) {
 			musicManager.player.setPaused(false);
 			e.reply("Wiedergabe fortgesetzt.");
-			if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null && !e.getGuild().getAudioManager().isConnected()) {
+			if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null
+					&& !e.getGuild().getAudioManager().isConnected()) {
 				e.getGuild().getAudioManager().openAudioConnection(vc);
 			}
 			return;
@@ -69,11 +70,13 @@ public class PlayCommand extends Command {
 
 		String toLoad = "";
 
-		if (musicManager.getSuggestions().containsKey(e.getAuthor()) && (e.getArgs().equalsIgnoreCase("1") || e.getArgs().equalsIgnoreCase("2") || e.getArgs().equalsIgnoreCase("3")
+		if (musicManager.getSuggestions().containsKey(e.getAuthor()) && (e.getArgs().equalsIgnoreCase("1")
+				|| e.getArgs().equalsIgnoreCase("2") || e.getArgs().equalsIgnoreCase("3")
 				|| e.getArgs().equalsIgnoreCase("4") || e.getArgs().equalsIgnoreCase("5"))) {
 			int nr = Integer.parseInt(e.getArgs());
 			if (nr <= musicManager.getSuggestions().get(e.getAuthor()).size()) {
-				toLoad = "http://youtube.com/watch?v=" + musicManager.getSuggestions().get(e.getAuthor()).get(nr - 1).getId();
+				toLoad = "http://youtube.com/watch?v="
+						+ musicManager.getSuggestions().get(e.getAuthor()).get(nr - 1).getId();
 			}
 		} else if (e.getArgs().equalsIgnoreCase("iloveradio")) {
 			toLoad = "http://www.iloveradio.de/iloveradio.m3u";
@@ -82,11 +85,12 @@ public class PlayCommand extends Command {
 		if (toLoad.equals("")) {
 			Matcher matcher = compiledPattern.matcher(e.getArgs());
 			if (!matcher.find()) {
-				YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
+				YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+						new HttpRequestInitializer() {
 
-					public void initialize(HttpRequest request) throws IOException {
-					}
-				}).setApplicationName("DiscordBot").build();
+							public void initialize(HttpRequest request) throws IOException {
+							}
+						}).setApplicationName("DiscordBot").build();
 
 				YouTube.Search.List searchRequest;
 				try {
@@ -104,9 +108,11 @@ public class PlayCommand extends Command {
 					m.setColor(e.getGuild().getSelfMember().getColor());
 					ArrayList<Suggestion> suggests = new ArrayList<>();
 					for (int i = 0; i < (videoList.size() >= 5 ? 5 : videoList.size()); i++) {
-						suggests.add(new Suggestion(videoList.get(i).getSnippet().getTitle(), videoList.get(i).getId().getVideoId()));
+						suggests.add(new Suggestion(videoList.get(i).getSnippet().getTitle(),
+								videoList.get(i).getId().getVideoId()));
 						m.appendDescription("**[" + (i + 1) + "]** " + videoList.get(i).getSnippet().getTitle() + " *["
-								+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId())) + "]*\n\n");
+								+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId()))
+								+ "]*\n\n");
 					}
 					musicManager.getSuggestions().put(e.getAuthor(), suggests);
 					m.setFooter("Titel auswählen: !play [Nr]", e.getJDA().getSelfUser().getAvatarUrl());
@@ -128,7 +134,8 @@ public class PlayCommand extends Command {
 
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				if (track.getDuration() > (1000 * 60 * 60 * 2) && !Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(e.getAuthor().getIdLong())) {
+				if (track.getDuration() > (1000 * 60 * 60 * 2)
+						&& !Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(e.getAuthor().getIdLong())) {
 					e.reply("Du kannst nur Titel mit einer Länge von bis zu zwei Stunden hinzufügen.");
 					return;
 				} else if (Main.getGuildConfig(e.getGuild()).scheduler.getRequestedTitles().size() > 10
@@ -138,7 +145,8 @@ public class PlayCommand extends Command {
 				}
 				audioManager.openAudioConnection(vc);
 				musicManager.scheduler.queue(track, e.getAuthor());
-				e.reply("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration()) + "] wurde zur Warteschlange hinzugefügt.");
+				e.reply("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration())
+						+ "] wurde zur Warteschlange hinzugefügt.");
 			}
 
 			@Override
@@ -149,7 +157,8 @@ public class PlayCommand extends Command {
 				}
 				audioManager.openAudioConnection(vc);
 				musicManager.scheduler.queue(firstTrack, e.getAuthor());
-				e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration()) + "] wurde zur Warteschlange hinzugefügt.");
+				e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration())
+						+ "] wurde zur Warteschlange hinzugefügt.");
 			}
 
 			@Override

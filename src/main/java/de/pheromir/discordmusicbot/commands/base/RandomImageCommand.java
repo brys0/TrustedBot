@@ -31,7 +31,9 @@ public abstract class RandomImageCommand extends Command {
 		String imgUrl;
 		try {
 			imgUrl = Methods.httpRequest(BASE_URL).getString(jsonKey);
-			e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT ? e.getSelfMember().getColor() : Color.BLUE).build());
+			e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT
+					? e.getSelfMember().getColor()
+					: Color.BLUE).build());
 		} catch (JSONException e1) {
 			e.reply("Es ist ein Fehler aufgetreten.");
 			e1.printStackTrace();

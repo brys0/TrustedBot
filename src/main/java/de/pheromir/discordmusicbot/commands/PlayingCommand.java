@@ -70,16 +70,17 @@ public class PlayingCommand extends Command {
 				fields.add(new Field("Titel:", track.getInfo().title, false));
 			}
 			fields.add(new Field("Von:", track.getInfo().author, false));
-			fields.add(new Field("Zeit:", "[" + Methods.getTimeString(track.getPosition()) + "/" + Methods.getTimeString(track.getDuration()) + "]", false));
+			fields.add(new Field("Zeit:", "[" + Methods.getTimeString(track.getPosition()) + "/"
+					+ Methods.getTimeString(track.getDuration()) + "]", false));
 			EmbedBuilder b = new EmbedBuilder();
 			b.setTitle(m.player.isPaused() ? "Pausiert:" : "Derzeit läuft:");
 			b.setColor(e.getSelfMember().getColor());
 			b.getFields().addAll(fields);
-			b.setFooter("Hinzugefügt von "
-					+ (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
-							? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null ? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
-									: m.scheduler.getCurrentRequester().getName())
-							: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
+			b.setFooter("Hinzugefügt von " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
+					? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
+							? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
+							: m.scheduler.getCurrentRequester().getName())
+					: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
 			e.reply(b.build());
 			return;
 		} else {
@@ -95,19 +96,22 @@ public class PlayingCommand extends Command {
 				if (c.getID().equals(videoId)) {
 					ArrayList<Field> fields = new ArrayList<>();
 					fields.add(new Field("Kanal:", c.getChannel(), false));
-					fields.add(new Field("Dauer:", "[" + Methods.getTimeString(track.getPosition()) + "/" + c.getDurationString() + "]", false));
+					fields.add(new Field("Dauer:",
+							"[" + Methods.getTimeString(track.getPosition()) + "/" + c.getDurationString() + "]",
+							false));
 					fields.add(new Field("Beschreibung:", c.getDescription(), false));
 
 					EmbedBuilder b = new EmbedBuilder();
 					b.setThumbnail(c.getThumbnailURL());
-					b.setTitle(m.player.isPaused() ? "Pausiert: " : "Derzeit läuft: " + c.getTitle(), m.player.getPlayingTrack().getInfo().uri);
+					b.setTitle(m.player.isPaused() ? "Pausiert: "
+							: "Derzeit läuft: " + c.getTitle(), m.player.getPlayingTrack().getInfo().uri);
 					b.setColor(e.getSelfMember().getColor());
 					b.getFields().addAll(fields);
-					b.setFooter("Hinzugefügt von "
-							+ (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
-									? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null ? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
-											: m.scheduler.getCurrentRequester().getName())
-									: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
+					b.setFooter("Hinzugefügt von " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
+							? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
+									? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
+									: m.scheduler.getCurrentRequester().getName())
+							: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
 					e.reply(b.build());
 					return true;
 				}
@@ -115,11 +119,12 @@ public class PlayingCommand extends Command {
 			}))
 				return;
 
-			YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
+			YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+					new HttpRequestInitializer() {
 
-				public void initialize(HttpRequest request) throws IOException {
-				}
-			}).setApplicationName("DiscordBot").build();
+						public void initialize(HttpRequest request) throws IOException {
+						}
+					}).setApplicationName("DiscordBot").build();
 
 			YouTube.Videos.List videoRequest;
 			try {
@@ -140,15 +145,18 @@ public class PlayingCommand extends Command {
 				ytcache.add(new YouTubeTitleCache(videoId1, title, dur, desc, author, thumbnail));
 				ArrayList<Field> fields = new ArrayList<>();
 				fields.add(new Field("Kanal:", author, false));
-				fields.add(new Field("Dauer:", "[" + Methods.getTimeString(track.getPosition()) + "/" + (dur == 0 ? "Stream" : Methods.getTimeString(dur)) + "]", false));
+				fields.add(new Field("Dauer:", "[" + Methods.getTimeString(track.getPosition()) + "/"
+						+ (dur == 0 ? "Stream" : Methods.getTimeString(dur)) + "]", false));
 				fields.add(new Field("Beschreibung:", desc, false));
 
 				EmbedBuilder b = new EmbedBuilder();
 				b.setThumbnail(thumbnail);
-				b.setTitle(m.player.isPaused() ? "Pausiert: " : "Derzeit läuft: " + title, m.player.getPlayingTrack().getInfo().uri);
+				b.setTitle(m.player.isPaused() ? "Pausiert: "
+						: "Derzeit läuft: " + title, m.player.getPlayingTrack().getInfo().uri);
 				b.setColor(e.getSelfMember().getColor());
 				b.getFields().addAll(fields);
-				b.setFooter("Hinzugefügt von " + e.getGuild().getMember(m.scheduler.getCurrentRequester()).getEffectiveName(), m.scheduler.getCurrentRequester().getAvatarUrl());
+				b.setFooter("Hinzugefügt von "
+						+ e.getGuild().getMember(m.scheduler.getCurrentRequester()).getEffectiveName(), m.scheduler.getCurrentRequester().getAvatarUrl());
 				e.reply(b.build());
 
 			} catch (IOException e1) {

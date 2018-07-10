@@ -240,8 +240,10 @@ public abstract class Command {
 
 		// required role check
 		if (requiredRole != null)
-			if (!event.isFromType(ChannelType.TEXT) || event.getMember().getRoles().stream().noneMatch(r -> r.getName().equalsIgnoreCase(requiredRole))) {
-				terminate(event, "Du musst eine Rolle mit dem Namen `" + requiredRole + "` haben um den Befehl nutzen zu können.");
+			if (!event.isFromType(ChannelType.TEXT)
+					|| event.getMember().getRoles().stream().noneMatch(r -> r.getName().equalsIgnoreCase(requiredRole))) {
+				terminate(event, "Du musst eine Rolle mit dem Namen `" + requiredRole
+						+ "` haben um den Befehl nutzen zu können.");
 				return;
 			}
 
@@ -541,18 +543,23 @@ public abstract class Command {
 			case USER:
 				return cooldownScope.genKey(name, event.getAuthor().getIdLong());
 			case USER_GUILD:
-				return event.getGuild() != null ? cooldownScope.genKey(name, event.getAuthor().getIdLong(), event.getGuild().getIdLong())
+				return event.getGuild() != null
+						? cooldownScope.genKey(name, event.getAuthor().getIdLong(), event.getGuild().getIdLong())
 						: CooldownScope.USER_CHANNEL.genKey(name, event.getAuthor().getIdLong(), event.getChannel().getIdLong());
 			case USER_CHANNEL:
 				return cooldownScope.genKey(name, event.getAuthor().getIdLong(), event.getChannel().getIdLong());
 			case GUILD:
-				return event.getGuild() != null ? cooldownScope.genKey(name, event.getGuild().getIdLong()) : CooldownScope.CHANNEL.genKey(name, event.getChannel().getIdLong());
+				return event.getGuild() != null ? cooldownScope.genKey(name, event.getGuild().getIdLong())
+						: CooldownScope.CHANNEL.genKey(name, event.getChannel().getIdLong());
 			case CHANNEL:
 				return cooldownScope.genKey(name, event.getChannel().getIdLong());
 			case SHARD:
-				return event.getJDA().getShardInfo() != null ? cooldownScope.genKey(name, event.getJDA().getShardInfo().getShardId()) : CooldownScope.GLOBAL.genKey(name, 0);
+				return event.getJDA().getShardInfo() != null
+						? cooldownScope.genKey(name, event.getJDA().getShardInfo().getShardId())
+						: CooldownScope.GLOBAL.genKey(name, 0);
 			case USER_SHARD:
-				return event.getJDA().getShardInfo() != null ? cooldownScope.genKey(name, event.getAuthor().getIdLong(), event.getJDA().getShardInfo().getShardId())
+				return event.getJDA().getShardInfo() != null
+						? cooldownScope.genKey(name, event.getAuthor().getIdLong(), event.getJDA().getShardInfo().getShardId())
 						: CooldownScope.USER.genKey(name, event.getAuthor().getIdLong());
 			case GLOBAL:
 				return cooldownScope.genKey(name, 0);
@@ -576,7 +583,8 @@ public abstract class Command {
 	public String getCooldownError(CommandEvent event, int remaining) {
 		if (remaining <= 0)
 			return null;
-		String front = event.getClient().getWarning() + " That command is on cooldown for " + remaining + " more seconds";
+		String front = event.getClient().getWarning() + " That command is on cooldown for " + remaining
+				+ " more seconds";
 		if (cooldownScope.equals(CooldownScope.USER))
 			return front + "!";
 		else if (cooldownScope.equals(CooldownScope.USER_GUILD) && event.getGuild() == null)
@@ -694,7 +702,8 @@ public abstract class Command {
 			if (!(obj instanceof Category))
 				return false;
 			Category other = (Category) obj;
-			return Objects.equals(name, other.name) && Objects.equals(predicate, other.predicate) && Objects.equals(failResponse, other.failResponse);
+			return Objects.equals(name, other.name) && Objects.equals(predicate, other.predicate)
+					&& Objects.equals(failResponse, other.failResponse);
 		}
 
 		@Override

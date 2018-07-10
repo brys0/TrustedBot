@@ -33,7 +33,8 @@ public class PlaylistCommand extends Command {
 		ArrayList<QueueTrack> titles = musicManager.scheduler.getRequestedTitles();
 
 		if (e.getArgs().equalsIgnoreCase("clear")) {
-			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) || e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
+					|| e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				musicManager.scheduler.clearQueue();
 				e.reactSuccess();
 				return;
@@ -41,9 +42,11 @@ public class PlaylistCommand extends Command {
 		}
 
 		if (e.getArgs().equalsIgnoreCase("repeat")) {
-			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) || e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
+					|| e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				musicManager.scheduler.setRepeat(!musicManager.scheduler.getRepeat());
-				e.reply(musicManager.scheduler.getRepeat() ? "Die Warteschlange wiederholt sich nun." : "Die Warteschlange wiederholt sich nicht mehr.");
+				e.reply(musicManager.scheduler.getRepeat() ? "Die Warteschlange wiederholt sich nun."
+						: "Die Warteschlange wiederholt sich nicht mehr.");
 				return;
 			}
 		}
@@ -54,7 +57,9 @@ public class PlaylistCommand extends Command {
 		m.setTitle("Wiederholung der Warteschlange: " + (musicManager.scheduler.getRepeat() ? "an" : "aus"));
 		m.setColor(e.getGuild().getSelfMember().getColor());
 		m.appendDescription("Derzeit läuft: " + (musicManager.player.getPlayingTrack() == null ? "nichts"
-				: musicManager.player.getPlayingTrack().getInfo().title + " [" + Methods.getTimeString(musicManager.player.getPlayingTrack().getInfo().length) + "], *hinzugefügt von "
+				: musicManager.player.getPlayingTrack().getInfo().title + " ["
+						+ Methods.getTimeString(musicManager.player.getPlayingTrack().getInfo().length)
+						+ "], *hinzugefügt von "
 						+ (e.getGuild().getMember(musicManager.scheduler.getCurrentRequester()) != null
 								? (e.getGuild().getMember(musicManager.scheduler.getCurrentRequester()).getNickname() != null
 										? e.getGuild().getMember(musicManager.scheduler.getCurrentRequester()).getNickname()
@@ -67,9 +72,11 @@ public class PlaylistCommand extends Command {
 			m.appendDescription("Es sind keine weiteren Titel eingereiht.");
 		}
 		for (int i = 0; i < titles.size(); i++) {
-			m.appendDescription("**[" + (i + 1) + "]** " + titles.get(i).getTrack().getInfo().title + ", *hinzugefügt von "
+			m.appendDescription("**[" + (i + 1) + "]** " + titles.get(i).getTrack().getInfo().title
+					+ ", *hinzugefügt von "
 					+ (e.getGuild().getMember(titles.get(i).getRequestor()) != null
-							? (e.getGuild().getMember(titles.get(i).getRequestor()).getNickname() != null ? e.getGuild().getMember(titles.get(i).getRequestor()).getNickname()
+							? (e.getGuild().getMember(titles.get(i).getRequestor()).getNickname() != null
+									? e.getGuild().getMember(titles.get(i).getRequestor()).getNickname()
 									: titles.get(i).getRequestor().getName())
 							: titles.get(i).getRequestor().getName())
 					+ "*\n\n");
