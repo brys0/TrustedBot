@@ -98,7 +98,6 @@ public class Main {
 
 			playerManager = new DefaultAudioPlayerManager();
 			AudioSourceManagers.registerRemoteSources(playerManager);
-			AudioSourceManagers.registerLocalSource(playerManager);
 
 			loadAllGuildConfigs();
 			renewGeneralTwitchList();
