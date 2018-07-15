@@ -50,7 +50,7 @@ import net.dv8tion.jda.core.entities.Guild;
 
 public class Main {
 
-	public static String token = "00000000";
+	public static String token;
 	public static String adminID = "00000000";
 	public static EventWaiter waiter = new EventWaiter();
 	public static AudioPlayerManager playerManager;
@@ -66,12 +66,7 @@ public class Main {
 
 		/* CONFIG ERSTELLEN / AUSLESEN */
 		createConfig();
-
-		if (token.equals("00000000")) {
-			System.out.println("FEHLER: Ungültiger Token.");
-			return;
-		}
-
+		
 		/* COMMANDS KONFIGURIEREN */
 		CommandClientBuilder builder = new CommandClientBuilder();
 		builder.setPrefix("!");
@@ -96,7 +91,7 @@ public class Main {
 			jda = new JDABuilder(
 					AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
-
+			
 			System.out.println("OWNERID: " + adminID);
 
 			guildConfigs = new HashMap<>();
@@ -112,9 +107,13 @@ public class Main {
 				t.schedule(new TwitchCheckTimer(), 10 * 1000, 5 * 60 * 1000);
 			}
 
-		} catch (LoginException | InterruptedException e) {
-			System.out.println("Fehler beim Start des Bots: ");
-			e.printStackTrace();
+		} catch (LoginException | InterruptedException | IllegalStateException e) {
+			System.out.print("Fehler beim Start des Bots: ");
+			if (e instanceof InterruptedException) {
+				e.printStackTrace();
+			} else {
+				System.out.println("Bot-Token ungültig");
+			}
 		}
 
 	}
@@ -151,7 +150,7 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public static void loadAllGuildConfigs() {
 		for (Guild g : jda.getGuilds()) {
 			guildConfigs.put(g.getIdLong(), getGuildConfig(g));
