@@ -64,6 +64,8 @@ public class PlayCommand extends Command {
 				e.reply("Bitte einen Track angeben (Link / Youtube Suchbegriffe).");
 			} else {
 				e.reply("Setze Wiedergabe der aktuellen Warteschlange fort.");
+				audioManager.openAudioConnection(vc);
+				musicManager.scheduler.nextTrack();
 			}
 			return;
 		}
@@ -87,7 +89,6 @@ public class PlayCommand extends Command {
 			if (!matcher.find()) {
 				YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
 						new HttpRequestInitializer() {
-
 							public void initialize(HttpRequest request) throws IOException {
 							}
 						}).setApplicationName("DiscordBot").build();

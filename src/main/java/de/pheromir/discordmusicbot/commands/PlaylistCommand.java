@@ -40,7 +40,7 @@ public class PlaylistCommand extends Command {
 				return;
 			}
 		}
-
+		
 		if (e.getArgs().equalsIgnoreCase("repeat")) {
 			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 					|| e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
@@ -52,7 +52,9 @@ public class PlaylistCommand extends Command {
 		}
 
 		MessageBuilder mes = new MessageBuilder();
-		mes.append("**Warteschlange:**");
+		int amnt = titles.size()>10?10:titles.size();
+		
+		mes.append("**Warteschlange** ("+(amnt>9?"Nächste 10 Titel)":amnt+" Titel)"));
 		EmbedBuilder m = new EmbedBuilder();
 		m.setTitle("Wiederholung der Warteschlange: " + (musicManager.scheduler.getRepeat() ? "an" : "aus"));
 		m.setColor(e.getGuild().getSelfMember().getColor());
@@ -71,9 +73,10 @@ public class PlaylistCommand extends Command {
 		if (titles.size() == 0) {
 			m.appendDescription("Es sind keine weiteren Titel eingereiht.");
 		}
-		for (int i = 0; i < titles.size(); i++) {
+		for (int i = 0; i < amnt; i++) {
 			m.appendDescription("**[" + (i + 1) + "]** " + titles.get(i).getTrack().getInfo().title
-					+ ", *hinzugefügt von "
+				+ " [" + Methods.getTimeString(titles.get(i).getTrack().getDuration())
+				+ "], *hinzugefügt von "
 					+ (e.getGuild().getMember(titles.get(i).getRequestor()) != null
 							? (e.getGuild().getMember(titles.get(i).getRequestor()).getNickname() != null
 									? e.getGuild().getMember(titles.get(i).getRequestor()).getNickname()
