@@ -126,7 +126,7 @@ public class Methods {
 
 	public static JSONObject getStreamInfo(String twitchname) {
 		try {
-			URL obj = new URL("https://api.twitch.tv/kraken/streams/" + twitchname);
+			URL obj = new URL("https://api.twitch.tv/kraken/streams/" + twitchname+"?stream_type=live");
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
 			con.setRequestProperty("client-id", Main.twitchKey);

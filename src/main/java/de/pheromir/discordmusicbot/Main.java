@@ -31,7 +31,6 @@ import de.pheromir.discordmusicbot.commands.PlayingCommand;
 import de.pheromir.discordmusicbot.commands.PlaylistCommand;
 import de.pheromir.discordmusicbot.commands.R6ClearCommand;
 import de.pheromir.discordmusicbot.commands.R6Command;
-import de.pheromir.discordmusicbot.commands.RandomCommand;
 import de.pheromir.discordmusicbot.commands.ResumeCommand;
 import de.pheromir.discordmusicbot.commands.SkipCommand;
 import de.pheromir.discordmusicbot.commands.StatusCommand;
@@ -55,7 +54,6 @@ public class Main {
 	public static EventWaiter waiter = new EventWaiter();
 	public static AudioPlayerManager playerManager;
 	public static HashMap<Long, GuildConfig> guildConfigs;
-	public static String giphyKey = "none";
 	public static String youtubeKey = "none";
 	public static String twitchKey = "none";
 	public static ArrayList<String> generalTwitchList = new ArrayList<>();
@@ -77,9 +75,6 @@ public class Main {
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
 		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
 		builder.addCommands(new GoogleCommand());
-		if (!giphyKey.equals("none") && !giphyKey.isEmpty()) {
-			builder.addCommands(new RandomCommand());
-		}
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
 		}
@@ -130,7 +125,6 @@ public class Main {
 				cfg.set("Token", "00000000");
 				cfg.set("AdminID", "00000000");
 				cfg.set("API-Keys.YouTube", "none");
-				cfg.set("API-Keys.Giphy", "none");
 				cfg.set("API-Keys.Twitch", "none");
 				yaml.save(cfg, configFile);
 			} catch (IOException e) {
@@ -142,7 +136,6 @@ public class Main {
 			Configuration cfg = yaml.load(configFile);
 			token = cfg.getString("Token");
 			adminID = cfg.getString("AdminID");
-			giphyKey = cfg.getString("API-Keys.Giphy");
 			youtubeKey = cfg.getString("API-Keys.YouTube");
 			twitchKey = cfg.getString("API-Keys.Twitch");
 		} catch (IOException e) {

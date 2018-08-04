@@ -54,8 +54,7 @@ public class PlayCommand extends Command {
 		if (e.getArgs().isEmpty() && musicManager.player.isPaused()) {
 			musicManager.player.setPaused(false);
 			e.reply("Wiedergabe fortgesetzt.");
-			if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null
-					&& !e.getGuild().getAudioManager().isConnected()) {
+			if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null) {
 				e.getGuild().getAudioManager().openAudioConnection(vc);
 			}
 			return;
