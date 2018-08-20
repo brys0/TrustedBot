@@ -8,8 +8,8 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
-import de.pheromir.discordmusicbot.helper.LeaveChannelTimer;
-import de.pheromir.discordmusicbot.helper.QueueTrack;
+import de.pheromir.discordmusicbot.music.QueueTrack;
+import de.pheromir.discordmusicbot.tasks.LeaveChannelTimer;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 

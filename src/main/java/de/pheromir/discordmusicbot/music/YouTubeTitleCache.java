@@ -1,4 +1,4 @@
-package de.pheromir.discordmusicbot.helper;
+package de.pheromir.discordmusicbot.music;
 
 import de.pheromir.discordmusicbot.Methods;
 

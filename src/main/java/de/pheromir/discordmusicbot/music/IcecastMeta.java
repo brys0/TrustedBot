@@ -1,4 +1,4 @@
-package de.pheromir.discordmusicbot.helper;
+package de.pheromir.discordmusicbot.music;
 
 import java.io.InputStream;
 import java.net.URL;

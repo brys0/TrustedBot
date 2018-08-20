@@ -1,4 +1,4 @@
-package de.pheromir.discordmusicbot.helper;
+package de.pheromir.discordmusicbot.tasks;
 
 import java.util.TimerTask;
 

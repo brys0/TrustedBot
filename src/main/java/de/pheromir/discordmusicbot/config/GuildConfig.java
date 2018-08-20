@@ -1,4 +1,4 @@
-package de.pheromir.discordmusicbot.helper;
+package de.pheromir.discordmusicbot.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,9 @@ import java.util.List;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 
 import de.pheromir.discordmusicbot.Main;
-import de.pheromir.discordmusicbot.config.Configuration;
-import de.pheromir.discordmusicbot.config.YamlConfiguration;
 import de.pheromir.discordmusicbot.handler.AudioPlayerSendHandler;
 import de.pheromir.discordmusicbot.handler.TrackScheduler;
+import de.pheromir.discordmusicbot.music.Suggestion;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 

@@ -7,7 +7,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
-import de.pheromir.discordmusicbot.helper.GuildConfig;
+import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 
 public class TwitchCommand extends Command {

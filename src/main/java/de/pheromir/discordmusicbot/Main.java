@@ -29,8 +29,6 @@ import de.pheromir.discordmusicbot.commands.PauseCommand;
 import de.pheromir.discordmusicbot.commands.PlayCommand;
 import de.pheromir.discordmusicbot.commands.PlayingCommand;
 import de.pheromir.discordmusicbot.commands.PlaylistCommand;
-import de.pheromir.discordmusicbot.commands.R6ClearCommand;
-import de.pheromir.discordmusicbot.commands.R6Command;
 import de.pheromir.discordmusicbot.commands.ResumeCommand;
 import de.pheromir.discordmusicbot.commands.SkipCommand;
 import de.pheromir.discordmusicbot.commands.StatusCommand;
@@ -38,9 +36,9 @@ import de.pheromir.discordmusicbot.commands.StopCommand;
 import de.pheromir.discordmusicbot.commands.TwitchCommand;
 import de.pheromir.discordmusicbot.commands.VolumeCommand;
 import de.pheromir.discordmusicbot.config.Configuration;
+import de.pheromir.discordmusicbot.config.GuildConfig;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
-import de.pheromir.discordmusicbot.helper.GuildConfig;
-import de.pheromir.discordmusicbot.helper.TwitchCheckTimer;
+import de.pheromir.discordmusicbot.tasks.TwitchCheckTimer;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -71,14 +69,13 @@ public class Main {
 		builder.useHelpBuilder(false);
 		builder.setOwnerId(adminID);
 
-		builder.addCommands(new StatusCommand(), new R6ClearCommand(), new LTAddCommand(), new LTRemoveCommand());
+		builder.addCommands(new StatusCommand(), new LTAddCommand(), new LTRemoveCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
 		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
 		builder.addCommands(new GoogleCommand());
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
 		}
-		builder.addCommands(new R6Command());
 
 		builder.setEmojis("\u2705", "\u26A0", "\u274C");
 		try {

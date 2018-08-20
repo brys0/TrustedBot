@@ -20,9 +20,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
-import de.pheromir.discordmusicbot.helper.GuildConfig;
-import de.pheromir.discordmusicbot.helper.IcecastMeta;
-import de.pheromir.discordmusicbot.helper.YouTubeTitleCache;
+import de.pheromir.discordmusicbot.config.GuildConfig;
+import de.pheromir.discordmusicbot.music.IcecastMeta;
+import de.pheromir.discordmusicbot.music.YouTubeTitleCache;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;

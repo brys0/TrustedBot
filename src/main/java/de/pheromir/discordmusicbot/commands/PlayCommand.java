@@ -22,8 +22,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
-import de.pheromir.discordmusicbot.helper.GuildConfig;
-import de.pheromir.discordmusicbot.helper.Suggestion;
+import de.pheromir.discordmusicbot.config.GuildConfig;
+import de.pheromir.discordmusicbot.music.Suggestion;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
