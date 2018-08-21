@@ -51,7 +51,7 @@ public class RedditGrab extends TimerTask {
 								emb.setTitle(title, link);
 								emb.setColor(g.getSelfMember().getColor());
 								if (!Main.getGuildConfig(g).getSubredditPostHistory(subreddit).contains(contentUrl)) {
-									if (!contentUrl.contains("gfy") && !contentUrl.contains(".gif")) {
+									if (contentUrl.contains(".jpg") || contentUrl.contains(".png") || contentUrl.contains(".jpeg")) {
 										emb.setImage(contentUrl);
 										Main.jda.getTextChannelById(chId).sendMessage(emb.build()).complete();
 									} else {
