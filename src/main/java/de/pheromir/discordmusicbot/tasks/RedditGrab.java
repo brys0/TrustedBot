@@ -31,20 +31,23 @@ public class RedditGrab extends TimerTask {
 				if (children.length() == 0)
 					continue;
 				for (Object postObject : children) {
+					JSONObject post = ((JSONObject) postObject).getJSONObject("data");
+					String contentUrl = post.getString("url");
+					if (contentUrl.isEmpty() || contentUrl.equals(""))
+						continue;
+
+					String sub = post.getString("subreddit");
+					String title = post.getString("title");
+					String link = "https://www.reddit.com" + post.getString("permalink");
+					String author = post.getString("author");
+					int score = post.getInt("score");
 					for (Guild g : Main.jda.getGuilds()) {
-						JSONObject post = ((JSONObject) postObject).getJSONObject("data");
 						if (Main.getGuildConfig(g).getRedditList().containsKey(subreddit)) {
 							for (Long chId : Main.getGuildConfig(g).getRedditList().get(subreddit)) {
-								String sub = post.getString("subreddit");
-								String title = post.getString("title");
-								String link = "https://www.reddit.com"+post.getString("permalink");
-								String contentUrl = post.getString("url");
-								String author = post.getString("author");
-								int score = post.getInt("score");
 								EmbedBuilder emb = new EmbedBuilder();
 								emb.setAuthor(author);
-								emb.addField(new Field("Score", score+"", false));
-								emb.setFooter("/r/"+sub, Main.jda.getSelfUser().getAvatarUrl());
+								emb.addField(new Field("Score", score + "", false));
+								emb.setFooter("/r/" + sub, Main.jda.getSelfUser().getAvatarUrl());
 								emb.setTitle(title, link);
 								emb.setColor(g.getSelfMember().getColor());
 								if (!Main.getGuildConfig(g).getSubredditPostHistory(subreddit).contains(contentUrl)) {
@@ -58,7 +61,7 @@ public class RedditGrab extends TimerTask {
 								}
 								Main.getGuildConfig(g).addSubredditPostHistory(subreddit, contentUrl);
 							}
-							Main.getGuildConfig(g).addSubredditPostHistory(subreddit, post.getString("url"));
+							Main.getGuildConfig(g).addSubredditPostHistory(subreddit, contentUrl);
 							Thread.sleep(1000L);
 						}
 					}

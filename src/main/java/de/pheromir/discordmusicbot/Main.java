@@ -99,8 +99,8 @@ public class Main {
 
 			loadAllGuildConfigs();
 			renewGeneralLists();
-			
-			new Timer().schedule(new RedditGrab(), 60*1000, 15*60*1000);
+
+			new Timer().schedule(new RedditGrab(), 60 * 1000, 30 * 60 * 1000);
 			new Timer().schedule(new ClearRedditPostHistory(), 2592000000L, 2592000000L);
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
@@ -188,7 +188,7 @@ public class Main {
 		}
 		generalRedditList = list;
 	}
-	
+
 	public static void renewGeneralLists() {
 		renewGeneralTwitchList();
 		renewGeneralRedditList();
