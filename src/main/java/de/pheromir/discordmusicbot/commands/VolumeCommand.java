@@ -29,7 +29,7 @@ public class VolumeCommand extends Command {
 			e.reply("Du musst mind. DJ sein um die Lautstärke anpassen zu können");
 			return;
 		}
-
+		
 		int vol = 0;
 		try {
 			vol = Integer.parseInt(e.getArgs());

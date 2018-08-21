@@ -1,4 +1,4 @@
-package de.pheromir.discordmusicbot.handler;
+package de.pheromir.discordmusicbot.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;

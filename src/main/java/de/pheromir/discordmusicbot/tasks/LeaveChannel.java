@@ -5,11 +5,11 @@ import java.util.TimerTask;
 import de.pheromir.discordmusicbot.Main;
 import net.dv8tion.jda.core.entities.Guild;
 
-public class LeaveChannelTimer extends TimerTask {
+public class LeaveChannel extends TimerTask {
 
 	private Guild g;
 
-	public LeaveChannelTimer(Guild g) {
+	public LeaveChannel(Guild g) {
 		this.g = g;
 	}
 

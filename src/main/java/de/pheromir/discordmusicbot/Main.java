@@ -29,6 +29,7 @@ import de.pheromir.discordmusicbot.commands.PauseCommand;
 import de.pheromir.discordmusicbot.commands.PlayCommand;
 import de.pheromir.discordmusicbot.commands.PlayingCommand;
 import de.pheromir.discordmusicbot.commands.PlaylistCommand;
+import de.pheromir.discordmusicbot.commands.RedditCommand;
 import de.pheromir.discordmusicbot.commands.ResumeCommand;
 import de.pheromir.discordmusicbot.commands.SkipCommand;
 import de.pheromir.discordmusicbot.commands.StatusCommand;
@@ -38,7 +39,9 @@ import de.pheromir.discordmusicbot.commands.VolumeCommand;
 import de.pheromir.discordmusicbot.config.Configuration;
 import de.pheromir.discordmusicbot.config.GuildConfig;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
-import de.pheromir.discordmusicbot.tasks.TwitchCheckTimer;
+import de.pheromir.discordmusicbot.tasks.ClearRedditPostHistory;
+import de.pheromir.discordmusicbot.tasks.RedditGrab;
+import de.pheromir.discordmusicbot.tasks.TwitchCheck;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -55,6 +58,7 @@ public class Main {
 	public static String youtubeKey = "none";
 	public static String twitchKey = "none";
 	public static ArrayList<String> generalTwitchList = new ArrayList<>();
+	public static ArrayList<String> generalRedditList = new ArrayList<>();
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
 	public static JDA jda;
 
@@ -62,7 +66,7 @@ public class Main {
 
 		/* CONFIG ERSTELLEN / AUSLESEN */
 		createConfig();
-		
+
 		/* COMMANDS KONFIGURIEREN */
 		CommandClientBuilder builder = new CommandClientBuilder();
 		builder.setPrefix("!");
@@ -72,9 +76,11 @@ public class Main {
 		builder.addCommands(new StatusCommand(), new LTAddCommand(), new LTRemoveCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
 		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
-		builder.addCommands(new GoogleCommand());
+		builder.addCommands(new GoogleCommand(), new RedditCommand());
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
+			Timer t = new Timer();
+			t.schedule(new TwitchCheck(), 60 * 1000, 5 * 60 * 1000);
 		}
 
 		builder.setEmojis("\u2705", "\u26A0", "\u274C");
@@ -83,7 +89,7 @@ public class Main {
 			jda = new JDABuilder(
 					AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
-			
+
 			System.out.println("OWNERID: " + adminID);
 
 			guildConfigs = new HashMap<>();
@@ -92,11 +98,10 @@ public class Main {
 			AudioSourceManagers.registerRemoteSources(playerManager);
 
 			loadAllGuildConfigs();
-			renewGeneralTwitchList();
-			if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
-				Timer t = new Timer();
-				t.schedule(new TwitchCheckTimer(), 10 * 1000, 5 * 60 * 1000);
-			}
+			renewGeneralLists();
+			
+			new Timer().schedule(new RedditGrab(), 60*1000, 15*60*1000);
+			new Timer().schedule(new ClearRedditPostHistory(), 2592000000L, 2592000000L);
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
 			System.out.print("Fehler beim Start des Bots: ");
@@ -139,7 +144,7 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void loadAllGuildConfigs() {
 		for (Guild g : jda.getGuilds()) {
 			guildConfigs.put(g.getIdLong(), getGuildConfig(g));
@@ -161,13 +166,32 @@ public class Main {
 	}
 
 	public static void renewGeneralTwitchList() {
+		ArrayList<String> list = new ArrayList<>();
 		for (Guild g : jda.getGuilds()) {
 			for (String str : getGuildConfig(g).getTwitchList().keySet()) {
-				if (!generalTwitchList.contains(str)) {
-					generalTwitchList.add(str);
+				if (!list.contains(str)) {
+					list.add(str);
 				}
 			}
 		}
+		generalTwitchList = list;
+	}
+
+	public static void renewGeneralRedditList() {
+		ArrayList<String> list = new ArrayList<>();
+		for (Guild g : jda.getGuilds()) {
+			for (String str : getGuildConfig(g).getRedditList().keySet()) {
+				if (!list.contains(str)) {
+					list.add(str);
+				}
+			}
+		}
+		generalRedditList = list;
+	}
+	
+	public static void renewGeneralLists() {
+		renewGeneralTwitchList();
+		renewGeneralRedditList();
 	}
 
 }

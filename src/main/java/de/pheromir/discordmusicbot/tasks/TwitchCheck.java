@@ -10,7 +10,7 @@ import de.pheromir.discordmusicbot.Methods;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 
-public class TwitchCheckTimer extends TimerTask {
+public class TwitchCheck extends TimerTask {
 
 	@Override
 	public void run() {

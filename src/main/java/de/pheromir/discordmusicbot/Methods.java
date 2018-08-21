@@ -7,6 +7,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONObject;
 
@@ -89,6 +95,26 @@ public class Methods {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	
+	public static boolean doesSubredditExist(String subreddit) {
+		Callable<Boolean> task = () -> {
+			try {
+				JSONObject jo = httpRequest("https://www.reddit.com/r/"+subreddit+"/hot/.json");
+				if(jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children") && jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
+					return false;
+				}
+				return true;
+			} catch (IOException e) {
+				return false;
+			}
+		};
+		Future<Boolean> future = Executors.newCachedThreadPool().submit(task);
+		try {
+			return future.get(5, TimeUnit.SECONDS);
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			return false;
+		}
 	}
 
 	/*

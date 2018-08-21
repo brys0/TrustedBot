@@ -9,9 +9,9 @@ import java.util.List;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 
 import de.pheromir.discordmusicbot.Main;
-import de.pheromir.discordmusicbot.handler.AudioPlayerSendHandler;
-import de.pheromir.discordmusicbot.handler.TrackScheduler;
+import de.pheromir.discordmusicbot.music.AudioPlayerSendHandler;
 import de.pheromir.discordmusicbot.music.Suggestion;
+import de.pheromir.discordmusicbot.music.TrackScheduler;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
@@ -31,6 +31,8 @@ public class GuildConfig {
 	private HashMap<User, ArrayList<Suggestion>> suggestions;
 
 	private HashMap<String, List<Long>> twitch;
+	private HashMap<String, List<Long>> reddit;
+	private HashMap<String, List<String>> redditPosts;
 	private List<Long> longTitlesUsers;
 
 	public GuildConfig(Guild g) {
@@ -39,6 +41,8 @@ public class GuildConfig {
 		volume = 30;
 		yaml = new YamlConfiguration();
 		twitch = new HashMap<>();
+		reddit = new HashMap<>();
+		redditPosts = new HashMap<>();
 		longTitlesUsers = new ArrayList<>();
 		configFile = new File("config//" + this.g.getId() + ".yml");
 		try {
@@ -49,6 +53,7 @@ public class GuildConfig {
 				cfg.set("Music.Volume", volume);
 				cfg.set("Music.LongTitlesUsers", longTitlesUsers);
 				cfg.set("Twitch", new ArrayList<>());
+				cfg.set("Reddit", new ArrayList<>());
 				yaml.save(cfg, configFile);
 			} else {
 				cfg = yaml.load(configFile);
@@ -58,6 +63,16 @@ public class GuildConfig {
 				if (cfg.getSection("Twitch") != null) {
 					for (String key : cfg.getSection("Twitch").getKeys()) {
 						twitch.put(key, cfg.getLongList("Twitch." + key));
+					}
+				}
+				if (cfg.getSection("Reddit") != null) {
+					for (String key : cfg.getSection("Reddit").getKeys()) {
+						reddit.put(key, cfg.getLongList("Reddit." + key));
+					}
+				}
+				if (cfg.getSection("RedditPosts") != null) {
+					for (String key : cfg.getSection("RedditPosts").getKeys()) {
+						redditPosts.put(key, cfg.getStringList("RedditPosts." + key));
 					}
 				}
 			}
@@ -161,9 +176,109 @@ public class GuildConfig {
 		}
 		Main.renewGeneralTwitchList();
 	}
+	
+	public void addSubredditPostHistory(String subreddit, String post) {
+		subreddit = subreddit.toLowerCase();
+		List<String> list = new ArrayList<>();
+		if(redditPosts.containsKey(subreddit)) {
+			list = redditPosts.get(subreddit);
+			if(!list.contains(post)) {
+				list.add(post);
+				redditPosts.put(subreddit, list);
+			}
+		} else {
+			list.add(post);
+			redditPosts.put(subreddit, list);
+		}
+		cfg.set("RedditPosts." + subreddit, list);
+		try {
+			yaml.save(cfg, configFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public List<String> getSubredditPostHistory(String subreddit) {
+		subreddit = subreddit.toLowerCase();
+		if(this.redditPosts.containsKey(subreddit)) {
+			return redditPosts.get(subreddit);
+		} else {
+			return new ArrayList<>();
+		}
+	}
+	
+	public void clearSubredditPostHistory(String subreddit) {
+		subreddit = subreddit.toLowerCase();
+		cfg.set("RedditPosts." + subreddit, null);
+		try {
+			yaml.save(cfg, configFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void clearSubredditPostHistory() {
+		cfg.set("RedditPosts", null);
+		try {
+			yaml.save(cfg, configFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void addSubreddit(String subreddit, Long channelID) {
+		subreddit = subreddit.toLowerCase();
+		List<Long> list = new ArrayList<>();
+		if (reddit.containsKey(subreddit)) {
+			list = reddit.get(subreddit);
+			if (!list.contains(channelID)) {
+				list.add(channelID);
+				reddit.put(subreddit, list);
+			}
+		} else {
+			list.add(channelID);
+			reddit.put(subreddit, list);
+		}
+		cfg.set("Reddit." + subreddit, list);
+		try {
+			yaml.save(cfg, configFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Main.renewGeneralRedditList();
+	}
+
+	public void removeSubreddit(String subreddit, Long channelID) {
+		subreddit = subreddit.toLowerCase();
+		List<Long> list = new ArrayList<>();
+		if (reddit.containsKey(subreddit)) {
+			list = reddit.get(subreddit);
+			if (list.contains(channelID))
+				list.remove(channelID);
+			reddit.put(subreddit, list);
+		} else {
+			list.add(channelID);
+			reddit.put(subreddit, list);
+		}
+		if (list.isEmpty()) {
+			cfg.set("Reddit." + subreddit, null);
+		} else {
+			cfg.set("Reddit." + subreddit, list);
+		}
+		try {
+			yaml.save(cfg, configFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Main.renewGeneralRedditList();
+	}
 
 	public HashMap<String, List<Long>> getTwitchList() {
 		return twitch;
+	}
+	
+	public HashMap<String, List<Long>> getRedditList() {
+		return reddit;
 	}
 
 	public List<Long> getLongTitlesUsers() {

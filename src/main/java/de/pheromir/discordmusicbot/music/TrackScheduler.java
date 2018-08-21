@@ -1,4 +1,4 @@
-package de.pheromir.discordmusicbot.handler;
+package de.pheromir.discordmusicbot.music;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -8,8 +8,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
-import de.pheromir.discordmusicbot.music.QueueTrack;
-import de.pheromir.discordmusicbot.tasks.LeaveChannelTimer;
+import de.pheromir.discordmusicbot.tasks.LeaveChannel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
@@ -55,7 +54,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	@Override
 	public void onPlayerPause(AudioPlayer player) {
-		timer.schedule(new LeaveChannelTimer(this.g), (15 * 60 * 1000));
+		timer.schedule(new LeaveChannel(this.g), (15 * 60 * 1000));
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-		timer.schedule(new LeaveChannelTimer(this.g), (15 * 60 * 1000));
+		timer.schedule(new LeaveChannel(this.g), (15 * 60 * 1000));
 		if (endReason.mayStartNext) {
 			nextTrack();
 		}
