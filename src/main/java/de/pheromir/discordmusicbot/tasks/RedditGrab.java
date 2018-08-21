@@ -48,7 +48,7 @@ public class RedditGrab extends TimerTask {
 								emb.setAuthor(author);
 								emb.addField(new Field("Score", score + "", false));
 								emb.setFooter("/r/" + sub, Main.jda.getSelfUser().getAvatarUrl());
-								emb.setTitle(title, link);
+								emb.setTitle(title.length() > 256 ? title.substring(0, 256) : title, link);
 								emb.setColor(g.getSelfMember().getColor());
 								if (!Main.getGuildConfig(g).getSubredditPostHistory(subreddit).contains(contentUrl)) {
 									if (contentUrl.contains(".jpg") || contentUrl.contains(".png") || contentUrl.contains(".jpeg")) {
