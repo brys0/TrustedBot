@@ -15,6 +15,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 
+import de.pheromir.discordmusicbot.commands.CBCommand;
 import de.pheromir.discordmusicbot.commands.DJAddCommand;
 import de.pheromir.discordmusicbot.commands.DJRemoveCommand;
 import de.pheromir.discordmusicbot.commands.ExtraAddCommand;
@@ -40,6 +41,7 @@ import de.pheromir.discordmusicbot.commands.VolumeCommand;
 import de.pheromir.discordmusicbot.config.Configuration;
 import de.pheromir.discordmusicbot.config.GuildConfig;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
+import de.pheromir.discordmusicbot.tasks.CBCheck;
 import de.pheromir.discordmusicbot.tasks.ClearRedditPostHistory;
 import de.pheromir.discordmusicbot.tasks.RedditGrab;
 import de.pheromir.discordmusicbot.tasks.TwitchCheck;
@@ -61,6 +63,8 @@ public class Main {
 	public static ArrayList<String> generalTwitchList = new ArrayList<>();
 	public static ArrayList<String> generalRedditList = new ArrayList<>();
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
+	public static ArrayList<String> generalCBList = new ArrayList<>();
+	public static ArrayList<String> onlineCBList = new ArrayList<>();
 	public static List<Long> extraPermissions = new ArrayList<>();
 	public static JDA jda;
 	public static File configFile = new File("config//config.yml");
@@ -81,7 +85,7 @@ public class Main {
 		builder.addCommands(new StatusCommand(), new ExtraAddCommand(), new ExtraRemoveCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
 		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
-		builder.addCommands(new GoogleCommand(), new RedditCommand());
+		builder.addCommands(new GoogleCommand(), new RedditCommand(), new CBCommand());
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
 			new Timer().schedule(new TwitchCheck(), 60 * 1000, 5 * 60 * 1000);
@@ -100,6 +104,7 @@ public class Main {
 			renewGeneralLists();
 			new Timer().schedule(new RedditGrab(), 60 * 1000, 30 * 60 * 1000);
 			new Timer().schedule(new ClearRedditPostHistory(), 1209600000L, 1209600000L);
+			new Timer().schedule(new CBCheck(), 60 * 1000, 30 * 60 * 1000);
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
 			System.out.print("Fehler beim Start des Bots: ");
@@ -216,10 +221,23 @@ public class Main {
 		}
 		generalRedditList = list;
 	}
+	
+	public static void renewGeneralCBList() {
+		ArrayList<String> list = new ArrayList<>();
+		for (Guild g : jda.getGuilds()) {
+			for (String str : getGuildConfig(g).getCBList().keySet()) {
+				if (!list.contains(str)) {
+					list.add(str);
+				}
+			}
+		}
+		generalCBList = list;
+	}
 
 	public static void renewGeneralLists() {
 		renewGeneralTwitchList();
 		renewGeneralRedditList();
+		renewGeneralCBList();
 	}
 
 }

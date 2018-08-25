@@ -1,6 +1,7 @@
 package de.pheromir.discordmusicbot;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -30,7 +31,16 @@ public class Methods {
 	 * GENERAL JSON HTTP CONNECTIONS
 	 */
 
-	public static JSONObject httpRequest(String url) throws IOException {
+	public static JSONObject httpRequestJSON(String url) throws IOException {
+		try {
+			JSONObject myResponse = new JSONObject(httpRequest(url));
+			return myResponse;
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+	
+	public static String httpRequest(String url) throws IOException {
 		try {
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -45,8 +55,7 @@ public class Methods {
 				response.append(inputLine);
 			}
 			in.close();
-			JSONObject myResponse = new JSONObject(response.toString());
-			return myResponse;
+			return response.toString();
 		} catch (IOException e) {
 			throw e;
 		}
@@ -100,7 +109,7 @@ public class Methods {
 	public static boolean doesSubredditExist(String subreddit) {
 		Callable<Boolean> task = () -> {
 			try {
-				JSONObject jo = httpRequest("https://www.reddit.com/r/"+subreddit+"/hot/.json");
+				JSONObject jo = httpRequestJSON("https://www.reddit.com/r/"+subreddit+"/hot/.json");
 				if(jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children") && jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
 					return false;
 				}
@@ -140,6 +149,18 @@ public class Methods {
 			}
 			return true;
 
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static boolean doesCBUserExist(String username) {
+		try {
+			String res = httpRequest("https://de.chaturbate.com/"+username);
+			return !res.contains("HTTP 404 - Seite nicht gefunden");
+		} catch (FileNotFoundException e) {
+			return false;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
