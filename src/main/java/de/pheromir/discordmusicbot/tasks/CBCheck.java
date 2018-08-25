@@ -26,11 +26,11 @@ public class CBCheck extends TimerTask {
 			}
 			if (Main.onlineCBList.contains(username)) {
 				if (res.contains("room_status: \"offline\"")) {
-					Main.onlineTwitchList.remove(username);
+					Main.onlineCBList.remove(username);
 				}
 			} else {
 				if (res.contains("room_status: \"public\"")) {
-					Main.onlineTwitchList.add(username);
+					Main.onlineCBList.add(username);
 
 					EmbedBuilder eb = new EmbedBuilder();
 					eb.setTitle(username+" ist nun online!", url);
