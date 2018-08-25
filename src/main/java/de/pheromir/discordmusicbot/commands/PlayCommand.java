@@ -90,7 +90,9 @@ public class PlayCommand extends Command {
 			if (!matcher.find()) {
 				YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
 						new HttpRequestInitializer() {
+
 							public void initialize(HttpRequest request) throws IOException {
+
 							}
 						}).setApplicationName("DiscordBot").build();
 
@@ -118,7 +120,7 @@ public class PlayCommand extends Command {
 					}
 					musicManager.getSuggestions().put(e.getAuthor(), suggests);
 					Timer t = new Timer();
-					t.schedule(new RemoveUserSuggestion(e.getGuild(), e.getAuthor()), 1000*60*5);
+					t.schedule(new RemoveUserSuggestion(e.getGuild(), e.getAuthor()), 1000 * 60 * 5);
 					m.setFooter("Titel auswählen: !play [Nr] (Vorschläge 5 min. gültig)", e.getJDA().getSelfUser().getAvatarUrl());
 					mes.setEmbed(m.build());
 					e.reply(mes.build());
@@ -139,11 +141,11 @@ public class PlayCommand extends Command {
 			@Override
 			public void trackLoaded(AudioTrack track) {
 				if (track.getDuration() > (1000 * 60 * 60 * 2)
-						&& !Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(e.getAuthor().getIdLong())) {
+						&& !Main.getExtraUsers().contains(e.getAuthor().getIdLong())) {
 					e.reply("Du kannst nur Titel mit einer Länge von bis zu zwei Stunden hinzufügen.");
 					return;
 				} else if (Main.getGuildConfig(e.getGuild()).scheduler.getRequestedTitles().size() > 10
-						&& !Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(e.getAuthor().getIdLong())) {
+						&& !Main.getExtraUsers().contains(e.getAuthor().getIdLong())) {
 					e.reply("Du kannst keine weiteren Titel hinzufügen, da das Limit von 10 Titeln erreicht wurde.");
 					return;
 				}

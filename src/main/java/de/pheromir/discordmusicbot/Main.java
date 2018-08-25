@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Timer;
 
 import javax.security.auth.login.LoginException;
@@ -16,11 +17,11 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 
 import de.pheromir.discordmusicbot.commands.DJAddCommand;
 import de.pheromir.discordmusicbot.commands.DJRemoveCommand;
+import de.pheromir.discordmusicbot.commands.ExtraAddCommand;
+import de.pheromir.discordmusicbot.commands.ExtraRemoveCommand;
 import de.pheromir.discordmusicbot.commands.GoogleCommand;
 import de.pheromir.discordmusicbot.commands.HugCommand;
 import de.pheromir.discordmusicbot.commands.KissCommand;
-import de.pheromir.discordmusicbot.commands.LTAddCommand;
-import de.pheromir.discordmusicbot.commands.LTRemoveCommand;
 import de.pheromir.discordmusicbot.commands.LewdCommand;
 import de.pheromir.discordmusicbot.commands.LizardCommand;
 import de.pheromir.discordmusicbot.commands.NekoCommand;
@@ -54,13 +55,17 @@ public class Main {
 	public static String adminID = "00000000";
 	public static EventWaiter waiter = new EventWaiter();
 	public static AudioPlayerManager playerManager;
-	public static HashMap<Long, GuildConfig> guildConfigs;
+	public static HashMap<Long, GuildConfig> guildConfigs = new HashMap<>();
 	public static String youtubeKey = "none";
 	public static String twitchKey = "none";
 	public static ArrayList<String> generalTwitchList = new ArrayList<>();
 	public static ArrayList<String> generalRedditList = new ArrayList<>();
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
+	public static List<Long> extraPermissions = new ArrayList<>();
 	public static JDA jda;
+	public static File configFile = new File("config//config.yml");
+	public static YamlConfiguration yaml = new YamlConfiguration();
+	public static Configuration cfg;
 
 	public static void main(String[] args) {
 
@@ -73,14 +78,13 @@ public class Main {
 		builder.useHelpBuilder(false);
 		builder.setOwnerId(adminID);
 
-		builder.addCommands(new StatusCommand(), new LTAddCommand(), new LTRemoveCommand());
+		builder.addCommands(new StatusCommand(), new ExtraAddCommand(), new ExtraRemoveCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
 		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
 		builder.addCommands(new GoogleCommand(), new RedditCommand());
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
-			Timer t = new Timer();
-			t.schedule(new TwitchCheck(), 60 * 1000, 5 * 60 * 1000);
+			new Timer().schedule(new TwitchCheck(), 60 * 1000, 5 * 60 * 1000);
 		}
 
 		builder.setEmojis("\u2705", "\u26A0", "\u274C");
@@ -89,19 +93,13 @@ public class Main {
 			jda = new JDABuilder(
 					AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
-
 			System.out.println("OWNERID: " + adminID);
-
-			guildConfigs = new HashMap<>();
-
 			playerManager = new DefaultAudioPlayerManager();
 			AudioSourceManagers.registerRemoteSources(playerManager);
-
 			loadAllGuildConfigs();
 			renewGeneralLists();
-
 			new Timer().schedule(new RedditGrab(), 60 * 1000, 30 * 60 * 1000);
-			new Timer().schedule(new ClearRedditPostHistory(), 2592000000L, 2592000000L);
+			new Timer().schedule(new ClearRedditPostHistory(), 1209600000L, 1209600000L);
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
 			System.out.print("Fehler beim Start des Bots: ");
@@ -118,16 +116,16 @@ public class Main {
 		File dir = new File("config");
 		if (!dir.exists())
 			dir.mkdir();
-		File configFile = new File("config//config.yml");
-		YamlConfiguration yaml = new YamlConfiguration();
+		
 		if (!configFile.exists()) {
 			try {
 				configFile.createNewFile();
-				Configuration cfg = yaml.load(configFile);
+				cfg = yaml.load(configFile);
 				cfg.set("Token", "00000000");
 				cfg.set("AdminID", "00000000");
 				cfg.set("API-Keys.YouTube", "none");
 				cfg.set("API-Keys.Twitch", "none");
+				cfg.set("Extra-Permissions", new ArrayList<Long>());
 				yaml.save(cfg, configFile);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -135,11 +133,13 @@ public class Main {
 		}
 
 		try {
-			Configuration cfg = yaml.load(configFile);
+			cfg = yaml.load(configFile);
 			token = cfg.getString("Token");
 			adminID = cfg.getString("AdminID");
 			youtubeKey = cfg.getString("API-Keys.YouTube");
 			twitchKey = cfg.getString("API-Keys.Twitch");
+			extraPermissions = cfg.getLongList("ExtraPermissions");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -163,6 +163,34 @@ public class Main {
 		g.getAudioManager().setSendingHandler(cfg.getSendHandler());
 
 		return cfg;
+	}
+	
+	public static List<Long> getExtraUsers() {
+		return extraPermissions;
+	}
+
+	public static void addExtraUser(Long id) {
+		if (!extraPermissions.contains(id)) {
+			extraPermissions.add(id);
+			cfg.set("ExtraPermissions", extraPermissions);
+			try {
+				yaml.save(cfg, configFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void removeExtraUser(Long id) {
+		if (extraPermissions.contains(id)) {
+			extraPermissions.remove(id);
+			cfg.set("ExtraPermissions", extraPermissions);
+			try {
+				yaml.save(cfg, configFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void renewGeneralTwitchList() {

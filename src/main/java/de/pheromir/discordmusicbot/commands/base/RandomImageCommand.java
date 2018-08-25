@@ -34,10 +34,7 @@ public abstract class RandomImageCommand extends Command {
 			e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT
 					? e.getSelfMember().getColor()
 					: Color.BLUE).build());
-		} catch (JSONException e1) {
-			e.reply("Es ist ein Fehler aufgetreten.");
-			e1.printStackTrace();
-		} catch (IOException e1) {
+		} catch (JSONException | IOException e1) {
 			e.reply("Es ist ein Fehler aufgetreten.");
 			e1.printStackTrace();
 		}

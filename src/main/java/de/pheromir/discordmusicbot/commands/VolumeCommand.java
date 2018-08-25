@@ -4,7 +4,6 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
-import net.dv8tion.jda.core.Permission;
 
 public class VolumeCommand extends Command {
 
@@ -24,17 +23,19 @@ public class VolumeCommand extends Command {
 			e.reply("Derzeitige Lautstärke: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
 			return;
 		}
-		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
-				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du musst mind. DJ sein um die Lautstärke anpassen zu können");
+		if (!Main.getExtraUsers().contains(e.getAuthor().getIdLong())) {
+			e.reply("Aus Performancegründen ist dieser Befehl nur für ausgewählte User freigeschaltet. Sorry.");
 			return;
 		}
 		
-		int vol = 0;
+		int vol = 100;
 		try {
 			vol = Integer.parseInt(e.getArgs());
+			if(vol < 1 && vol > 100) {
+				throw new NumberFormatException("Lautstärke außerhalb des Bereiches 1-100.");
+			}
 		} catch (NumberFormatException ex) {
-			e.reply("Ungültiger Wert.");
+			e.reply("Ungültiger Wert. Bitte einen Wert von 1-100 angeben.");
 			return;
 		}
 		Main.getGuildConfig(e.getGuild()).setVolume(vol);

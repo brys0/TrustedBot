@@ -33,17 +33,15 @@ public class GuildConfig {
 	private HashMap<String, List<Long>> twitch;
 	private HashMap<String, List<Long>> reddit;
 	private HashMap<String, List<String>> redditPosts;
-	private List<Long> longTitlesUsers;
 
 	public GuildConfig(Guild g) {
 		this.g = g;
 		djs = new ArrayList<>();
-		volume = 30;
+		volume = 100;
 		yaml = new YamlConfiguration();
 		twitch = new HashMap<>();
 		reddit = new HashMap<>();
 		redditPosts = new HashMap<>();
-		longTitlesUsers = new ArrayList<>();
 		configFile = new File("config//" + this.g.getId() + ".yml");
 		try {
 			if (!configFile.exists()) {
@@ -51,7 +49,6 @@ public class GuildConfig {
 				cfg = yaml.load(configFile);
 				cfg.set("Music.DJs", djs);
 				cfg.set("Music.Volume", volume);
-				cfg.set("Music.LongTitlesUsers", longTitlesUsers);
 				cfg.set("Twitch", new ArrayList<>());
 				cfg.set("Reddit", new ArrayList<>());
 				yaml.save(cfg, configFile);
@@ -59,7 +56,6 @@ public class GuildConfig {
 				cfg = yaml.load(configFile);
 				djs = cfg.getLongList("Music.DJs");
 				volume = cfg.getInt("Music.Volume");
-				longTitlesUsers = cfg.getLongList("Music.LongTitlesUsers");
 				if (cfg.getSection("Twitch") != null) {
 					for (String key : cfg.getSection("Twitch").getKeys()) {
 						twitch.put(key, cfg.getLongList("Twitch." + key));
@@ -279,34 +275,6 @@ public class GuildConfig {
 	
 	public HashMap<String, List<Long>> getRedditList() {
 		return reddit;
-	}
-
-	public List<Long> getLongTitlesUsers() {
-		return longTitlesUsers;
-	}
-
-	public void addLongTitlesUser(Long id) {
-		if (!longTitlesUsers.contains(id)) {
-			longTitlesUsers.add(id);
-			cfg.set("Music.LongTitlesUsers", longTitlesUsers);
-			try {
-				yaml.save(cfg, configFile);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public void removeLongTitlesUser(Long id) {
-		if (longTitlesUsers.contains(id)) {
-			longTitlesUsers.remove(id);
-			cfg.set("Music.LongTitlesUsers", longTitlesUsers);
-			try {
-				yaml.save(cfg, configFile);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	public void setAutoPause(boolean pause) {

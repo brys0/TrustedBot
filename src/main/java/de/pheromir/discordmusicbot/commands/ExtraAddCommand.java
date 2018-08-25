@@ -7,15 +7,15 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Main;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 
-public class LTRemoveCommand extends Command {
+public class ExtraAddCommand extends Command {
 
-	public LTRemoveCommand() {
-		this.name = "ltremove";
-		this.help = "Person die Erlaubnis entziehen, längere Titel abzuspielen.";
-		this.arguments = "<Person>";
-		this.guildOnly = true;
+	public ExtraAddCommand() {
+		this.name = "extraadd";
+		this.help = "Extra-Rechte an eine Person vergeben.";
+		this.arguments = "<User-Tag/ID>";
+		this.guildOnly = false;
 		this.ownerCommand = true;
 	}
 
@@ -30,19 +30,19 @@ public class LTRemoveCommand extends Command {
 			Matcher m = p.matcher(arg);
 			if (m.find()) {
 				String id = m.group(1);
-				Member mem = e.getGuild().getMemberById(id);
+				User mem = Main.jda.getUserById(id);
 				if (mem == null) {
 					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 					continue;
 				}
-				if (!Main.getGuildConfig(e.getGuild()).getLongTitlesUsers().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention() + " hat gar keine Erlaubnis, längere Titel abzuspielen.");
+				if (Main.getExtraUsers().contains(Long.parseLong(id))) {
+					e.reply(mem.getAsMention() + " hat bereits Extra-Rechte.");
 					continue;
 				} else {
-					e.reply(mem.getAsMention() + " hat nun keine Erlaubnis mehr, längere Titel abzuspielen.");
-					Main.getGuildConfig(e.getGuild()).removeLongTitlesUser(Long.parseLong(id));
-					continue;
+					e.reply(mem.getAsMention() + " hat nun Extra-Rechte.");
+					Main.addExtraUser(Long.parseLong(id));
 				}
+				continue;
 			} else {
 				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 				continue;

@@ -62,7 +62,7 @@ public class RedditGrab extends TimerTask {
 								Main.getGuildConfig(g).addSubredditPostHistory(subreddit, contentUrl);
 							}
 							Main.getGuildConfig(g).addSubredditPostHistory(subreddit, contentUrl);
-							Thread.sleep(1000L);
+							Thread.sleep(500L);
 						}
 					}
 				}
