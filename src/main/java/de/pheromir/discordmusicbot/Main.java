@@ -93,7 +93,8 @@ public class Main {
 		try {
 			/* BOT STARTEN */
 			jda = new JDABuilder(
-					AccountType.BOT).setToken(token).addEventListener(builder.build()).setAutoReconnect(true).buildBlocking();
+					AccountType.BOT).setToken(token).addEventListener(builder.build()).setAutoReconnect(true).build();
+			jda.awaitReady();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
 			System.out.println("OWNERID: " + adminID);
 			playerManager = new DefaultAudioPlayerManager();
@@ -119,7 +120,7 @@ public class Main {
 		File dir = new File("config");
 		if (!dir.exists())
 			dir.mkdir();
-		
+
 		if (!configFile.exists()) {
 			try {
 				configFile.createNewFile();
@@ -142,7 +143,7 @@ public class Main {
 			youtubeKey = cfg.getString("API-Keys.YouTube");
 			twitchKey = cfg.getString("API-Keys.Twitch");
 			extraPermissions = cfg.getLongList("ExtraPermissions");
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -167,7 +168,7 @@ public class Main {
 
 		return cfg;
 	}
-	
+
 	public static List<Long> getExtraUsers() {
 		return extraPermissions;
 	}
@@ -219,7 +220,7 @@ public class Main {
 		}
 		generalRedditList = list;
 	}
-	
+
 	public static void renewGeneralCBList() {
 		ArrayList<String> list = new ArrayList<>();
 		for (Guild g : jda.getGuilds()) {
