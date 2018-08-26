@@ -103,8 +103,8 @@ public class Main {
 			loadAllGuildConfigs();
 			renewGeneralLists();
 			new Timer().schedule(new RedditGrab(), 60 * 1000, 30 * 60 * 1000);
-			new Timer().schedule(new ClearRedditPostHistory(), 1209600000L, 1209600000L);
-			new Timer().schedule(new CBCheck(), 60 * 1000, 30 * 60 * 1000);
+			new Timer().schedule(new ClearRedditPostHistory(), 14 * 24 * 60 * 60 * 1000, 14 * 24 * 60 * 60 * 1000);
+			new Timer().schedule(new CBCheck(), 60 * 1000, 15 * 60 * 1000);
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
 			System.out.print("Fehler beim Start des Bots: ");

@@ -36,6 +36,8 @@ public class CBCheck extends TimerTask {
 					eb.setTitle(username+" ist nun online!", url);
 					eb.setAuthor("Chaturbate");
 					eb.setThumbnail("https://ssl-ccstatic.highwebmedia.com/images/logo-standard.png");
+					eb.setImage("https://roomimg.stream.highwebmedia.com/ri/"+username+".jpg");
+					
 
 					for (Guild g : Main.jda.getGuilds()) {
 						if (Main.getGuildConfig(g).getCBList().containsKey(username)) {
