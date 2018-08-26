@@ -27,6 +27,8 @@ public class TwitchCheck extends TimerTask {
 				if (!res.isNull("stream")) {
 					Main.onlineTwitchList.add(twitchname);
 					JSONObject stream = res.getJSONObject("stream");
+					if (res.getBoolean("is_playlist"))
+						continue;
 					String game = stream.getString("game");
 					int viewers = stream.getInt("viewers");
 					String preview = stream.getJSONObject("preview").getString("large");
