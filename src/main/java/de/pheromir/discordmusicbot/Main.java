@@ -10,7 +10,6 @@ import java.util.Timer;
 import javax.security.auth.login.LoginException;
 
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -55,7 +54,6 @@ public class Main {
 
 	public static String token;
 	public static String adminID = "00000000";
-	public static EventWaiter waiter = new EventWaiter();
 	public static AudioPlayerManager playerManager;
 	public static HashMap<Long, GuildConfig> guildConfigs = new HashMap<>();
 	public static String youtubeKey = "none";
@@ -95,7 +93,7 @@ public class Main {
 		try {
 			/* BOT STARTEN */
 			jda = new JDABuilder(
-					AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
+					AccountType.BOT).setToken(token).addEventListener(builder.build()).setAutoReconnect(true).buildBlocking();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
 			System.out.println("OWNERID: " + adminID);
 			playerManager = new DefaultAudioPlayerManager();

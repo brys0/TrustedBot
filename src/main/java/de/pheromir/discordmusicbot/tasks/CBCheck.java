@@ -42,7 +42,7 @@ public class CBCheck extends TimerTask {
 					for (Guild g : Main.jda.getGuilds()) {
 						if (Main.getGuildConfig(g).getCBList().containsKey(username)) {
 							for (Long chId : Main.getGuildConfig(g).getCBList().get(username)) {
-								Main.jda.getTextChannelById(chId).sendMessage("@here").embed(eb.build()).complete();
+								Main.jda.getTextChannelById(chId).sendMessage(eb.build()).complete();
 							}
 						}
 					}
