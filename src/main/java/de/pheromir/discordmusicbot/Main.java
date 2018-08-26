@@ -10,11 +10,11 @@ import java.util.Timer;
 import javax.security.auth.login.LoginException;
 
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 
+import de.pheromir.discordmusicbot.commands.CBCommand;
 import de.pheromir.discordmusicbot.commands.DJAddCommand;
 import de.pheromir.discordmusicbot.commands.DJRemoveCommand;
 import de.pheromir.discordmusicbot.commands.ExtraAddCommand;
@@ -40,6 +40,7 @@ import de.pheromir.discordmusicbot.commands.VolumeCommand;
 import de.pheromir.discordmusicbot.config.Configuration;
 import de.pheromir.discordmusicbot.config.GuildConfig;
 import de.pheromir.discordmusicbot.config.YamlConfiguration;
+import de.pheromir.discordmusicbot.tasks.CBCheck;
 import de.pheromir.discordmusicbot.tasks.ClearRedditPostHistory;
 import de.pheromir.discordmusicbot.tasks.RedditGrab;
 import de.pheromir.discordmusicbot.tasks.TwitchCheck;
@@ -53,7 +54,6 @@ public class Main {
 
 	public static String token;
 	public static String adminID = "00000000";
-	public static EventWaiter waiter = new EventWaiter();
 	public static AudioPlayerManager playerManager;
 	public static HashMap<Long, GuildConfig> guildConfigs = new HashMap<>();
 	public static String youtubeKey = "none";
@@ -61,6 +61,8 @@ public class Main {
 	public static ArrayList<String> generalTwitchList = new ArrayList<>();
 	public static ArrayList<String> generalRedditList = new ArrayList<>();
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
+	public static ArrayList<String> generalCBList = new ArrayList<>();
+	public static ArrayList<String> onlineCBList = new ArrayList<>();
 	public static List<Long> extraPermissions = new ArrayList<>();
 	public static JDA jda;
 	public static File configFile = new File("config//config.yml");
@@ -81,7 +83,7 @@ public class Main {
 		builder.addCommands(new StatusCommand(), new ExtraAddCommand(), new ExtraRemoveCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
 		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
-		builder.addCommands(new GoogleCommand(), new RedditCommand());
+		builder.addCommands(new GoogleCommand(), new RedditCommand(), new CBCommand());
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			builder.addCommands(new TwitchCommand());
 			new Timer().schedule(new TwitchCheck(), 60 * 1000, 5 * 60 * 1000);
@@ -91,7 +93,8 @@ public class Main {
 		try {
 			/* BOT STARTEN */
 			jda = new JDABuilder(
-					AccountType.BOT).setToken(token).addEventListener(builder.build()).addEventListener(waiter).setAutoReconnect(true).buildBlocking();
+					AccountType.BOT).setToken(token).addEventListener(builder.build()).setAutoReconnect(true).build();
+			jda.awaitReady();
 			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
 			System.out.println("OWNERID: " + adminID);
 			playerManager = new DefaultAudioPlayerManager();
@@ -99,7 +102,8 @@ public class Main {
 			loadAllGuildConfigs();
 			renewGeneralLists();
 			new Timer().schedule(new RedditGrab(), 60 * 1000, 30 * 60 * 1000);
-			new Timer().schedule(new ClearRedditPostHistory(), 1209600000L, 1209600000L);
+			new Timer().schedule(new ClearRedditPostHistory(), 14 * 24 * 60 * 60 * 1000, 14 * 24 * 60 * 60 * 1000);
+			new Timer().schedule(new CBCheck(), 60 * 1000, 15 * 60 * 1000);
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
 			System.out.print("Fehler beim Start des Bots: ");
@@ -116,7 +120,7 @@ public class Main {
 		File dir = new File("config");
 		if (!dir.exists())
 			dir.mkdir();
-		
+
 		if (!configFile.exists()) {
 			try {
 				configFile.createNewFile();
@@ -139,7 +143,7 @@ public class Main {
 			youtubeKey = cfg.getString("API-Keys.YouTube");
 			twitchKey = cfg.getString("API-Keys.Twitch");
 			extraPermissions = cfg.getLongList("ExtraPermissions");
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -164,7 +168,7 @@ public class Main {
 
 		return cfg;
 	}
-	
+
 	public static List<Long> getExtraUsers() {
 		return extraPermissions;
 	}
@@ -217,9 +221,22 @@ public class Main {
 		generalRedditList = list;
 	}
 
+	public static void renewGeneralCBList() {
+		ArrayList<String> list = new ArrayList<>();
+		for (Guild g : jda.getGuilds()) {
+			for (String str : getGuildConfig(g).getCBList().keySet()) {
+				if (!list.contains(str)) {
+					list.add(str);
+				}
+			}
+		}
+		generalCBList = list;
+	}
+
 	public static void renewGeneralLists() {
 		renewGeneralTwitchList();
 		renewGeneralRedditList();
+		renewGeneralCBList();
 	}
 
 }

@@ -21,7 +21,7 @@ public class RedditGrab extends TimerTask {
 		list.addAll(Main.generalRedditList);
 		for (String subreddit : list) {
 			try {
-				JSONObject res = Methods.httpRequest("https://www.reddit.com/r/" + subreddit + "/hot/.json");
+				JSONObject res = Methods.httpRequestJSON("https://www.reddit.com/r/" + subreddit + "/hot/.json");
 				if (!res.has("data"))
 					continue;
 				JSONObject data = res.getJSONObject("data");

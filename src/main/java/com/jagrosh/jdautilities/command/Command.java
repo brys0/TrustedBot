@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2018 John Grosh (jagrosh) & Kaidan Gustave (TheMonitorLizard)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.jagrosh.jdautilities.command;
 
 import java.util.Arrays;
@@ -73,7 +88,7 @@ public abstract class Command {
 	 * A small help String that summarizes the function of the command, used in
 	 * the default help builder.
 	 */
-	protected String help = "no help available";
+	protected String help = "Keine Hilfe verfügbar.";
 
 	/**
 	 * The {@link com.jagrosh.jdautilities.command.Command.Category Category} of
@@ -255,21 +270,21 @@ public abstract class Command {
 					if (p.name().startsWith("VOICE")) {
 						VoiceChannel vc = event.getMember().getVoiceState().getChannel();
 						if (vc == null) {
-							terminate(event, "Du musst in einem VoiceChannel sein, um den Befehl nutzen zu können!");
+							terminate(event, "Du musst in einem Voice-Channel sein, um den Befehl nutzen zu können!");
 							return;
 						} else if (!event.getSelfMember().hasPermission(vc, p)) {
-							terminate(event, String.format(BOT_PERM, "VoiceChannel", p.name()));
+							terminate(event, String.format(BOT_PERM, "Voice-Channel", p.getName()));
 							return;
 						}
 					} else {
 						if (!event.getSelfMember().hasPermission(event.getTextChannel(), p)) {
-							terminate(event, String.format(BOT_PERM, "Channel", p.name()));
+							terminate(event, String.format(BOT_PERM, "Channel", p.getName()));
 							return;
 						}
 					}
 				} else {
-					if (!event.getSelfMember().hasPermission(event.getTextChannel(), p)) {
-						terminate(event, String.format(BOT_PERM, "Server", p.name()));
+					if (!event.getSelfMember().hasPermission(p)) {
+						terminate(event, String.format(BOT_PERM, "Server", p.getName()));
 						return;
 					}
 				}
@@ -279,12 +294,12 @@ public abstract class Command {
 			for (Permission p : userPermissions) {
 				if (p.isChannel()) {
 					if (!event.getMember().hasPermission(event.getTextChannel(), p)) {
-						terminate(event, String.format(USER_PERM, "Channel", p.name()));
+						terminate(event, String.format(USER_PERM, "Channel", p.getName()));
 						return;
 					}
 				} else {
 					if (!event.getMember().hasPermission(p)) {
-						terminate(event, String.format(USER_PERM, "Server", p.name()));
+						terminate(event, String.format(USER_PERM, "Server", p.getName()));
 						return;
 					}
 				}

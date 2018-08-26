@@ -30,7 +30,7 @@ public abstract class RandomImageCommand extends Command {
 	protected void execute(CommandEvent e) {
 		String imgUrl;
 		try {
-			imgUrl = Methods.httpRequest(BASE_URL).getString(jsonKey);
+			imgUrl = Methods.httpRequestJSON(BASE_URL).getString(jsonKey);
 			e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT
 					? e.getSelfMember().getColor()
 					: Color.BLUE).build());

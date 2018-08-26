@@ -33,6 +33,7 @@ public class GuildConfig {
 	private HashMap<String, List<Long>> twitch;
 	private HashMap<String, List<Long>> reddit;
 	private HashMap<String, List<String>> redditPosts;
+	private HashMap<String, List<Long>> cb;
 
 	public GuildConfig(Guild g) {
 		this.g = g;
@@ -42,6 +43,7 @@ public class GuildConfig {
 		twitch = new HashMap<>();
 		reddit = new HashMap<>();
 		redditPosts = new HashMap<>();
+		cb = new HashMap<>();
 		configFile = new File("config//" + this.g.getId() + ".yml");
 		try {
 			if (!configFile.exists()) {
@@ -51,6 +53,7 @@ public class GuildConfig {
 				cfg.set("Music.Volume", volume);
 				cfg.set("Twitch", new ArrayList<>());
 				cfg.set("Reddit", new ArrayList<>());
+				cfg.set("CB", new ArrayList<>());
 				yaml.save(cfg, configFile);
 			} else {
 				cfg = yaml.load(configFile);
@@ -69,6 +72,11 @@ public class GuildConfig {
 				if (cfg.getSection("RedditPosts") != null) {
 					for (String key : cfg.getSection("RedditPosts").getKeys()) {
 						redditPosts.put(key, cfg.getStringList("RedditPosts." + key));
+					}
+				}
+				if (cfg.getSection("CB") != null) {
+					for (String key : cfg.getSection("CB").getKeys()) {
+						cb.put(key, cfg.getLongList("CB." + key));
 					}
 				}
 			}
@@ -268,6 +276,53 @@ public class GuildConfig {
 		}
 		Main.renewGeneralRedditList();
 	}
+	
+	public void addCBStream(String username, Long channelID) {
+		username = username.toLowerCase();
+		List<Long> list = new ArrayList<>();
+		if (cb.containsKey(username)) {
+			list = cb.get(username);
+			if (!list.contains(channelID)) {
+				list.add(channelID);
+				cb.put(username, list);
+			}
+		} else {
+			list.add(channelID);
+			cb.put(username, list);
+		}
+		cfg.set("CB." + username, list);
+		try {
+			yaml.save(cfg, configFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Main.renewGeneralCBList();
+	}
+	
+	public void removeCBStream(String username, Long channelID) {
+		username = username.toLowerCase();
+		List<Long> list = new ArrayList<>();
+		if (cb.containsKey(username)) {
+			list = cb.get(username);
+			if (list.contains(channelID))
+				list.remove(channelID);
+			cb.put(username, list);
+		} else {
+			list.add(channelID);
+			cb.put(username, list);
+		}
+		if (list.isEmpty()) {
+			cfg.set("CB." + username, null);
+		} else {
+			cfg.set("CB." + username, list);
+		}
+		try {
+			yaml.save(cfg, configFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Main.renewGeneralCBList();
+	}
 
 	public HashMap<String, List<Long>> getTwitchList() {
 		return twitch;
@@ -275,6 +330,10 @@ public class GuildConfig {
 	
 	public HashMap<String, List<Long>> getRedditList() {
 		return reddit;
+	}
+	
+	public HashMap<String, List<Long>> getCBList() {
+		return cb;
 	}
 
 	public void setAutoPause(boolean pause) {

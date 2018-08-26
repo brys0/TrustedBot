@@ -31,7 +31,7 @@ public class VolumeCommand extends Command {
 		int vol = 100;
 		try {
 			vol = Integer.parseInt(e.getArgs());
-			if(vol < 1 && vol > 100) {
+			if(vol < 1 || vol > 100) {
 				throw new NumberFormatException("Lautstärke außerhalb des Bereiches 1-100.");
 			}
 		} catch (NumberFormatException ex) {

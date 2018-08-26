@@ -23,7 +23,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
 	public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
 		this.audioPlayer = audioPlayer;
 	}
-
+	
 	@Override
 	public boolean canProvide() {
 		if (lastFrame == null) {
