@@ -1,0 +1,27 @@
+# Your Discord Bot-Token. You can create a Bot-Account here: https://discordapp.com/developers/applications/
+Token: YourBotToken
+
+# Your own Client-ID for giving you Admin-Permissions. You can get it by rightclicking yourself -> copy id if you have the developer mode enabled in discord.
+AdminID: 'YourClientID'
+
+API-Keys:
+  # Needed for the YT-Search of the !play-Command. You can request a YouTube-API Key by creating a project here: https://console.developers.google.com/
+  YouTube: "YourYouTubeKey"
+  # Needed for Twitch notifications. You can request a Twitch-API key by creating an app here: https://dev.twitch.tv/dashboard (URL for the app can be http://localhost)
+  Twitch: "YourTwitchKey"
+  
+# Users with Extra-Permissions can play titles longer than 2 hours and have access to !volume
+# you can assign Extra-Permissions with the !extraadd @UserTag and remove them with !extraremove @UserTag
+ExtraPermissions: []
+
+MySQL:
+  # The host-address of your mysql-server
+  Host: localhost
+  # the port of your mysql-server - default 3306
+  Port: 3306
+  # user with access to the database defined below
+  Username: discordbot
+  # password for the user
+  Password: YOURPASSWORD
+  # name of your database
+  Database: discordbot

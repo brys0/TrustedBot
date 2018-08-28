@@ -1,7 +1,8 @@
 package de.pheromir.discordmusicbot.tasks;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.TimerTask;
 
 import org.json.JSONArray;
@@ -9,17 +10,18 @@ import org.json.JSONObject;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
+import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public class RedditGrab extends TimerTask {
 
 	@Override
 	public void run() {
-		ArrayList<String> list = new ArrayList<>();
-		list.addAll(Main.generalRedditList);
-		for (String subreddit : list) {
+		HashMap<String, List<Long>> list = new HashMap<>();
+		GuildConfig.getRedditList().forEach((e, b) -> list.put(e, b));
+		for (String subreddit : list.keySet()) {
 			try {
 				JSONObject res = Methods.httpRequestJSON("https://www.reddit.com/r/" + subreddit + "/hot/.json");
 				if (!res.has("data"))
@@ -41,30 +43,29 @@ public class RedditGrab extends TimerTask {
 					String link = "https://www.reddit.com" + post.getString("permalink");
 					String author = post.getString("author");
 					int score = post.getInt("score");
-					for (Guild g : Main.jda.getGuilds()) {
-						if (Main.getGuildConfig(g).getRedditList().containsKey(subreddit)) {
-							for (Long chId : Main.getGuildConfig(g).getRedditList().get(subreddit)) {
-								EmbedBuilder emb = new EmbedBuilder();
-								emb.setAuthor(author);
-								emb.addField(new Field("Score", score + "", false));
-								emb.setFooter("/r/" + sub, Main.jda.getSelfUser().getAvatarUrl());
-								emb.setTitle(title.length() > 256 ? title.substring(0, 256) : title, link);
-								emb.setColor(g.getSelfMember().getColor());
-								if (!Main.getGuildConfig(g).getSubredditPostHistory(subreddit).contains(contentUrl)) {
-									if (contentUrl.contains(".jpg") || contentUrl.contains(".png") || contentUrl.contains(".jpeg")) {
-										emb.setImage(contentUrl);
-										Main.jda.getTextChannelById(chId).sendMessage(emb.build()).complete();
-									} else {
-										Main.jda.getTextChannelById(chId).sendMessage(emb.build()).complete();
-										Main.jda.getTextChannelById(chId).sendMessage(contentUrl).complete();
-									}
-								}
-								Main.getGuildConfig(g).addSubredditPostHistory(subreddit, contentUrl);
+					
+					EmbedBuilder emb = new EmbedBuilder();
+					emb.setAuthor(author);
+					emb.addField(new Field("Score", score + "", false));
+					emb.setFooter("/r/" + sub, Main.jda.getSelfUser().getAvatarUrl());
+					emb.setTitle(title.length() > 256 ? title.substring(0, 256) : title, link);
+
+					for (Long chId : list.get(subreddit)) {
+						TextChannel c = Main.jda.getTextChannelById(chId);
+						
+						if (!GuildConfig.RedditPosthistoryContains(contentUrl)) {
+							if (contentUrl.contains(".jpg") || contentUrl.contains(".png")
+									|| contentUrl.contains(".jpeg")) {
+								emb.setImage(contentUrl);
+								c.sendMessage(emb.build()).complete();
+							} else {
+								c.sendMessage(emb.build()).complete();
+								c.sendMessage(contentUrl).complete();
 							}
-							Main.getGuildConfig(g).addSubredditPostHistory(subreddit, contentUrl);
-							Thread.sleep(500L);
 						}
 					}
+					GuildConfig.addSubredditPostHistory(contentUrl);
+					Thread.sleep(500L);
 				}
 			} catch (IOException e) {
 				System.out.print("Fehler bei RedditGrab: ");

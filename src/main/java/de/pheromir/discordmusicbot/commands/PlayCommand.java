@@ -134,7 +134,6 @@ public class PlayCommand extends Command {
 				toLoad = matcher.group();
 			}
 		}
-		musicManager.setAutoPause(false);
 		musicManager.player.setPaused(false);
 		Main.playerManager.loadItemOrdered(musicManager, toLoad, new AudioLoadResultHandler() {
 

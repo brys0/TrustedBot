@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
 import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
@@ -28,9 +27,8 @@ public class RedditCommand extends Command {
 
 		if (args.length == 0) {
 			ArrayList<String> subreddits = new ArrayList<>();
-			GuildConfig cfg = Main.getGuildConfig(e.getGuild());
-			for (String str : cfg.getRedditList().keySet()) {
-				if (cfg.getRedditList().get(str).contains(e.getChannel().getIdLong())) {
+			for (String str : GuildConfig.getRedditList().keySet()) {
+				if (GuildConfig.getRedditList().get(str).contains(e.getChannel().getIdLong())) {
 					subreddits.add(str);
 				}
 			}
@@ -51,10 +49,9 @@ public class RedditCommand extends Command {
 			e.reply("Syntaxfehler. Verwendung: `!reddit <Subreddit>`");
 			return;
 		} else {
-			GuildConfig cfg = Main.getGuildConfig(e.getGuild());
-			if (cfg.getRedditList().containsKey(e.getArgs().toLowerCase())
-					&& cfg.getRedditList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
-				cfg.removeSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
+			if (GuildConfig.getRedditList().containsKey(e.getArgs().toLowerCase())
+					&& GuildConfig.getRedditList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
+				GuildConfig.removeSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
 				e.reply("Subreddit " + e.getArgs().toLowerCase()
 						+ " ist in diesem Channel nun deaktiviert.");
 			} else {
@@ -62,7 +59,7 @@ public class RedditCommand extends Command {
 					e.reply("Es scheint keinen Subreddit mit diesem Namen zu geben (oder es ist ein Fehler aufgetreten).");
 					return;
 				}
-				cfg.addSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
+				GuildConfig.addSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
 				e.reply("Subreddit " + e.getArgs().toLowerCase()
 						+ " ist in diesem Channel nun aktiviert.");
 			}

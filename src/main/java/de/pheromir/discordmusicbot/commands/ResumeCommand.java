@@ -37,7 +37,6 @@ public class ResumeCommand extends Command {
 			musicManager.player.startTrack(musicManager.player.getPlayingTrack().makeClone(), false);
 		}
 		musicManager.player.setPaused(false);
-		musicManager.setAutoPause(false);
 		if (musicManager.player.getPlayingTrack() != null && !e.getGuild().getAudioManager().isConnected()) {
 			VoiceChannel vc = e.getMember().getVoiceState().getChannel();
 			if (vc != null) {

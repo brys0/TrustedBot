@@ -18,7 +18,6 @@ public class LeaveChannel extends TimerTask {
 		if (Main.getGuildConfig(g).player.getPlayingTrack() != null)
 			return;
 		g.getAudioManager().closeAudioConnection();
-		Main.getGuildConfig(g).setAutoPause(false);
 		Main.getGuildConfig(g).player.stopTrack();
 		Main.getGuildConfig(g).player.setPaused(false);
 	}

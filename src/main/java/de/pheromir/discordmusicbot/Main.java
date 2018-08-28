@@ -2,6 +2,9 @@ package de.pheromir.discordmusicbot;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,19 +61,17 @@ public class Main {
 	public static HashMap<Long, GuildConfig> guildConfigs = new HashMap<>();
 	public static String youtubeKey = "none";
 	public static String twitchKey = "none";
-	public static ArrayList<String> generalTwitchList = new ArrayList<>();
-	public static ArrayList<String> generalRedditList = new ArrayList<>();
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
-	public static ArrayList<String> generalCBList = new ArrayList<>();
 	public static ArrayList<String> onlineCBList = new ArrayList<>();
 	public static List<Long> extraPermissions = new ArrayList<>();
 	public static JDA jda;
-	public static File configFile = new File("config//config.yml");
+	public static File configFile = new File("config.yml");
 	public static YamlConfiguration yaml = new YamlConfiguration();
 	public static Configuration cfg;
 
 	public static void main(String[] args) {
-
+		System.out.println("Starting DiscordBot...");
+		
 		/* CONFIG ERSTELLEN / AUSLESEN */
 		createConfig();
 
@@ -100,9 +101,8 @@ public class Main {
 			playerManager = new DefaultAudioPlayerManager();
 			AudioSourceManagers.registerRemoteSources(playerManager);
 			loadAllGuildConfigs();
-			renewGeneralLists();
 			new Timer().schedule(new RedditGrab(), 60 * 1000, 30 * 60 * 1000);
-			new Timer().schedule(new ClearRedditPostHistory(), 14 * 24 * 60 * 60 * 1000, 14 * 24 * 60 * 60 * 1000);
+			new Timer().schedule(new ClearRedditPostHistory(), 30L * 24L * 60L * 60L * 1000L, 30L * 24L * 60L * 60L * 1000L);
 			new Timer().schedule(new CBCheck(), 60 * 1000, 15 * 60 * 1000);
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
@@ -117,21 +117,15 @@ public class Main {
 	}
 
 	public static void createConfig() {
-		File dir = new File("config");
-		if (!dir.exists())
-			dir.mkdir();
-
 		if (!configFile.exists()) {
 			try {
-				configFile.createNewFile();
-				cfg = yaml.load(configFile);
-				cfg.set("Token", "00000000");
-				cfg.set("AdminID", "00000000");
-				cfg.set("API-Keys.YouTube", "none");
-				cfg.set("API-Keys.Twitch", "none");
-				cfg.set("Extra-Permissions", new ArrayList<Long>());
-				yaml.save(cfg, configFile);
+				Files.copy(Main.class.getResourceAsStream("/config.yml"), Paths.get("config.yml"), StandardCopyOption.REPLACE_EXISTING);
+				System.out.println("-- Please set up the configuration file --");
+				Thread.sleep(30000);
+				System.exit(1);
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -143,7 +137,35 @@ public class Main {
 			youtubeKey = cfg.getString("API-Keys.YouTube");
 			twitchKey = cfg.getString("API-Keys.Twitch");
 			extraPermissions = cfg.getLongList("ExtraPermissions");
-
+			
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Guilds"
+					+ " (GuildId VARCHAR(64) PRIMARY KEY,"
+					+ " Volume INT NOT NULL DEFAULT 100)");
+			
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS DJs"
+					+ " (GuildId VARCHAR(64) NOT NULL,"
+					+ " UserId VARCHAR(64) NOT NULL,"
+					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId),"
+					+ " PRIMARY KEY (GuildId, UserId))");
+			
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Twitch"
+					+ " (ChannelId VARCHAR(64) NOT NULL,"
+					+ " Username VARCHAR(32) NOT NULL,"
+					+ " PRIMARY KEY (ChannelId, Username))");
+			
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Reddit"
+					+ " (ChannelId VARCHAR(64) NOT NULL,"
+					+ " Subreddit VARCHAR(32) NOT NULL,"
+					+ " PRIMARY KEY (ChannelId, Subreddit))");
+			
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Reddit_Posts"
+					+ " (Url VARCHAR(191) PRIMARY KEY)");
+			
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Chaturbate"
+					+ " (ChannelId VARCHAR(64) NOT NULL,"
+					+ " Username VARCHAR(32) NOT NULL,"
+					+ " PRIMARY KEY (ChannelId, Username))");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -163,9 +185,6 @@ public class Main {
 			cfg = new GuildConfig(g);
 			guildConfigs.put(g.getIdLong(), cfg);
 		}
-
-		g.getAudioManager().setSendingHandler(cfg.getSendHandler());
-
 		return cfg;
 	}
 
@@ -197,46 +216,8 @@ public class Main {
 		}
 	}
 
-	public static void renewGeneralTwitchList() {
-		ArrayList<String> list = new ArrayList<>();
-		for (Guild g : jda.getGuilds()) {
-			for (String str : getGuildConfig(g).getTwitchList().keySet()) {
-				if (!list.contains(str)) {
-					list.add(str);
-				}
-			}
-		}
-		generalTwitchList = list;
-	}
-
-	public static void renewGeneralRedditList() {
-		ArrayList<String> list = new ArrayList<>();
-		for (Guild g : jda.getGuilds()) {
-			for (String str : getGuildConfig(g).getRedditList().keySet()) {
-				if (!list.contains(str)) {
-					list.add(str);
-				}
-			}
-		}
-		generalRedditList = list;
-	}
-
-	public static void renewGeneralCBList() {
-		ArrayList<String> list = new ArrayList<>();
-		for (Guild g : jda.getGuilds()) {
-			for (String str : getGuildConfig(g).getCBList().keySet()) {
-				if (!list.contains(str)) {
-					list.add(str);
-				}
-			}
-		}
-		generalCBList = list;
-	}
-
-	public static void renewGeneralLists() {
-		renewGeneralTwitchList();
-		renewGeneralRedditList();
-		renewGeneralCBList();
+	public static MySQL getMySQL() {
+		return new MySQL();
 	}
 
 }

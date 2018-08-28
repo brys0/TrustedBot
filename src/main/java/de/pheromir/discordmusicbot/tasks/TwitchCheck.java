@@ -1,22 +1,23 @@
 package de.pheromir.discordmusicbot.tasks;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.TimerTask;
 
 import org.json.JSONObject;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
+import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
 
 public class TwitchCheck extends TimerTask {
 
 	@Override
 	public void run() {
-		ArrayList<String> list = new ArrayList<>();
-		list.addAll(Main.generalTwitchList);
-		for (String twitchname : list) {
+		HashMap<String, List<Long>> list = new HashMap<>();
+		GuildConfig.getTwitchList().forEach((e, b) -> list.put(e, b));
+		for (String twitchname : list.keySet()) {
 			JSONObject res = Methods.getStreamInfo(twitchname);
 			if (Main.onlineTwitchList.contains(twitchname)) {
 				if (res.isNull("stream")) {
@@ -27,7 +28,7 @@ public class TwitchCheck extends TimerTask {
 				if (!res.isNull("stream")) {
 					Main.onlineTwitchList.add(twitchname);
 					JSONObject stream = res.getJSONObject("stream");
-					if (res.getBoolean("is_playlist"))
+					if (stream.getBoolean("is_playlist"))
 						continue;
 					String game = stream.getString("game");
 					int viewers = stream.getInt("viewers");
@@ -46,13 +47,9 @@ public class TwitchCheck extends TimerTask {
 					eb.addField("Spiel", game, true);
 					eb.addField("Zuschauer", Integer.toString(viewers), true);
 
-					for (Guild g : Main.jda.getGuilds()) {
-						if (Main.getGuildConfig(g).getTwitchList().containsKey(twitchname)) {
-							for (Long chId : Main.getGuildConfig(g).getTwitchList().get(twitchname)) {
-								Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname
-										+ " ist nun auf " + url + " online!").embed(eb.build()).complete();
-							}
-						}
+					for (Long chId : list.get(twitchname)) {
+						Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname + " ist nun auf "
+								+ url + " online!").embed(eb.build()).complete();
 					}
 				}
 			}

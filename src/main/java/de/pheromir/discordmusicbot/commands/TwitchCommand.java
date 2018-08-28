@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
 import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
@@ -28,9 +27,8 @@ public class TwitchCommand extends Command {
 
 		if (args.length == 0) {
 			ArrayList<String> streams = new ArrayList<>();
-			GuildConfig cfg = Main.getGuildConfig(e.getGuild());
-			for (String str : cfg.getTwitchList().keySet()) {
-				if (cfg.getTwitchList().get(str).contains(e.getChannel().getIdLong())) {
+			for (String str : GuildConfig.getTwitchList().keySet()) {
+				if (GuildConfig.getTwitchList().get(str).contains(e.getChannel().getIdLong())) {
 					streams.add(str);
 				}
 			}
@@ -51,10 +49,9 @@ public class TwitchCommand extends Command {
 			e.reply("Syntaxfehler. Verwendung: `!twitch <Username>`");
 			return;
 		} else {
-			GuildConfig cfg = Main.getGuildConfig(e.getGuild());
-			if (cfg.getTwitchList().containsKey(e.getArgs().toLowerCase())
-					&& cfg.getTwitchList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
-				cfg.removeTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
+			if (GuildConfig.getTwitchList().containsKey(e.getArgs().toLowerCase())
+					&& GuildConfig.getTwitchList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
+				GuildConfig.removeTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
 				e.reply("Twitchbenachrichtigungen für " + e.getArgs().toLowerCase()
 						+ " sind in diesem Channel nun deaktiviert.");
 			} else {
@@ -62,7 +59,7 @@ public class TwitchCommand extends Command {
 					e.reply("Es scheint keinen Benutzer mit diesem Namen zu geben (oder es ist ein Fehler aufgetreten).");
 					return;
 				}
-				cfg.addTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
+				GuildConfig.addTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
 				e.reply("Twitchbenachrichtigungen für " + e.getArgs().toLowerCase()
 						+ " sind in diesem Channel nun aktiviert.");
 			}

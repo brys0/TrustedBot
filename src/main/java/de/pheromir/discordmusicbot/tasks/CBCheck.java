@@ -1,21 +1,22 @@
 package de.pheromir.discordmusicbot.tasks;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.TimerTask;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
+import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
 
 public class CBCheck extends TimerTask {
 
 	@Override
 	public void run() {
-		ArrayList<String> list = new ArrayList<>();
-		list.addAll(Main.generalCBList);
-		for (String username : list) {
+		HashMap<String, List<Long>> list = new HashMap<>();
+		GuildConfig.getCBList().forEach((e, b) -> list.put(e, b));
+		for (String username : list.keySet()) {
 			String url = "https://de.chaturbate.com/" + username;
 			String res;
 			try {
@@ -33,18 +34,13 @@ public class CBCheck extends TimerTask {
 					Main.onlineCBList.add(username);
 
 					EmbedBuilder eb = new EmbedBuilder();
-					eb.setTitle(username+" ist nun online!", url);
+					eb.setTitle(username + " ist nun online!", url);
 					eb.setAuthor("Chaturbate");
 					eb.setThumbnail("https://ssl-ccstatic.highwebmedia.com/images/logo-standard.png");
-					eb.setImage("https://roomimg.stream.highwebmedia.com/ri/"+username+".jpg");
-					
+					eb.setImage("https://roomimg.stream.highwebmedia.com/ri/" + username + ".jpg");
 
-					for (Guild g : Main.jda.getGuilds()) {
-						if (Main.getGuildConfig(g).getCBList().containsKey(username)) {
-							for (Long chId : Main.getGuildConfig(g).getCBList().get(username)) {
-								Main.jda.getTextChannelById(chId).sendMessage(eb.build()).complete();
-							}
-						}
+					for (Long chId : list.get(username)) {
+						Main.jda.getTextChannelById(chId).sendMessage(eb.build()).complete();
 					}
 				}
 			}

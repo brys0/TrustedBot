@@ -39,7 +39,7 @@ public class Methods {
 			throw e;
 		}
 	}
-	
+
 	public static String httpRequest(String url) throws IOException {
 		try {
 			URL obj = new URL(url);
@@ -105,12 +105,13 @@ public class Methods {
 		}
 		return 0;
 	}
-	
+
 	public static boolean doesSubredditExist(String subreddit) {
 		Callable<Boolean> task = () -> {
 			try {
-				JSONObject jo = httpRequestJSON("https://www.reddit.com/r/"+subreddit+"/hot/.json");
-				if(jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children") && jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
+				JSONObject jo = httpRequestJSON("https://www.reddit.com/r/" + subreddit + "/hot/.json");
+				if (jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children")
+						&& jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
 					return false;
 				}
 				return true;
@@ -154,10 +155,10 @@ public class Methods {
 			return false;
 		}
 	}
-	
+
 	public static boolean doesCBUserExist(String username) {
 		try {
-			String res = httpRequest("https://de.chaturbate.com/"+username);
+			String res = httpRequest("https://de.chaturbate.com/" + username);
 			return !res.contains("HTTP 404 - Seite nicht gefunden");
 		} catch (FileNotFoundException e) {
 			return false;
@@ -173,7 +174,7 @@ public class Methods {
 
 	public static JSONObject getStreamInfo(String twitchname) {
 		try {
-			URL obj = new URL("https://api.twitch.tv/kraken/streams/" + twitchname+"?stream_type=live");
+			URL obj = new URL("https://api.twitch.tv/kraken/streams/" + twitchname + "?stream_type=live");
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
 			con.setRequestProperty("client-id", Main.twitchKey);
@@ -191,6 +192,13 @@ public class Methods {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static void mySQLQuery(String query) {
+		MySQL sql = Main.getMySQL();
+		sql.openConnection();
+		sql.queryUpdate(query);
+		sql.closeConnection();
 	}
 
 }
