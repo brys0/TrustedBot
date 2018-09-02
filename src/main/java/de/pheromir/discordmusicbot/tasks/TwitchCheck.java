@@ -1,9 +1,5 @@
 package de.pheromir.discordmusicbot.tasks;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.TimerTask;
-
 import org.json.JSONObject;
 
 import de.pheromir.discordmusicbot.Main;
@@ -11,13 +7,12 @@ import de.pheromir.discordmusicbot.Methods;
 import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
 
-public class TwitchCheck extends TimerTask {
+public class TwitchCheck implements Runnable {
 
 	@Override
 	public void run() {
-		HashMap<String, List<Long>> list = new HashMap<>();
-		GuildConfig.getTwitchList().forEach((e, b) -> list.put(e, b));
-		for (String twitchname : list.keySet()) {
+		Thread.currentThread().setName("TwitchChecker");
+		for (String twitchname : GuildConfig.getTwitchList().keySet()) {
 			JSONObject res = Methods.getStreamInfo(twitchname);
 			if (Main.onlineTwitchList.contains(twitchname)) {
 				if (res.isNull("stream")) {
@@ -47,7 +42,7 @@ public class TwitchCheck extends TimerTask {
 					eb.addField("Spiel", game, true);
 					eb.addField("Zuschauer", Integer.toString(viewers), true);
 
-					for (Long chId : list.get(twitchname)) {
+					for (Long chId : GuildConfig.getTwitchList().get(twitchname)) {
 						Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname + " ist nun auf "
 								+ url + " online!").embed(eb.build()).complete();
 					}

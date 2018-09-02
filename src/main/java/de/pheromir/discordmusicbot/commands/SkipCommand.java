@@ -36,11 +36,11 @@ public class SkipCommand extends Command {
 			try {
 				index = Integer.parseInt(e.getArgs()) - 1;
 			} catch (NumberFormatException ex) {
-				e.reply("Bitte eine gültige Zahl angeben.");
+				e.reply("Bitte eine gültige Zahl angeben.".intern());
 				return;
 			}
 			if (index >= m.scheduler.getRequestedTitles().size()) {
-				e.reply("Bitte eine gültige Zahl angeben.");
+				e.reply("Bitte eine gültige Zahl angeben.".intern());
 			}
 			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()
 					&& m.scheduler.getRequestedTitles().get(index).getRequestor() != e.getAuthor()

@@ -8,7 +8,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
 
@@ -22,11 +23,13 @@ import de.pheromir.discordmusicbot.commands.DJAddCommand;
 import de.pheromir.discordmusicbot.commands.DJRemoveCommand;
 import de.pheromir.discordmusicbot.commands.ExtraAddCommand;
 import de.pheromir.discordmusicbot.commands.ExtraRemoveCommand;
+import de.pheromir.discordmusicbot.commands.GCCommand;
 import de.pheromir.discordmusicbot.commands.GoogleCommand;
 import de.pheromir.discordmusicbot.commands.HugCommand;
 import de.pheromir.discordmusicbot.commands.KissCommand;
 import de.pheromir.discordmusicbot.commands.LewdCommand;
 import de.pheromir.discordmusicbot.commands.LizardCommand;
+import de.pheromir.discordmusicbot.commands.MemoryCommand;
 import de.pheromir.discordmusicbot.commands.NekoCommand;
 import de.pheromir.discordmusicbot.commands.PatCommand;
 import de.pheromir.discordmusicbot.commands.PauseCommand;
@@ -56,76 +59,33 @@ import net.dv8tion.jda.core.entities.Guild;
 public class Main {
 
 	public static String token;
-	public static String adminID = "00000000";
 	public static AudioPlayerManager playerManager;
 	public static HashMap<Long, GuildConfig> guildConfigs = new HashMap<>();
-	public static String youtubeKey = "none";
-	public static String twitchKey = "none";
+	public static String youtubeKey = "none".intern();
+	public static String twitchKey = "none".intern();
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
 	public static ArrayList<String> onlineCBList = new ArrayList<>();
 	public static List<Long> extraPermissions = new ArrayList<>();
 	public static JDA jda;
-	public static File configFile = new File("config.yml");
+	public static final Long startMillis = System.currentTimeMillis();
+	public static File configFile = new File("config.yml".intern());
 	public static YamlConfiguration yaml = new YamlConfiguration();
 	public static Configuration cfg;
 
 	public static void main(String[] args) {
 		System.out.println("Starting DiscordBot...");
 		
-		/* CONFIG ERSTELLEN / AUSLESEN */
-		createConfig();
-
-		/* COMMANDS KONFIGURIEREN */
 		CommandClientBuilder builder = new CommandClientBuilder();
-		builder.setPrefix("!");
-		builder.useHelpBuilder(false);
-		builder.setOwnerId(adminID);
-
-		builder.addCommands(new StatusCommand(), new ExtraAddCommand(), new ExtraRemoveCommand());
-		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
-		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
-		builder.addCommands(new GoogleCommand(), new RedditCommand(), new CBCommand());
-		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
-			builder.addCommands(new TwitchCommand());
-			new Timer().schedule(new TwitchCheck(), 60 * 1000, 5 * 60 * 1000);
-		}
-
-		builder.setEmojis("\u2705", "\u26A0", "\u274C");
-		try {
-			/* BOT STARTEN */
-			jda = new JDABuilder(
-					AccountType.BOT).setToken(token).addEventListener(builder.build()).setAutoReconnect(true).build();
-			jda.awaitReady();
-			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
-			System.out.println("OWNERID: " + adminID);
-			playerManager = new DefaultAudioPlayerManager();
-			AudioSourceManagers.registerRemoteSources(playerManager);
-			loadAllGuildConfigs();
-			new Timer().schedule(new RedditGrab(), 60 * 1000, 30 * 60 * 1000);
-			new Timer().schedule(new ClearRedditPostHistory(), 30L * 24L * 60L * 60L * 1000L, 30L * 24L * 60L * 60L * 1000L);
-			new Timer().schedule(new CBCheck(), 60 * 1000, 15 * 60 * 1000);
-
-		} catch (LoginException | InterruptedException | IllegalStateException e) {
-			System.out.print("Fehler beim Start des Bots: ");
-			if (e instanceof InterruptedException) {
-				e.printStackTrace();
-			} else {
-				System.out.println("Bot-Token ungültig");
-			}
-		}
-
-	}
-
-	public static void createConfig() {
+		
+		/* CONFIG ERSTELLEN / AUSLESEN */
+		
 		if (!configFile.exists()) {
 			try {
-				Files.copy(Main.class.getResourceAsStream("/config.yml"), Paths.get("config.yml"), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(Main.class.getResourceAsStream("/config.yml"), Paths.get("config.yml".intern()), StandardCopyOption.REPLACE_EXISTING);
 				System.out.println("-- Please set up the configuration file --");
 				Thread.sleep(30000);
 				System.exit(1);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
+			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -133,7 +93,7 @@ public class Main {
 		try {
 			cfg = yaml.load(configFile);
 			token = cfg.getString("Token");
-			adminID = cfg.getString("AdminID");
+			builder.setOwnerId(cfg.getString("AdminID"));
 			youtubeKey = cfg.getString("API-Keys.YouTube");
 			twitchKey = cfg.getString("API-Keys.Twitch");
 			extraPermissions = cfg.getLongList("ExtraPermissions");
@@ -168,6 +128,51 @@ public class Main {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+
+		/* COMMANDS KONFIGURIEREN */
+		
+		builder.setPrefix("!");
+		builder.useHelpBuilder(false);
+		
+
+		builder.addCommands(new StatusCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new MemoryCommand(), new GCCommand());
+		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
+		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
+		builder.addCommands(new GoogleCommand(), new RedditCommand(), new CBCommand());
+		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
+			builder.addCommands(new TwitchCommand());
+			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 5, 5, TimeUnit.MINUTES);
+		}
+
+		builder.setEmojis("\u2705", "\u26A0", "\u274C");
+		try {
+			/* BOT STARTEN */
+			jda = new JDABuilder(
+					AccountType.BOT).setToken(token).addEventListener(builder.build()).setAutoReconnect(true).build();
+			jda.awaitReady();
+			jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
+			playerManager = new DefaultAudioPlayerManager();
+			AudioSourceManagers.registerRemoteSources(playerManager);
+			loadAllGuildConfigs();
+			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 60, 60, TimeUnit.SECONDS);
+			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new ClearRedditPostHistory(), 30, 30, TimeUnit.DAYS);
+			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 30, 30, TimeUnit.MINUTES);
+			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+				System.gc();
+			}, 2, 2, TimeUnit.HOURS);
+			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+				Main.jda.getPresence().setGame(Game.playing(String.format("%d / %d / %d", Runtime.getRuntime().freeMemory() / 1024L / 1024L, Runtime.getRuntime().totalMemory() / 1024L / 1024L, Runtime.getRuntime().maxMemory() / 1024L / 1024L)));
+			}, 1, 1, TimeUnit.MINUTES);
+			
+
+		} catch (LoginException | InterruptedException | IllegalStateException e) {
+			System.out.print("Fehler beim Start des Bots: ");
+			if (e instanceof InterruptedException) {
+				e.printStackTrace();
+			} else {
+				System.out.println("Bot-Token ungültig");
+			}
 		}
 	}
 

@@ -135,6 +135,7 @@ public class PlayCommand extends Command {
 			}
 		}
 		musicManager.player.setPaused(false);
+		
 		Main.playerManager.loadItemOrdered(musicManager, toLoad, new AudioLoadResultHandler() {
 
 			@Override

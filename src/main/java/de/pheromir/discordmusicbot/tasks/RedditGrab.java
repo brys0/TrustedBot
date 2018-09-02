@@ -1,9 +1,6 @@
 package de.pheromir.discordmusicbot.tasks;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TimerTask;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,15 +12,14 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-public class RedditGrab extends TimerTask {
+public class RedditGrab implements Runnable {
 
 	@Override
 	public void run() {
-		HashMap<String, List<Long>> list = new HashMap<>();
-		GuildConfig.getRedditList().forEach((e, b) -> list.put(e, b));
-		for (String subreddit : list.keySet()) {
+		Thread.currentThread().setName("RedditGrabber");
+		for (String subreddit : GuildConfig.getRedditList().keySet()) {
 			try {
-				JSONObject res = Methods.httpRequestJSON("https://www.reddit.com/r/" + subreddit + "/hot/.json");
+				JSONObject res = Methods.httpRequestJSON(String.format("https://www.reddit.com/r/%s/hot/.json", subreddit));
 				if (!res.has("data"))
 					continue;
 				JSONObject data = res.getJSONObject("data");
@@ -35,9 +31,9 @@ public class RedditGrab extends TimerTask {
 				for (Object postObject : children) {
 					JSONObject post = ((JSONObject) postObject).getJSONObject("data");
 					String contentUrl = post.getString("url");
-					if (contentUrl.isEmpty() || contentUrl.equals(""))
+					if (contentUrl.isEmpty())
 						continue;
-
+					
 					String sub = post.getString("subreddit");
 					String title = post.getString("title");
 					String link = "https://www.reddit.com" + post.getString("permalink");
@@ -49,8 +45,8 @@ public class RedditGrab extends TimerTask {
 					emb.addField(new Field("Score", score + "", false));
 					emb.setFooter("/r/" + sub, Main.jda.getSelfUser().getAvatarUrl());
 					emb.setTitle(title.length() > 256 ? title.substring(0, 256) : title, link);
-
-					for (Long chId : list.get(subreddit)) {
+					
+					for (Long chId : GuildConfig.getRedditList().get(subreddit)) {
 						TextChannel c = Main.jda.getTextChannelById(chId);
 						
 						if (!GuildConfig.RedditPosthistoryContains(contentUrl)) {
@@ -63,10 +59,12 @@ public class RedditGrab extends TimerTask {
 								c.sendMessage(contentUrl).complete();
 							}
 						}
+						c = null;
 					}
 					GuildConfig.addSubredditPostHistory(contentUrl);
 					Thread.sleep(500L);
 				}
+				res = null;
 			} catch (IOException e) {
 				System.out.print("Fehler bei RedditGrab: ");
 				e.printStackTrace();

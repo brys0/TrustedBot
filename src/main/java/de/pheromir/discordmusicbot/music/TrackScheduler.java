@@ -1,14 +1,12 @@
 package de.pheromir.discordmusicbot.music;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
-import de.pheromir.discordmusicbot.tasks.LeaveChannel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
@@ -19,12 +17,7 @@ import net.dv8tion.jda.core.entities.User;
 public class TrackScheduler extends AudioEventAdapter {
 
 	private final AudioPlayer player;
-	// private ArrayList<AudioTrack> queue;
-	// private ArrayList<User> requestedBy;
 	private ArrayList<QueueTrack> queue;
-	// private User currentRequestor;
-	private Timer timer;
-	private Guild g;
 	private boolean repeat;
 	private QueueTrack currentTrack;
 
@@ -35,10 +28,6 @@ public class TrackScheduler extends AudioEventAdapter {
 	public TrackScheduler(AudioPlayer player, Guild g) {
 		this.player = player;
 		this.queue = new ArrayList<>();
-		// this.requestedBy = new ArrayList<>();
-		// this.currentRequestor = null;
-		this.timer = new Timer();
-		this.g = g;
 		this.repeat = false;
 		this.currentTrack = null;
 	}
@@ -48,23 +37,11 @@ public class TrackScheduler extends AudioEventAdapter {
 			queue.add(new QueueTrack(track, requestedByMember));
 		} else {
 			currentTrack = new QueueTrack(track, requestedByMember);
-			cancelAndRenewTimer();
 		}
 	}
 
 	@Override
-	public void onPlayerPause(AudioPlayer player) {
-		timer.schedule(new LeaveChannel(this.g), (15 * 60 * 1000));
-	}
-
-	@Override
-	public void onPlayerResume(AudioPlayer player) {
-		cancelAndRenewTimer();
-	}
-
-	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-		timer.schedule(new LeaveChannel(this.g), (15 * 60 * 1000));
 		if (endReason.mayStartNext) {
 			nextTrack();
 		}
@@ -79,7 +56,6 @@ public class TrackScheduler extends AudioEventAdapter {
 		} else {
 			currentTrack = queue.remove(0);
 			player.startTrack(currentTrack.getTrack(), false);
-			cancelAndRenewTimer();
 		}
 	}
 
@@ -100,11 +76,6 @@ public class TrackScheduler extends AudioEventAdapter {
 			return false;
 		queue.remove(index);
 		return true;
-	}
-
-	public void cancelAndRenewTimer() {
-		this.timer.cancel();
-		this.timer = new Timer();
 	}
 
 	public void clearQueue() {
