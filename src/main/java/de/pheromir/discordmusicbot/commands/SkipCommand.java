@@ -18,8 +18,6 @@ public class SkipCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		if (e.getAuthor().isBot())
-			return;
 		GuildConfig m = Main.getGuildConfig(e.getGuild());
 
 		if (e.getArgs().isEmpty()) {

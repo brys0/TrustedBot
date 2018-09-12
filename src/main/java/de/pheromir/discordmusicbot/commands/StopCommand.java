@@ -17,18 +17,15 @@ public class StopCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		if (e.getAuthor().isBot())
-			return;
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("Du musst mind. DJ sein um den Bot stoppen zu können.");
 			return;
 		}
-
+		e.getGuild().getAudioManager().closeAudioConnection();
 		Main.getGuildConfig(e.getGuild()).player.setPaused(false);
 		Main.getGuildConfig(e.getGuild()).player.stopTrack();
 		e.reactSuccess();
-		e.getGuild().getAudioManager().closeAudioConnection();
 
 	}
 

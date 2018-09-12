@@ -15,7 +15,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
 
 	private final AudioPlayer audioPlayer;
 	private AudioFrame lastFrame;
-
+ 
 	/**
 	 * @param audioPlayer
 	 *            Audio player to wrap.

@@ -21,8 +21,6 @@ public class ResumeCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		if (e.getAuthor().isBot())
-			return;
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("Du musst mind. ein DJ sein um den Bot wieder starten zu können.");

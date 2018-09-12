@@ -60,7 +60,7 @@ public class CBCommand extends Command {
 					e.reply("Es scheint keinen Benutzer mit diesem Namen zu geben (oder es ist ein Fehler aufgetreten).");
 					return;
 				}
-				GuildConfig.addCBStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
+				GuildConfig.addCBStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
 				e.reply("CB-Benachrichtigungen für " + e.getArgs().toLowerCase()
 						+ " sind in diesem Channel nun aktiviert.");
 			}

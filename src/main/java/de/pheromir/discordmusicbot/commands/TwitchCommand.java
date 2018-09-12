@@ -59,7 +59,7 @@ public class TwitchCommand extends Command {
 					e.reply("Es scheint keinen Benutzer mit diesem Namen zu geben (oder es ist ein Fehler aufgetreten).");
 					return;
 				}
-				GuildConfig.addTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
+				GuildConfig.addTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
 				e.reply("Twitchbenachrichtigungen für " + e.getArgs().toLowerCase()
 						+ " sind in diesem Channel nun aktiviert.");
 			}

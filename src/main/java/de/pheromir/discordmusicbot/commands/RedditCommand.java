@@ -59,7 +59,7 @@ public class RedditCommand extends Command {
 					e.reply("Es scheint keinen Subreddit mit diesem Namen zu geben (oder es ist ein Fehler aufgetreten).");
 					return;
 				}
-				GuildConfig.addSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
+				GuildConfig.addSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
 				e.reply("Subreddit " + e.getArgs().toLowerCase()
 						+ " ist in diesem Channel nun aktiviert.");
 			}

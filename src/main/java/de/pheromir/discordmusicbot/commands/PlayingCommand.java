@@ -44,9 +44,6 @@ public class PlayingCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		if (e.getAuthor().isBot())
-			return;
-
 		GuildConfig m = Main.getGuildConfig(e.getGuild());
 		AudioTrack track = m.player.getPlayingTrack();
 		if (track == null) {

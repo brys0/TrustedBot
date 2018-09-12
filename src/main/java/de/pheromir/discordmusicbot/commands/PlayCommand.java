@@ -47,8 +47,6 @@ public class PlayCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		if (e.getAuthor().isBot())
-			return;
 		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
 		AudioManager audioManager = e.getGuild().getAudioManager();
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());

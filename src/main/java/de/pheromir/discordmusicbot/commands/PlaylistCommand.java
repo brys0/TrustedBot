@@ -26,9 +26,6 @@ public class PlaylistCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		if (e.getAuthor().isBot())
-			return;
-
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 		ArrayList<QueueTrack> titles = musicManager.scheduler.getRequestedTitles();
 

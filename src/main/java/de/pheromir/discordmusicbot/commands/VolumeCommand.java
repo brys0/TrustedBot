@@ -17,8 +17,6 @@ public class VolumeCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		if (e.getAuthor().isBot())
-			return;
 		if (e.getArgs().isEmpty()) {
 			e.reply("Derzeitige Lautstärke: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
 			return;
