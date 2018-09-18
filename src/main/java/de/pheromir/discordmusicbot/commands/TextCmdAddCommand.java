@@ -26,28 +26,29 @@ public class TextCmdAddCommand extends Command {
 			return;
 		}
 
-		if(args.length < 2) {
-			e.reply("Syntaxfehler. Verwendung: !"+name+" <Command> <Argumente>");
+		if (args.length < 2) {
+			e.reply("Syntaxfehler. Verwendung: !" + name + " <Command> <Argumente>");
 			return;
 		}
-		
+
 		String name = args[0].toLowerCase();
-		if(Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name)) || Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
+		if (Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name))
+				|| Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
 			e.reply("Es existiert bereits ein Befehl mit diesem Namen.");
 			return;
 		}
 		String arguments = "";
-		if(args.length > 2) {
+		if (args.length > 2) {
 			StringBuilder sb = new StringBuilder();
-			for(int i = 1; i < args.length; i++) {
-				sb.append(args[i]+" ");
+			for (int i = 1; i < args.length; i++) {
+				sb.append(args[i] + " ");
 			}
 			arguments = sb.toString().trim();
 		}
 		if (Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
-			e.reply("Der Textbefehl `"+name+"` wurde ersetzt.");
+			e.reply("Der Textbefehl `" + name + "` wurde ersetzt.");
 		} else {
-			e.reply("Der Textbefehl `"+name+"` wurde erstellt.");
+			e.reply("Der Textbefehl `" + name + "` wurde erstellt.");
 		}
 		Main.getGuildConfig(e.getGuild()).addCustomCommand(name, arguments);
 	}

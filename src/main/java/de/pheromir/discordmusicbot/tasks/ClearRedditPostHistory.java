@@ -9,5 +9,5 @@ public class ClearRedditPostHistory implements Runnable {
 		Thread.currentThread().setName("Reddit History Clear");
 		GuildConfig.clearSubredditPostHistory();
 	}
-
+ 
 }

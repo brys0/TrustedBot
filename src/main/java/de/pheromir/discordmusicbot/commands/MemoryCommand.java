@@ -7,7 +7,7 @@ import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
 
 public class MemoryCommand extends Command {
-	
+
 	public MemoryCommand() {
 		this.name = "memory";
 		this.aliases = new String[] { "mem" };

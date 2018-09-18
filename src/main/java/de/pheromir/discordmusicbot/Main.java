@@ -90,7 +90,7 @@ public class Main {
 
 		/* CONFIG ERSTELLEN / AUSLESEN */
 		loadConfig();
-		
+
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
 
@@ -116,12 +116,7 @@ public class Main {
 		try {
 			/* BOT STARTEN */
 			jda = new JDABuilder(
-					AccountType.BOT)
-					.setToken(token)
-					.addEventListener(commandClient, new GuildLeave(), new GuildJoin())
-					.setAutoReconnect(true)
-					.setGame(Game.playing("Trusted-Community.eu"))
-					.build();
+					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildLeave(), new GuildJoin()).setAutoReconnect(true).setGame(Game.playing("Trusted-Community.eu")).build();
 			jda.awaitReady();
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 15, 30, TimeUnit.MINUTES);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new ClearRedditPostHistory(), 30, 30, TimeUnit.DAYS);
@@ -131,7 +126,7 @@ public class Main {
 						/ 1024L / 1024L, Runtime.getRuntime().totalMemory() / 1024L
 								/ 1024L, Runtime.getRuntime().maxMemory() / 1024L / 1024L)));
 			}, 10, 60, TimeUnit.SECONDS);
-			
+
 			Unirest.setDefaultHeader("User-Agent", "Mozilla/5.0");
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
@@ -164,53 +159,39 @@ public class Main {
 			twitchKey = cfg.getString("API-Keys.Twitch");
 			extraPermissions = cfg.getLongList("ExtraPermissions");
 
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Guilds"
-					+ " (GuildId VARCHAR(64) PRIMARY KEY,"
-					+ " Volume INT NOT NULL DEFAULT 100,"
-					+ " Prefix VARCHAR(16) NOT NULL DEFAULT \"!\");");
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Guilds" + " (GuildId VARCHAR(64) PRIMARY KEY,"
+					+ " Volume INT NOT NULL DEFAULT 100," + " Prefix VARCHAR(16) NOT NULL DEFAULT \"!\");");
 
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS DJs"
-					+ " (GuildId VARCHAR(64) NOT NULL,"
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS DJs" + " (GuildId VARCHAR(64) NOT NULL,"
 					+ " UserId VARCHAR(64) NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (GuildId, UserId));");
 
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Twitch"
-					+ " (ChannelId VARCHAR(64) NOT NULL,"
-					+ " Username VARCHAR(32) NOT NULL,"
-					+ " GuildId VARCHAR(64) NOT NULL,"
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Twitch" + " (ChannelId VARCHAR(64) NOT NULL,"
+					+ " Username VARCHAR(32) NOT NULL," + " GuildId VARCHAR(64) NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (ChannelId, Username));");
 
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Reddit"
-					+ " (ChannelId VARCHAR(64) NOT NULL,"
-					+ " Subreddit VARCHAR(32) NOT NULL,"
-					+ " GuildId VARCHAR(64) NOT NULL,"
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Reddit" + " (ChannelId VARCHAR(64) NOT NULL,"
+					+ " Subreddit VARCHAR(32) NOT NULL," + " GuildId VARCHAR(64) NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (ChannelId, Subreddit));");
 
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Reddit_Posts"
-					+ " (Url VARCHAR(191) PRIMARY KEY);");
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Reddit_Posts" + " (Url VARCHAR(191) PRIMARY KEY);");
 
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Chaturbate"
-					+ " (ChannelId VARCHAR(64) NOT NULL,"
-					+ " Username VARCHAR(32) NOT NULL,"
-					+ " GuildId VARCHAR(64) NOT NULL,"
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Chaturbate" + " (ChannelId VARCHAR(64) NOT NULL,"
+					+ " Username VARCHAR(32) NOT NULL," + " GuildId VARCHAR(64) NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (ChannelId, Username));");
-			
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS AliasCommands"
-					+ " (Name VARCHAR(128) NOT NULL,"
-					+ " GuildId VARCHAR(64) NOT NULL,"
-					+ " Command VARCHAR(64) NOT NULL,"
+
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS AliasCommands" + " (Name VARCHAR(128) NOT NULL,"
+					+ " GuildId VARCHAR(64) NOT NULL," + " Command VARCHAR(64) NOT NULL,"
 					+ " Arguments LONGTEXT NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (Name, GuildId));");
-			
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS CustomCommands"
-					+ " (Name VARCHAR(128) NOT NULL,"
-					+ " GuildId VARCHAR(64) NOT NULL,"
-					+ " Text LONGTEXT NOT NULL,"
+
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS CustomCommands" + " (Name VARCHAR(128) NOT NULL,"
+					+ " GuildId VARCHAR(64) NOT NULL," + " Text LONGTEXT NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (Name, GuildId));");
 

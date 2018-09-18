@@ -26,17 +26,17 @@ public class TextCmdRemoveCommand extends Command {
 			return;
 		}
 
-		if(args.length == 0) {
-			e.reply("Syntaxfehler. Verwendung: !"+name+" <Befehl>");
+		if (args.length == 0) {
+			e.reply("Syntaxfehler. Verwendung: !" + name + " <Befehl>");
 			return;
 		}
-		
+
 		String name = args[0].toLowerCase();
-		if(!Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
+		if (!Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
 			e.reply("Es existiert kein Textbefehl mit diesem Namen.");
 			return;
 		}
 		Main.getGuildConfig(e.getGuild()).removeCustomCommand(name);
-		e.reply("Der Textbefehl `"+name+"` wurde entfernt.");
+		e.reply("Der Textbefehl `" + name + "` wurde entfernt.");
 	}
 }

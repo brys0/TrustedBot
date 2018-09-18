@@ -47,7 +47,7 @@ public class CBCommand extends Command {
 			}
 		}
 		if (args.length != 1) {
-			e.reply("Syntaxfehler. Verwendung: `!"+this.name+" <Username>`");
+			e.reply("Syntaxfehler. Verwendung: `!" + this.name + " <Username>`");
 			return;
 		} else {
 			if (GuildConfig.getCBList().containsKey(e.getArgs().toLowerCase())

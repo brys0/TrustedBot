@@ -118,7 +118,8 @@ public class PlayCommand extends Command {
 								+ "]*\n\n");
 					}
 					musicManager.getSuggestions().put(e.getAuthor(), suggests);
-					Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(), e.getAuthor()), 5, TimeUnit.MINUTES);
+					Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(),
+							e.getAuthor()), 5, TimeUnit.MINUTES);
 					m.setFooter("Titel auswählen: !play [Nr] (Vorschläge 5 min. gültig)", e.getJDA().getSelfUser().getAvatarUrl());
 					mes.setEmbed(m.build());
 					e.reply(mes.build());
@@ -133,7 +134,7 @@ public class PlayCommand extends Command {
 			}
 		}
 		musicManager.player.setPaused(false);
-		
+
 		Main.playerManager.loadItemOrdered(musicManager, toLoad, new AudioLoadResultHandler() {
 
 			@Override

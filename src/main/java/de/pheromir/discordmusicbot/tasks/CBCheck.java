@@ -7,7 +7,7 @@ import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
 
 public class CBCheck implements Runnable {
-	
+
 	@Override
 	public void run() {
 		Thread.currentThread().setName("CB-Checker");

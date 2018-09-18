@@ -52,16 +52,14 @@ public class RedditCommand extends Command {
 			if (GuildConfig.getRedditList().containsKey(e.getArgs().toLowerCase())
 					&& GuildConfig.getRedditList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
 				GuildConfig.removeSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
-				e.reply("Subreddit " + e.getArgs().toLowerCase()
-						+ " ist in diesem Channel nun deaktiviert.");
+				e.reply("Subreddit " + e.getArgs().toLowerCase() + " ist in diesem Channel nun deaktiviert.");
 			} else {
 				if (!Methods.doesSubredditExist(e.getArgs())) {
 					e.reply("Es scheint keinen Subreddit mit diesem Namen zu geben (oder es ist ein Fehler aufgetreten).");
 					return;
 				}
 				GuildConfig.addSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
-				e.reply("Subreddit " + e.getArgs().toLowerCase()
-						+ " ist in diesem Channel nun aktiviert.");
+				e.reply("Subreddit " + e.getArgs().toLowerCase() + " ist in diesem Channel nun aktiviert.");
 			}
 			return;
 		}

@@ -21,8 +21,8 @@ public class AliasCmdsCommand extends Command {
 
 		String cmds = "Es existieren derzeit folgende Aliase: ";
 		StringBuilder sb = new StringBuilder();
-		for(String str : Main.getGuildConfig(e.getGuild()).getAliasCommands().keySet()) {
-			sb.append("`"+str+"`, ");
+		for (String str : Main.getGuildConfig(e.getGuild()).getAliasCommands().keySet()) {
+			sb.append("`" + str + "`, ");
 		}
 		e.reply(cmds + sb.toString().substring(0, sb.length() - 2));
 	}

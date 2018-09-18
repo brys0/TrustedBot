@@ -20,5 +20,5 @@ public class RemoveUserSuggestion extends TimerTask {
 	public void run() {
 		Main.getGuildConfig(g).getSuggestions().remove(user);
 	}
-
+ 
 }

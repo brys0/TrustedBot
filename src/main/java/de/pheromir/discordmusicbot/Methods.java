@@ -27,6 +27,7 @@ import com.mashape.unirest.http.Unirest;
 import de.pheromir.discordmusicbot.Exceptions.HttpErrorException;
 
 public class Methods {
+
 	static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^(\\d?\\d)(?::([0-5]?\\d))?(?::([0-5]?\\d))?$");
 
 	/*
@@ -72,52 +73,55 @@ public class Methods {
 		else
 			return String.format("%02d:%02d", minute, second);
 	}
-	
-	
+
 	/*
-	 * CONVERT TIMESTRING INTO TIMEMILLIS
-	 * Method Copyright (c) 2017 Frederik Ar. Mikkelsen
-	 * https://github.com/Frederikam/FredBoat/blob/dev/FredBoat/src/main/java/fredboat/util/TextUtils.java
+	 * CONVERT TIMESTRING INTO TIMEMILLIS Method Copyright (c) 2017 Frederik Ar.
+	 * Mikkelsen
+	 * https://github.com/Frederikam/FredBoat/blob/dev/FredBoat/src/main/java/
+	 * fredboat/util/TextUtils.java
 	 */
-	
+
 	public static long parseTimeString(String str) throws NumberFormatException {
-        long millis = 0;
-        long seconds = 0;
-        long minutes = 0;
-        long hours = 0;
+		long millis = 0;
+		long seconds = 0;
+		long minutes = 0;
+		long hours = 0;
 
-        Matcher m = TIMESTAMP_PATTERN.matcher(str);
+		Matcher m = TIMESTAMP_PATTERN.matcher(str);
 
-        m.find();
+		m.find();
 
-        int capturedGroups = 0;
-        if(m.group(1) != null) capturedGroups++;
-        if(m.group(2) != null) capturedGroups++;
-        if(m.group(3) != null) capturedGroups++;
+		int capturedGroups = 0;
+		if (m.group(1) != null)
+			capturedGroups++;
+		if (m.group(2) != null)
+			capturedGroups++;
+		if (m.group(3) != null)
+			capturedGroups++;
 
-        switch(capturedGroups){
-            case 0:
-                throw new IllegalStateException("Unable to match " + str);
-            case 1:
-                seconds = Integer.parseInt(m.group(1));
-                break;
-            case 2:
-                minutes = Integer.parseInt(m.group(1));
-                seconds = Integer.parseInt(m.group(2));
-                break;
-            case 3:
-                hours = Integer.parseInt(m.group(1));
-                minutes = Integer.parseInt(m.group(2));
-                seconds = Integer.parseInt(m.group(3));
-                break;
-        }
+		switch (capturedGroups) {
+			case 0:
+				throw new IllegalStateException("Unable to match " + str);
+			case 1:
+				seconds = Integer.parseInt(m.group(1));
+				break;
+			case 2:
+				minutes = Integer.parseInt(m.group(1));
+				seconds = Integer.parseInt(m.group(2));
+				break;
+			case 3:
+				hours = Integer.parseInt(m.group(1));
+				minutes = Integer.parseInt(m.group(2));
+				seconds = Integer.parseInt(m.group(3));
+				break;
+		}
 
-        minutes = minutes + hours * 60;
-        seconds = seconds + minutes * 60;
-        millis = seconds * 1000;
+		minutes = minutes + hours * 60;
+		seconds = seconds + minutes * 60;
+		millis = seconds * 1000;
 
-        return millis;
-    }
+		return millis;
+	}
 
 	/*
 	 * CONVERT YOUTUBE DURATION TO TIMEMILLIS
@@ -170,9 +174,8 @@ public class Methods {
 	 */
 
 	public static boolean doesTwitchUserExist(String twitchname) {
-		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/helix/users?login=" + twitchname)
-				.header("client-id", Main.twitchKey)
-				.asStringAsync();
+		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/helix/users?login="
+				+ twitchname).header("client-id", Main.twitchKey).asStringAsync();
 		try {
 			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
 			if (r.getStatus() == 404) {
@@ -204,12 +207,12 @@ public class Methods {
 	 */
 
 	public static JSONObject getStreamInfo(String twitchname) {
-		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/kraken/streams/" + twitchname + "?stream_type=live")
-				.header("client-id", Main.twitchKey)
-				.asStringAsync();
+		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/kraken/streams/" + twitchname
+				+ "?stream_type=live").header("client-id", Main.twitchKey).asStringAsync();
 		try {
 			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
-			if(r.getStatus() == 404) return null;
+			if (r.getStatus() == 404)
+				return null;
 			JSONObject res = new JSONObject(r.getBody().toString());
 			return res;
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {

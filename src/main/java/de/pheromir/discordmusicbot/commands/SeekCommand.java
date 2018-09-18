@@ -30,11 +30,13 @@ public class SeekCommand extends Command {
 			e.reply("Ungültige Angabe. Syntax: `HH:mm:ss` oder `mm:ss`.");
 			return;
 		}
-		if(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() == null) {
+		if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() == null) {
 			e.reactError();
 			return;
 		}
-		Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().setPosition(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration()<time?Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration():time);
+		Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().setPosition(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration() < time
+				? Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration()
+				: time);
 		e.reactSuccess();
 
 	}

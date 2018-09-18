@@ -162,7 +162,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		return l;
 
 	}
-	
+
 	public String getPrefix() {
 		return cmdPrefix;
 

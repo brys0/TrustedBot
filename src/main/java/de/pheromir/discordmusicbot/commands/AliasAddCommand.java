@@ -26,29 +26,30 @@ public class AliasAddCommand extends Command {
 			return;
 		}
 
-		if(args.length < 2) {
-			e.reply("Syntaxfehler. Verwendung: !"+name+" <Alias> <Command> [Argumente]");
+		if (args.length < 2) {
+			e.reply("Syntaxfehler. Verwendung: !" + name + " <Alias> <Command> [Argumente]");
 			return;
 		}
-		
+
 		String name = args[0].toLowerCase();
-		if(Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name)) || Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
+		if (Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name))
+				|| Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
 			e.reply("Es existiert bereits ein Befehl mit diesem Namen.");
 			return;
 		}
 		String cmd = args[1].toLowerCase();
 		String arguments = "";
-		if(args.length > 2) {
+		if (args.length > 2) {
 			StringBuilder sb = new StringBuilder();
-			for(int i = 2; i < args.length; i++) {
-				sb.append(args[i]+" ");
+			for (int i = 2; i < args.length; i++) {
+				sb.append(args[i] + " ");
 			}
 			arguments = sb.toString().trim();
 		}
 		if (Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
-			e.reply("Der Alias `"+name+"` wurde ersetzt.");
+			e.reply("Der Alias `" + name + "` wurde ersetzt.");
 		} else {
-			e.reply("Der Alias `"+name+"` wurde erstellt.");
+			e.reply("Der Alias `" + name + "` wurde erstellt.");
 		}
 		Main.getGuildConfig(e.getGuild()).addAliasCommand(name, cmd, arguments);
 	}

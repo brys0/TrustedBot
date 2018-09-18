@@ -32,22 +32,22 @@ public class RedditGrab implements Runnable {
 					String contentUrl = post.getString("url");
 					if (contentUrl.isEmpty())
 						continue;
-					
+
 					String sub = post.getString("subreddit");
 					String title = post.getString("title");
 					String link = "https://www.reddit.com" + post.getString("permalink");
 					String author = post.getString("author");
 					int score = post.getInt("score");
-					
+
 					EmbedBuilder emb = new EmbedBuilder();
 					emb.setAuthor(author);
 					emb.addField(new Field("Score", score + "", false));
 					emb.setFooter("/r/" + sub, Main.jda.getSelfUser().getAvatarUrl());
 					emb.setTitle(title.length() > 256 ? title.substring(0, 256) : title, link);
-					
+
 					for (Long chId : GuildConfig.getRedditList().get(subreddit)) {
 						TextChannel c = Main.jda.getTextChannelById(chId);
-						
+
 						if (!GuildConfig.RedditPosthistoryContains(contentUrl)) {
 							if (contentUrl.contains(".jpg") || contentUrl.contains(".png")
 									|| contentUrl.contains(".jpeg")) {

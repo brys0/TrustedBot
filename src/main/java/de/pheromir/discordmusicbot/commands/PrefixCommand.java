@@ -9,7 +9,7 @@ public class PrefixCommand extends Command {
 
 	public PrefixCommand() {
 		this.name = "prefix";
-		this.aliases = new String[] {"präfix"};
+		this.aliases = new String[] { "präfix" };
 		this.help = "Präfix anpassen";
 		this.guildOnly = true;
 	}
@@ -20,9 +20,9 @@ public class PrefixCommand extends Command {
 			e.reply("Derzeitiges Präfix: " + Main.getGuildConfig(e.getGuild()).getPrefix());
 			return;
 		}
-		
+
 		Main.getGuildConfig(e.getGuild()).setPrefix(e.getArgs());
-		e.reply("Das Präfix wurde auf `"+e.getArgs()+"` gesetzt.");
+		e.reply("Das Präfix wurde auf `" + e.getArgs() + "` gesetzt.");
 
 	}
 
