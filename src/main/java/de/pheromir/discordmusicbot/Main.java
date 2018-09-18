@@ -14,6 +14,7 @@ import javax.security.auth.login.LoginException;
 
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.mashape.unirest.http.Unirest;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -41,6 +42,7 @@ import de.pheromir.discordmusicbot.commands.PlaylistCommand;
 import de.pheromir.discordmusicbot.commands.PrefixCommand;
 import de.pheromir.discordmusicbot.commands.RedditCommand;
 import de.pheromir.discordmusicbot.commands.ResumeCommand;
+import de.pheromir.discordmusicbot.commands.SeekCommand;
 import de.pheromir.discordmusicbot.commands.SkipCommand;
 import de.pheromir.discordmusicbot.commands.StatusCommand;
 import de.pheromir.discordmusicbot.commands.StopCommand;
@@ -99,7 +101,7 @@ public class Main {
 		builder.setGuildSettingsManager(new SettingsManager());
 		builder.addCommands(new StatusCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new MemoryCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
-		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand());
+		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand());
 		builder.addCommands(new GoogleCommand(), new RedditCommand(), new CBCommand());
 		builder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand(), new PrefixCommand());
 		builder.setLinkedCacheSize(128);
@@ -129,6 +131,8 @@ public class Main {
 						/ 1024L / 1024L, Runtime.getRuntime().totalMemory() / 1024L
 								/ 1024L, Runtime.getRuntime().maxMemory() / 1024L / 1024L)));
 			}, 10, 60, TimeUnit.SECONDS);
+			
+			Unirest.setDefaultHeader("User-Agent", "Mozilla/5.0");
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
 			System.out.print("Fehler beim Start des Bots: ");

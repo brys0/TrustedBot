@@ -3,7 +3,8 @@ package de.pheromir.discordmusicbot.commands;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,8 +118,7 @@ public class PlayCommand extends Command {
 								+ "]*\n\n");
 					}
 					musicManager.getSuggestions().put(e.getAuthor(), suggests);
-					Timer t = new Timer();
-					t.schedule(new RemoveUserSuggestion(e.getGuild(), e.getAuthor()), 1000 * 60 * 5);
+					Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(), e.getAuthor()), 5, TimeUnit.MINUTES);
 					m.setFooter("Titel auswählen: !play [Nr] (Vorschläge 5 min. gültig)", e.getJDA().getSelfUser().getAvatarUrl());
 					mes.setEmbed(m.build());
 					e.reply(mes.build());

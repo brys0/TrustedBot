@@ -1,11 +1,6 @@
 package de.pheromir.discordmusicbot;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -14,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
@@ -24,40 +21,39 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+
+import de.pheromir.discordmusicbot.Exceptions.HttpErrorException;
 
 public class Methods {
+	static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^(\\d?\\d)(?::([0-5]?\\d))?(?::([0-5]?\\d))?$");
 
 	/*
-	 * GENERAL JSON HTTP CONNECTIONS
+	 * GENERAL HTTP CONNECTIONS
 	 */
 
-	public static JSONObject httpRequestJSON(String url) throws IOException {
-		try {
-			JSONObject myResponse = new JSONObject(httpRequest(url));
+	public static JSONObject httpRequestJSON(String url) throws HttpErrorException {
+		String resp = httpRequest(url);
+		if (resp.isEmpty()) {
+			throw new HttpErrorException("Bei der Abfrage ist ein Fehler aufgetreten.");
+		} else {
+			JSONObject myResponse = new JSONObject(resp);
 			return myResponse;
-		} catch (IOException e) {
-			throw e;
 		}
+
 	}
 
-	public static String httpRequest(String url) throws IOException {
+	public static String httpRequest(String url) throws HttpErrorException {
+		Future<HttpResponse<String>> future = Unirest.get(url).asStringAsync();
 		try {
-			URL obj = new URL(url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			con.setReadTimeout(60000);
-			con.setConnectTimeout(60000);
-			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
+			if (r.getStatus() == 404) {
+				throw new HttpErrorException();
 			}
-			in.close();
-			return response.toString();
-		} catch (IOException e) {
-			throw e;
+			return r.getBody();
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			throw new HttpErrorException("Bei der Abfrage ist ein Fehler aufgetreten.", e);
 		}
 	}
 
@@ -76,6 +72,52 @@ public class Methods {
 		else
 			return String.format("%02d:%02d", minute, second);
 	}
+	
+	
+	/*
+	 * CONVERT TIMESTRING INTO TIMEMILLIS
+	 * Method Copyright (c) 2017 Frederik Ar. Mikkelsen
+	 * https://github.com/Frederikam/FredBoat/blob/dev/FredBoat/src/main/java/fredboat/util/TextUtils.java
+	 */
+	
+	public static long parseTimeString(String str) throws NumberFormatException {
+        long millis = 0;
+        long seconds = 0;
+        long minutes = 0;
+        long hours = 0;
+
+        Matcher m = TIMESTAMP_PATTERN.matcher(str);
+
+        m.find();
+
+        int capturedGroups = 0;
+        if(m.group(1) != null) capturedGroups++;
+        if(m.group(2) != null) capturedGroups++;
+        if(m.group(3) != null) capturedGroups++;
+
+        switch(capturedGroups){
+            case 0:
+                throw new IllegalStateException("Unable to match " + str);
+            case 1:
+                seconds = Integer.parseInt(m.group(1));
+                break;
+            case 2:
+                minutes = Integer.parseInt(m.group(1));
+                seconds = Integer.parseInt(m.group(2));
+                break;
+            case 3:
+                hours = Integer.parseInt(m.group(1));
+                minutes = Integer.parseInt(m.group(2));
+                seconds = Integer.parseInt(m.group(3));
+                break;
+        }
+
+        minutes = minutes + hours * 60;
+        seconds = seconds + minutes * 60;
+        millis = seconds * 1000;
+
+        return millis;
+    }
 
 	/*
 	 * CONVERT YOUTUBE DURATION TO TIMEMILLIS
@@ -108,16 +150,12 @@ public class Methods {
 
 	public static boolean doesSubredditExist(String subreddit) {
 		Callable<Boolean> task = () -> {
-			try {
-				JSONObject jo = httpRequestJSON("https://www.reddit.com/r/" + subreddit + "/hot/.json");
-				if (jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children")
-						&& jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
-					return false;
-				}
-				return true;
-			} catch (IOException e) {
+			JSONObject jo = httpRequestJSON("https://www.reddit.com/r/" + subreddit + "/hot/.json");
+			if (jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children")
+					&& jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
 				return false;
 			}
+			return true;
 		};
 		Future<Boolean> future = Executors.newCachedThreadPool().submit(task);
 		try {
@@ -132,38 +170,31 @@ public class Methods {
 	 */
 
 	public static boolean doesTwitchUserExist(String twitchname) {
+		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/helix/users?login=" + twitchname)
+				.header("client-id", Main.twitchKey)
+				.asStringAsync();
 		try {
-			URL obj = new URL("https://api.twitch.tv/helix/users?login=" + twitchname);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			con.setRequestProperty("client-id", Main.twitchKey);
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
+			if (r.getStatus() == 404) {
+				return false;
 			}
-			in.close();
-			JSONObject res = new JSONObject(response.toString());
+			JSONObject res = new JSONObject(r.getBody().toString());
 			if (res.getJSONArray("data").length() == 0) {
 				return false;
 			}
 			return true;
-
-		} catch (IOException e) {
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			e.printStackTrace();
-			return false;
 		}
+		return false;
 	}
 
 	public static boolean doesCBUserExist(String username) {
+		String res;
 		try {
-			String res = httpRequest("https://de.chaturbate.com/" + username);
+			res = httpRequest("https://de.chaturbate.com/" + username);
 			return !res.contains("HTTP 404 - Seite nicht gefunden");
-		} catch (FileNotFoundException e) {
-			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (HttpErrorException e) {
 			return false;
 		}
 	}
@@ -173,22 +204,15 @@ public class Methods {
 	 */
 
 	public static JSONObject getStreamInfo(String twitchname) {
+		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/kraken/streams/" + twitchname + "?stream_type=live")
+				.header("client-id", Main.twitchKey)
+				.asStringAsync();
 		try {
-			URL obj = new URL("https://api.twitch.tv/kraken/streams/" + twitchname + "?stream_type=live");
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			con.setRequestProperty("client-id", Main.twitchKey);
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-			JSONObject res = new JSONObject(response.toString());
+			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
+			if(r.getStatus() == 404) return null;
+			JSONObject res = new JSONObject(r.getBody().toString());
 			return res;
-
-		} catch (IOException e) {
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			e.printStackTrace();
 			return null;
 		}

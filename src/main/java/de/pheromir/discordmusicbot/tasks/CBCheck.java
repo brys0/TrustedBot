@@ -1,9 +1,8 @@
 package de.pheromir.discordmusicbot.tasks;
 
-import java.io.IOException;
-
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
+import de.pheromir.discordmusicbot.Exceptions.HttpErrorException;
 import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
 
@@ -17,7 +16,7 @@ public class CBCheck implements Runnable {
 			String res;
 			try {
 				res = Methods.httpRequest(url);
-			} catch (IOException e1) {
+			} catch (HttpErrorException e1) {
 				e1.printStackTrace();
 				continue;
 			}

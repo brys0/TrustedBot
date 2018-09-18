@@ -1,12 +1,11 @@
 package de.pheromir.discordmusicbot.tasks;
 
-import java.io.IOException;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
+import de.pheromir.discordmusicbot.Exceptions.HttpErrorException;
 import de.pheromir.discordmusicbot.config.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
@@ -65,10 +64,9 @@ public class RedditGrab implements Runnable {
 					Thread.sleep(500L);
 				}
 				res = null;
-			} catch (IOException e) {
-				System.out.print("Fehler bei RedditGrab: ");
-				e.printStackTrace();
 			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (HttpErrorException e) {
 				e.printStackTrace();
 			}
 		}

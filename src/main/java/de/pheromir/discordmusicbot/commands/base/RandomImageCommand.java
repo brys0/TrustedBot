@@ -1,7 +1,6 @@
 package de.pheromir.discordmusicbot.commands.base;
 
 import java.awt.Color;
-import java.io.IOException;
 
 import org.json.JSONException;
 
@@ -9,6 +8,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.discordmusicbot.Methods;
+import de.pheromir.discordmusicbot.Exceptions.HttpErrorException;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -34,7 +34,7 @@ public abstract class RandomImageCommand extends Command {
 			e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT
 					? e.getSelfMember().getColor()
 					: Color.BLUE).build());
-		} catch (JSONException | IOException e1) {
+		} catch (JSONException | HttpErrorException e1) {
 			e.reply("Es ist ein Fehler aufgetreten.");
 			e1.printStackTrace();
 		}
