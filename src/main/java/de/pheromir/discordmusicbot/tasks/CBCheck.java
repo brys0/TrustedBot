@@ -10,7 +10,7 @@ public class CBCheck implements Runnable {
 
 	@Override
 	public void run() {
-		Thread.currentThread().setName("CB-Checker");
+		Thread.currentThread().setName("CB-Check");
 		for (String username : GuildConfig.getCBList().keySet()) {
 			String url = "https://de.chaturbate.com/" + username;
 			String res;
@@ -30,8 +30,8 @@ public class CBCheck implements Runnable {
 
 					EmbedBuilder eb = new EmbedBuilder();
 					eb.setTitle(username + " ist nun online!", url);
-					eb.setAuthor("Chaturbate".intern());
-					eb.setThumbnail("https://ssl-ccstatic.highwebmedia.com/images/logo-standard.png".intern());
+					eb.setAuthor("Chaturbate");
+					eb.setThumbnail("https://ssl-ccstatic.highwebmedia.com/images/logo-standard.png");
 					eb.setImage("https://roomimg.stream.highwebmedia.com/ri/" + username + ".jpg");
 
 					for (Long chId : GuildConfig.getCBList().get(username)) {

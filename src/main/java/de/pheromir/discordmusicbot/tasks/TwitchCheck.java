@@ -11,7 +11,7 @@ public class TwitchCheck implements Runnable {
 
 	@Override
 	public void run() {
-		Thread.currentThread().setName("TwitchChecker");
+		Thread.currentThread().setName("Twitch-Check");
 		for (String twitchname : GuildConfig.getTwitchList().keySet()) {
 			JSONObject res = Methods.getStreamInfo(twitchname);
 			if (Main.onlineTwitchList.contains(twitchname)) {

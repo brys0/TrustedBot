@@ -32,7 +32,7 @@ public class ExtraRemoveCommand extends Command {
 				String id = m.group(1);
 				User mem = Main.jda.getUserById(id);
 				if (mem == null) {
-					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.".intern());
+					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 					continue;
 				}
 				if (!Main.getExtraUsers().contains(Long.parseLong(id))) {
@@ -44,7 +44,7 @@ public class ExtraRemoveCommand extends Command {
 					continue;
 				}
 			} else {
-				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.".intern());
+				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 				continue;
 			}
 		}

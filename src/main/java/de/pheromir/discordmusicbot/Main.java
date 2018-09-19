@@ -27,6 +27,7 @@ import de.pheromir.discordmusicbot.commands.DJAddCommand;
 import de.pheromir.discordmusicbot.commands.DJRemoveCommand;
 import de.pheromir.discordmusicbot.commands.ExtraAddCommand;
 import de.pheromir.discordmusicbot.commands.ExtraRemoveCommand;
+import de.pheromir.discordmusicbot.commands.ForwardCommand;
 import de.pheromir.discordmusicbot.commands.GoogleCommand;
 import de.pheromir.discordmusicbot.commands.HugCommand;
 import de.pheromir.discordmusicbot.commands.KissCommand;
@@ -42,6 +43,7 @@ import de.pheromir.discordmusicbot.commands.PlaylistCommand;
 import de.pheromir.discordmusicbot.commands.PrefixCommand;
 import de.pheromir.discordmusicbot.commands.RedditCommand;
 import de.pheromir.discordmusicbot.commands.ResumeCommand;
+import de.pheromir.discordmusicbot.commands.RewindCommand;
 import de.pheromir.discordmusicbot.commands.SeekCommand;
 import de.pheromir.discordmusicbot.commands.SkipCommand;
 import de.pheromir.discordmusicbot.commands.StatusCommand;
@@ -65,6 +67,7 @@ import de.pheromir.discordmusicbot.tasks.TwitchCheck;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 
@@ -72,15 +75,15 @@ public class Main {
 
 	public static String token;
 	public static AudioPlayerManager playerManager;
-	public static String adminId = "none".intern();
-	public static String youtubeKey = "none".intern();
-	public static String twitchKey = "none".intern();
+	public static String adminId = "none";
+	public static String youtubeKey = "none";
+	public static String twitchKey = "none";
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
 	public static ArrayList<String> onlineCBList = new ArrayList<>();
 	public static List<Long> extraPermissions = new ArrayList<>();
 	public static JDA jda;
 	public static final Long startMillis = System.currentTimeMillis();
-	public static File configFile = new File("config.yml".intern());
+	public static File configFile = new File("config.yml");
 	public static YamlConfiguration yaml = new YamlConfiguration();
 	public static Configuration cfg;
 	public static CommandClient commandClient;
@@ -88,7 +91,6 @@ public class Main {
 	public static void main(String[] args) {
 		System.out.println("Starting DiscordBot...");
 
-		/* CONFIG ERSTELLEN / AUSLESEN */
 		loadConfig();
 
 		playerManager = new DefaultAudioPlayerManager();
@@ -101,7 +103,7 @@ public class Main {
 		builder.setGuildSettingsManager(new SettingsManager());
 		builder.addCommands(new StatusCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new MemoryCommand());
 		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
-		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand());
+		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand());
 		builder.addCommands(new GoogleCommand(), new RedditCommand(), new CBCommand());
 		builder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand(), new PrefixCommand());
 		builder.setLinkedCacheSize(128);
@@ -118,6 +120,7 @@ public class Main {
 			jda = new JDABuilder(
 					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildLeave(), new GuildJoin()).setAutoReconnect(true).setGame(Game.playing("Trusted-Community.eu")).build();
 			jda.awaitReady();
+			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 15, 30, TimeUnit.MINUTES);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new ClearRedditPostHistory(), 30, 30, TimeUnit.DAYS);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 30, 30, TimeUnit.MINUTES);
@@ -142,7 +145,7 @@ public class Main {
 	private static void loadConfig() {
 		if (!configFile.exists()) {
 			try {
-				Files.copy(Main.class.getResourceAsStream("/config.yml"), Paths.get("config.yml".intern()), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(Main.class.getResourceAsStream("/config.yml"), Paths.get("config.yml"), StandardCopyOption.REPLACE_EXISTING);
 				System.out.println("-- Please set up the configuration file --");
 				Thread.sleep(30000);
 				System.exit(1);

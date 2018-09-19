@@ -705,8 +705,9 @@ public class GuildConfig implements GuildSettingsProvider {
 			cb.setString(1, guildId.toString());
 			cb.execute();
 			sq.closeConnection();
+			SettingsManager.guildConfigs.remove(this.guildId);
 		} catch (SQLException e) {
-			System.out.println("Chaturbate remove failed: " + e.getMessage());
+			System.out.println("General delete failed: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

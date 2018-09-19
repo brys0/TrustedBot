@@ -22,7 +22,7 @@ public class TextCmdAddCommand extends Command {
 			args = new String[0];
 
 		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.".intern());
+			e.reply("Du hast keine Rechte für diesen Befehl.");
 			return;
 		}
 

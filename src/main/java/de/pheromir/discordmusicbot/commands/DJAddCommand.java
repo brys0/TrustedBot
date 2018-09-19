@@ -26,7 +26,7 @@ public class DJAddCommand extends Command {
 			args = new String[0];
 
 		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.".intern());
+			e.reply("Du hast keine Rechte für diesen Befehl.");
 			return;
 		}
 
@@ -37,7 +37,7 @@ public class DJAddCommand extends Command {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);
 				if (mem == null) {
-					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.".intern());
+					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 					continue;
 				}
 				if (Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
@@ -49,7 +49,7 @@ public class DJAddCommand extends Command {
 					continue;
 				}
 			} else {
-				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.".intern());
+				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
 				continue;
 			}
 		}

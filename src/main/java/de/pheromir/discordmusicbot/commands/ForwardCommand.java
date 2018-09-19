@@ -7,12 +7,11 @@ import de.pheromir.discordmusicbot.Main;
 import de.pheromir.discordmusicbot.Methods;
 import net.dv8tion.jda.core.Permission;
 
-public class SeekCommand extends Command {
+public class ForwardCommand extends Command {
 
-	public SeekCommand() {
-		this.name = "seek";
-		this.aliases = new String[] { "goto" };
-		this.help = "Wiedergabestelle setzen";
+	public ForwardCommand() {
+		this.name = "forward";
+		this.help = "Aktuellen Titel vorspulen";
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -35,9 +34,11 @@ public class SeekCommand extends Command {
 			e.reactError();
 			return;
 		}
+		time += Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration();
+		
 		Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().setPosition(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration() < time
-				? Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration()
-				: (time < 0) ? 0 : time);
+			? Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration()
+			: (time < 0) ? 0 : time);
 		e.reactSuccess();
 
 	}
