@@ -69,10 +69,8 @@ public class IcecastMeta {
 				Matcher m = p.matcher(res);
 				if (m.find()) {
 					return Integer.parseInt(m.group(1));
-				} else
-					return -1;
-			} else
-				return -1;
+				}
+			}
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}
