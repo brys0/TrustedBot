@@ -18,6 +18,7 @@ public class GoogleCommand extends Command {
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
 		this.help = "Erstellt einen Link zur Google-Suche";
 		this.guildOnly = false;
+		this.category = new Category("Miscellaneous");
 	}
 
 	@Override

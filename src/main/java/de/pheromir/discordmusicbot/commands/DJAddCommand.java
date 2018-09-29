@@ -17,6 +17,7 @@ public class DJAddCommand extends Command {
 		this.help = "DJ-Rechte an eine Person vergeben.";
 		this.arguments = "<Person>";
 		this.guildOnly = true;
+		this.category = new Category("Music");
 	}
 
 	@Override

@@ -17,6 +17,7 @@ public class DJRemoveCommand extends Command {
 		this.help = "DJ-Rechte von einer Person entfernen.";
 		this.arguments = "<User-Mention>";
 		this.guildOnly = true;
+		this.category = new Category("Music");
 	}
 
 	@Override

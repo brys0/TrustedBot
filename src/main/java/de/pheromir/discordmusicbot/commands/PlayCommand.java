@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONObject;
+
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -17,6 +19,11 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -80,55 +87,62 @@ public class PlayCommand extends Command {
 				toLoad = "http://youtube.com/watch?v="
 						+ musicManager.getSuggestions().get(e.getAuthor()).get(nr - 1).getId();
 			}
-		} else if (e.getArgs().equalsIgnoreCase("iloveradio")) {
-			toLoad = "http://www.iloveradio.de/iloveradio.m3u";
+		}
+
+		if(!Main.spotifyToken.equals("none")) {
+			if(e.getArgs().toLowerCase().contains("spotify.com/track/")) {
+				Pattern p = Pattern.compile("track\\/(?<trackid>[0-9A-z]+)");
+				Matcher m = p.matcher(e.getArgs());
+				if(m.find()) {
+					String id = m.group("trackid");
+					if(id != null && !id.isEmpty()) {
+						Unirest.get("https://api.spotify.com/v1/tracks/{id}").routeParam("id", id).header("Authorization", "Bearer "+Main.spotifyToken).asJsonAsync(new Callback<JsonNode>() {
+
+							@Override
+							public void cancelled() {
+							}
+
+							@Override
+							public void completed(HttpResponse<JsonNode> arg0) {
+								String title = arg0.getBody().getObject().getString("name");
+								String artist = ((JSONObject)arg0.getBody().getObject().getJSONArray("artists").get(0)).getString("name");
+								
+								try {
+									printAndAddSuggestions(getVideoSuggestions(artist+" "+title), e);
+								} catch (IOException e1) {
+									e1.printStackTrace();
+									
+								}
+								return;
+							}
+
+							@Override
+							public void failed(UnirestException arg0) {
+							}
+							
+						});
+						return;
+					}
+				}
+			
+			} else if(e.getArgs().toLowerCase().contains("spotify.com")) {
+				e.reply("Es wird derzeit nur die einfache Trackangabe von Spotify unterstützt.\n(spotify.com/track/TRACKID)");
+				return;
+			}
 		}
 
 		if (toLoad.equals("")) {
 			Matcher matcher = compiledPattern.matcher(e.getArgs());
 			if (!matcher.find()) {
-				YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
-						new HttpRequestInitializer() {
-
-							public void initialize(HttpRequest request) throws IOException {
-
-							}
-						}).setApplicationName("DiscordBot").build();
-
-				YouTube.Search.List searchRequest;
 				try {
-
-					searchRequest = youtube.search().list("snippet");
-					searchRequest.setMaxResults((long) 5);
-					searchRequest.setType("video");
-					searchRequest.setQ(e.getArgs());
-					searchRequest.setKey(Main.youtubeKey);
-					SearchListResponse listResponse = searchRequest.execute();
-					List<SearchResult> videoList = listResponse.getItems();
-					MessageBuilder mes = new MessageBuilder();
-					mes.append("**Titelauswahl:**");
-					EmbedBuilder m = new EmbedBuilder();
-					m.setColor(e.getGuild().getSelfMember().getColor());
-					ArrayList<Suggestion> suggests = new ArrayList<>();
-					for (int i = 0; i < (videoList.size() >= 5 ? 5 : videoList.size()); i++) {
-						suggests.add(new Suggestion(videoList.get(i).getSnippet().getTitle(),
-								videoList.get(i).getId().getVideoId()));
-						m.appendDescription("**[" + (i + 1) + "]** " + videoList.get(i).getSnippet().getTitle() + " *["
-								+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId()))
-								+ "]*\n\n");
-					}
-					musicManager.getSuggestions().put(e.getAuthor(), suggests);
-					Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(),
-							e.getAuthor()), 5, TimeUnit.MINUTES);
-					m.setFooter("Titel auswählen: !play [Nr] (Vorschläge 5 min. gültig)", e.getJDA().getSelfUser().getAvatarUrl());
-					mes.setEmbed(m.build());
-					e.reply(mes.build());
-
+					printAndAddSuggestions(getVideoSuggestions(e.getArgs()), e);
 					return;
-
 				} catch (IOException e1) {
 					e1.printStackTrace();
+					e.reply("Es ist ein Fehler aufgetreten.");
+					return;
 				}
+
 			} else {
 				toLoad = matcher.group();
 			}
@@ -177,7 +191,47 @@ public class PlayCommand extends Command {
 			}
 
 		});
+	}
 
+	public static List<SearchResult> getVideoSuggestions(String search) throws IOException {
+		YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
+				new HttpRequestInitializer() {
+
+					public void initialize(HttpRequest request) throws IOException {
+
+					}
+				}).setApplicationName("DiscordBot").build();
+
+		YouTube.Search.List searchRequest;
+		searchRequest = youtube.search().list("snippet");
+		searchRequest.setMaxResults((long) 5);
+		searchRequest.setType("video");
+		searchRequest.setQ(search);
+		searchRequest.setKey(Main.youtubeKey);
+		SearchListResponse listResponse = searchRequest.execute();
+		List<SearchResult> videoList = listResponse.getItems();
+		return videoList;
+	}
+
+	public static void printAndAddSuggestions(List<SearchResult> videoList, CommandEvent e) {
+		MessageBuilder mes = new MessageBuilder();
+		mes.append("**Titelauswahl:**");
+		EmbedBuilder m = new EmbedBuilder();
+		m.setColor(e.getGuild().getSelfMember().getColor());
+		ArrayList<Suggestion> suggests = new ArrayList<>();
+		for (int i = 0; i < (videoList.size() >= 5 ? 5 : videoList.size()); i++) {
+			suggests.add(new Suggestion(videoList.get(i).getSnippet().getTitle(),
+					videoList.get(i).getId().getVideoId()));
+			m.appendDescription("**[" + (i + 1) + "]** " + videoList.get(i).getSnippet().getTitle() + " *["
+					+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId()))
+					+ "]*\n\n");
+		}
+		Main.getGuildConfig(e.getGuild()).getSuggestions().put(e.getAuthor(), suggests);
+		Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(),
+				e.getAuthor()), 5, TimeUnit.MINUTES);
+		m.setFooter("Titel auswählen: !play [Nr] (Vorschläge 5 min. gültig)", e.getJDA().getSelfUser().getAvatarUrl());
+		mes.setEmbed(m.build());
+		e.reply(mes.build());
 	}
 
 }

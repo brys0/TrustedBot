@@ -23,7 +23,7 @@ public abstract class RandomImageCommand extends Command {
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS };
 		this.help = "Zeigt ein zufälliges Bild";
 		this.guildOnly = false;
-		this.category = new Category("RandomImage");
+		this.category = new Category("Fun");
 	}
 
 	@Override
