@@ -8,7 +8,7 @@ public class LizardCommand extends RandomImageCommand {
 		this.BASE_URL = "https://nekos.life/api/" + "lizard";
 		this.jsonKey = "url";
 		this.name = "lizard";
-		this.help = "Zeigt ein zufälliges Lizard-Bild";
+		this.help = "Shows a random lizard picture.";
 	}
 
 }

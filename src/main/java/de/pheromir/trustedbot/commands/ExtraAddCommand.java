@@ -13,8 +13,8 @@ public class ExtraAddCommand extends Command {
 
 	public ExtraAddCommand() {
 		this.name = "extraadd";
-		this.help = "Extra-Rechte an eine Person vergeben.";
-		this.arguments = "<User-Tag/ID>";
+		this.help = "Assign extra permissions to the specified user.";
+		this.arguments = "<User-Mention>";
 		this.guildOnly = false;
 		this.ownerCommand = true;
 	}
@@ -32,19 +32,19 @@ public class ExtraAddCommand extends Command {
 				String id = m.group(1);
 				User mem = Main.jda.getUserById(id);
 				if (mem == null) {
-					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+					e.reply("The specified user couldn't be found.");
 					continue;
 				}
 				if (Main.getExtraUsers().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention() + " hat bereits Extra-Rechte.");
+					e.reply(mem.getAsMention() + " already has extra permissions.");
 					continue;
 				} else {
-					e.reply(mem.getAsMention() + " hat nun Extra-Rechte.");
+					e.reply(mem.getAsMention() + " has been granted extra permissions.");
 					Main.addExtraUser(Long.parseLong(id));
 				}
 				continue;
 			} else {
-				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+				e.reply("The specified user couldn't be found.");
 				continue;
 			}
 		}

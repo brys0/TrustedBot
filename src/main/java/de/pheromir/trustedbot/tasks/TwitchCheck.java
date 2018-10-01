@@ -39,12 +39,12 @@ public class TwitchCheck implements Runnable {
 					eb.setThumbnail(userimage);
 					eb.setAuthor(displayname);
 					eb.setImage(preview);
-					eb.addField("Spiel", game, true);
-					eb.addField("Zuschauer", Integer.toString(viewers), true);
+					eb.addField("Game", game, true);
+					eb.addField("Viewers", Integer.toString(viewers), true);
 
 					for (Long chId : GuildConfig.getTwitchList().get(twitchname)) {
-						Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname + " ist nun auf "
-								+ url + " online!").embed(eb.build()).complete();
+						Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname + " is now live at "
+								+ url + "!").embed(eb.build()).complete();
 					}
 				}
 			}

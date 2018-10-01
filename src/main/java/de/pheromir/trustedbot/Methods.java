@@ -37,7 +37,7 @@ public class Methods {
 	public static JSONObject httpRequestJSON(String url) throws HttpErrorException {
 		String resp = httpRequest(url);
 		if (resp.isEmpty()) {
-			throw new HttpErrorException("Bei der Abfrage ist ein Fehler aufgetreten.");
+			throw new HttpErrorException("An error occurred during the request: empty response");
 		} else {
 			JSONObject myResponse = new JSONObject(resp);
 			return myResponse;
@@ -54,7 +54,7 @@ public class Methods {
 			}
 			return r.getBody();
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			throw new HttpErrorException("Bei der Abfrage ist ein Fehler aufgetreten.", e);
+			throw new HttpErrorException("An error occurred during the request: "+e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -75,8 +75,8 @@ public class Methods {
 	}
 
 	/*
-	 * CONVERT TIMESTRING INTO TIMEMILLIS Method Copyright (c) 2017 Frederik Ar.
-	 * Mikkelsen
+	 * CONVERT TIMESTRING INTO TIMEMILLIS
+	 * Method Copyright (c) 2017 Frederik Ar. Mikkelsen
 	 * https://github.com/Frederikam/FredBoat/blob/dev/FredBoat/src/main/java/
 	 * fredboat/util/TextUtils.java
 	 */

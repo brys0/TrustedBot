@@ -19,9 +19,8 @@ public abstract class RandomImageCommand extends Command {
 	protected String jsonKey;
 
 	public RandomImageCommand() {
-		this.name = "";
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS };
-		this.help = "Zeigt ein zufälliges Bild";
+		this.help = "Shows a random picture.";
 		this.guildOnly = false;
 		this.category = new Category("Fun");
 	}

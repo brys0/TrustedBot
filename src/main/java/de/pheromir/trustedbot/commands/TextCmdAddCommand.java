@@ -10,9 +10,11 @@ public class TextCmdAddCommand extends Command {
 
 	public TextCmdAddCommand() {
 		this.name = "textcmdadd";
-		this.help = "Einen Textbefehl erstellen";
-		this.arguments = "<command> <antwort>";
+		this.help = "Create a custom text-command.";
+		this.arguments = "<command> <response>";
 		this.guildOnly = true;
+		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
+		this.category = new Category("Custom Commands");
 	}
 
 	@Override
@@ -21,20 +23,15 @@ public class TextCmdAddCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.");
-			return;
-		}
-
 		if (args.length < 2) {
-			e.reply("Syntaxfehler. Verwendung: !" + name + " <Command> <Argumente>");
+			e.reply("Syntaxerror. Usage: !" + name + " <command> <response>");
 			return;
 		}
 
 		String name = args[0].toLowerCase();
 		if (Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name))
 				|| Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
-			e.reply("Es existiert bereits ein Befehl mit diesem Namen.");
+			e.reply("There is already a command with that name.");
 			return;
 		}
 		String arguments = "";
@@ -46,9 +43,9 @@ public class TextCmdAddCommand extends Command {
 			arguments = sb.toString().trim();
 		}
 		if (Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
-			e.reply("Der Textbefehl `" + name + "` wurde ersetzt.");
+			e.reply("The text-command `" + name + "` has been replaced.");
 		} else {
-			e.reply("Der Textbefehl `" + name + "` wurde erstellt.");
+			e.reply("The text-command `" + name + "` has been created.");
 		}
 		Main.getGuildConfig(e.getGuild()).addCustomCommand(name, arguments);
 	}

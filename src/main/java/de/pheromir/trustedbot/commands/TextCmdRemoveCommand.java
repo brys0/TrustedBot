@@ -10,9 +10,11 @@ public class TextCmdRemoveCommand extends Command {
 
 	public TextCmdRemoveCommand() {
 		this.name = "textcmdremove";
-		this.help = "Einen Textbefehl entfernen";
+		this.help = "Remove a custom text-command.";
 		this.arguments = "<command>";
 		this.guildOnly = true;
+		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
+		this.category = new Category("Custom Commands");
 	}
 
 	@Override
@@ -21,22 +23,17 @@ public class TextCmdRemoveCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.");
-			return;
-		}
-
 		if (args.length == 0) {
-			e.reply("Syntaxfehler. Verwendung: !" + name + " <Befehl>");
+			e.reply("Syntaxerror. Usage: !" + name + " <command>");
 			return;
 		}
 
 		String name = args[0].toLowerCase();
 		if (!Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
-			e.reply("Es existiert kein Textbefehl mit diesem Namen.");
+			e.reply("There is no text-command with the specified name.");
 			return;
 		}
 		Main.getGuildConfig(e.getGuild()).removeCustomCommand(name);
-		e.reply("Der Textbefehl `" + name + "` wurde entfernt.");
+		e.reply("The text-command `" + name + "` has been removed.");
 	}
 }

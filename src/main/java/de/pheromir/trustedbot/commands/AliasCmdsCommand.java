@@ -9,8 +9,9 @@ public class AliasCmdsCommand extends Command {
 
 	public AliasCmdsCommand() {
 		this.name = "aliases";
-		this.help = "Aliase auflisten";
+		this.help = "List all aliases for the current guild.";
 		this.guildOnly = true;
+		this.category = new Category("Command Aliases");
 	}
 
 	@Override
@@ -19,7 +20,7 @@ public class AliasCmdsCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		String cmds = "Es existieren derzeit folgende Aliase: ";
+		String cmds = "There are currently the following aliases: ";
 		StringBuilder sb = new StringBuilder();
 		for (String str : Main.getGuildConfig(e.getGuild()).getAliasCommands().keySet()) {
 			sb.append("`" + str + "`, ");

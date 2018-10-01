@@ -11,8 +11,9 @@ public class SeekCommand extends Command {
 
 	public SeekCommand() {
 		this.name = "seek";
+		this.arguments = "<HH:mm:ss>";
 		this.aliases = new String[] { "goto" };
-		this.help = "Wiedergabestelle setzen";
+		this.help = "Seek the playback time of the current track.";
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -21,14 +22,14 @@ public class SeekCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du musst mind. DJ sein um die Wiedergabestelle ändern zu können.");
+			e.reply("You need DJ privileges to seek the track.");
 			return;
 		}
 		long time;
 		try {
 			time = Methods.parseTimeString(e.getArgs());
 		} catch (NumberFormatException ex) {
-			e.reply("Ungültige Angabe. Syntax: `HH:mm:ss` oder `mm:ss`.");
+			e.reply("Syntaxerror. Usage: `HH:mm:ss` or `mm:ss`.");
 			return;
 		}
 		if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() == null) {

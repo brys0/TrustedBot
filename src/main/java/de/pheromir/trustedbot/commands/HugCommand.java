@@ -8,7 +8,7 @@ public class HugCommand extends RandomImageCommand {
 		this.BASE_URL = "https://nekos.life/api/hug";
 		this.jsonKey = "url";
 		this.name = "hug";
-		this.help = "Zeigt ein zufälliges Hug-Gif";
+		this.help = "Shows a random hug gif.";
 	}
 
 }

@@ -14,8 +14,9 @@ public class DJRemoveCommand extends Command {
 
 	public DJRemoveCommand() {
 		this.name = "djremove";
-		this.help = "DJ-Rechte von einer Person entfernen.";
+		this.help = "Remove DJ permissions of the specified user.";
 		this.arguments = "<User-Mention>";
+		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -26,11 +27,6 @@ public class DJRemoveCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.");
-			return;
-		}
-
 		for (String arg : args) {
 			Pattern p = Pattern.compile("(\\d+)");
 			Matcher m = p.matcher(arg);
@@ -38,19 +34,19 @@ public class DJRemoveCommand extends Command {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);
 				if (mem == null) {
-					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+					e.reply("The specified user couldn't be found.");
 					continue;
 				}
 				if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention() + " ist gar kein DJ.");
+					e.reply(mem.getAsMention() + " is not a DJ.");
 					continue;
 				} else {
-					e.reply(mem.getAsMention() + " ist nun kein DJ mehr.");
+					e.reply(mem.getAsMention() + " is no longer a DJ.");
 					Main.getGuildConfig(e.getGuild()).removeDJ(Long.parseLong(id));
 					continue;
 				}
 			} else {
-				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+				e.reply("The specified user couldn't be found.");
 				continue;
 			}
 		}

@@ -49,7 +49,7 @@ public class PlayCommand extends Command {
 		this.name = "play";
 		this.botPermissions = new Permission[] { Permission.VOICE_CONNECT, Permission.VOICE_SPEAK };
 		this.guildOnly = true;
-		this.help = "Titel zur Wiedergabeschlange hinzufügen.";
+		this.help = "Add a track to the playlist.";
 		this.category = new Category("Music");
 	}
 
@@ -61,16 +61,16 @@ public class PlayCommand extends Command {
 
 		if (e.getArgs().isEmpty() && musicManager.player.isPaused()) {
 			musicManager.player.setPaused(false);
-			e.reply("Wiedergabe fortgesetzt.");
+			e.reply("Playback resumed.");
 			if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null) {
 				e.getGuild().getAudioManager().openAudioConnection(vc);
 			}
 			return;
 		} else if (e.getArgs().isEmpty()) {
 			if (Main.getGuildConfig(e.getGuild()).scheduler.getRequestedTitles().isEmpty()) {
-				e.reply("Bitte einen Track angeben (Link / Youtube Suchbegriffe).");
+				e.reply("Please specify a track. (URL / YouTube keywords)");
 			} else {
-				e.reply("Setze Wiedergabe der aktuellen Warteschlange fort.");
+				e.reply("Continue playing the current queue.");
 				audioManager.openAudioConnection(vc);
 				musicManager.scheduler.nextTrack();
 			}
@@ -126,7 +126,7 @@ public class PlayCommand extends Command {
 				}
 			
 			} else if(e.getArgs().toLowerCase().contains("spotify.com")) {
-				e.reply("Es wird derzeit nur die einfache Trackangabe von Spotify unterstützt.\n(spotify.com/track/TRACKID)");
+				e.reply("Currently only tracks (not playlists) from spotify are supported.\n(spotify.com/track/TRACKID)");
 				return;
 			}
 		}
@@ -139,7 +139,7 @@ public class PlayCommand extends Command {
 					return;
 				} catch (IOException e1) {
 					e1.printStackTrace();
-					e.reply("Es ist ein Fehler aufgetreten.");
+					e.reply("An error occurred.");
 					return;
 				}
 
@@ -155,17 +155,17 @@ public class PlayCommand extends Command {
 			public void trackLoaded(AudioTrack track) {
 				if (track.getDuration() > (1000 * 60 * 60 * 2)
 						&& !Main.getExtraUsers().contains(e.getAuthor().getIdLong())) {
-					e.reply("Du kannst nur Titel mit einer Länge von bis zu zwei Stunden hinzufügen.");
+					e.reply("You can only add tracks with a duration of up to two hours.");
 					return;
 				} else if (Main.getGuildConfig(e.getGuild()).scheduler.getRequestedTitles().size() > 10
 						&& !Main.getExtraUsers().contains(e.getAuthor().getIdLong())) {
-					e.reply("Du kannst keine weiteren Titel hinzufügen, da das Limit von 10 Titeln erreicht wurde.");
+					e.reply("You can't add more tracks, as the limit of 10 tracks in the queue has been reached.");
 					return;
 				}
 				audioManager.openAudioConnection(vc);
 				musicManager.scheduler.queue(track, e.getAuthor());
 				e.reply("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration())
-						+ "] wurde zur Warteschlange hinzugefügt.");
+						+ "] has been added to the queue.");
 			}
 
 			@Override
@@ -177,17 +177,17 @@ public class PlayCommand extends Command {
 				audioManager.openAudioConnection(vc);
 				musicManager.scheduler.queue(firstTrack, e.getAuthor());
 				e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration())
-						+ "] wurde zur Warteschlange hinzugefügt.");
+						+ "] has been added to the queue.");
 			}
 
 			@Override
 			public void noMatches() {
-				e.reply("Es konnte kein passender Titel gefunden werden.");
+				e.reply("Couldn't find a matching track.");
 			}
 
 			@Override
 			public void loadFailed(FriendlyException throwable) {
-				e.reply("Fehler beim Abspielen: " + throwable.getLocalizedMessage());
+				e.reply("An error occurred loading the track: " + throwable.getLocalizedMessage());
 			}
 
 		});
@@ -200,7 +200,7 @@ public class PlayCommand extends Command {
 					public void initialize(HttpRequest request) throws IOException {
 
 					}
-				}).setApplicationName("DiscordBot").build();
+				}).setApplicationName("TrustedBot").build();
 
 		YouTube.Search.List searchRequest;
 		searchRequest = youtube.search().list("snippet");
@@ -229,7 +229,7 @@ public class PlayCommand extends Command {
 		Main.getGuildConfig(e.getGuild()).getSuggestions().put(e.getAuthor(), suggests);
 		Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(),
 				e.getAuthor()), 5, TimeUnit.MINUTES);
-		m.setFooter("Titel auswählen: !play [Nr] (Vorschläge 5 min. gültig)", e.getJDA().getSelfUser().getAvatarUrl());
+		m.setFooter("Select track: !play [Nr] (Suggestions are valid for 5 min)", e.getJDA().getSelfUser().getAvatarUrl());
 		mes.setEmbed(m.build());
 		e.reply(mes.build());
 	}

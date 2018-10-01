@@ -14,7 +14,7 @@ public class ResumeCommand extends Command {
 	public ResumeCommand() {
 		this.name = "resume";
 		this.aliases = new String[] { "unpause" };
-		this.help = "Musikwiedergabe fortsetzen";
+		this.help = "Resume the current track.";
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -23,7 +23,7 @@ public class ResumeCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du musst mind. ein DJ sein um den Bot wieder starten zu können.");
+			e.reply("You need DJ privileges to resume the playback.");
 			return;
 		}
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());

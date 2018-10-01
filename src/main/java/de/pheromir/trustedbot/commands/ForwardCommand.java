@@ -11,7 +11,8 @@ public class ForwardCommand extends Command {
 
 	public ForwardCommand() {
 		this.name = "forward";
-		this.help = "Aktuellen Titel vorspulen";
+		this.arguments = "<HH:mm:ss>";
+		this.help = "Fast-forward the current track by the specified time.";
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -20,14 +21,14 @@ public class ForwardCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du musst mind. DJ sein um die Wiedergabestelle ändern zu können.");
+			e.reply("You need DJ privileges to fast-forward the track.");
 			return;
 		}
 		long time;
 		try {
 			time = Methods.parseTimeString(e.getArgs());
 		} catch (NumberFormatException ex) {
-			e.reply("Ungültige Angabe. Syntax: `HH:mm:ss` oder `mm:ss`.");
+			e.reply("Syntaxerror. Usage: `HH:mm:ss` or `mm:ss`.");
 			return;
 		}
 		if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() == null) {

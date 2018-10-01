@@ -10,13 +10,13 @@ import net.dv8tion.jda.core.Permission;
 
 public class GoogleCommand extends Command {
 
-	private final String BASE_URL = "https://www.google.de/search?q=%s";
+	private final String BASE_URL = "https://www.google.com/search?q=%s";
 
 	public GoogleCommand() {
 		this.name = "google";
 		this.aliases = new String[] { "g" };
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
-		this.help = "Erstellt einen Link zur Google-Suche";
+		this.help = "Create a google search url with the specified keywords.";
 		this.guildOnly = false;
 		this.category = new Category("Miscellaneous");
 	}
@@ -29,7 +29,7 @@ public class GoogleCommand extends Command {
 			e.reply(url);
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
-			e.reply("Whoops, da ist wohl etwas schiefgelaufen.");
+			e.reply("Oops, looks like something went wrong.");
 		}
 	}
 

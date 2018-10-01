@@ -10,9 +10,11 @@ public class AliasAddCommand extends Command {
 
 	public AliasAddCommand() {
 		this.name = "aliasadd";
-		this.help = "Einen Alias für einen Befehl erstellen";
+		this.help = "Create an alias for a command";
 		this.arguments = "<alias> <command> <arguments>";
+		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
 		this.guildOnly = true;
+		this.category = new Category("Command Aliases");
 	}
 
 	@Override
@@ -21,20 +23,15 @@ public class AliasAddCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.");
-			return;
-		}
-
 		if (args.length < 2) {
-			e.reply("Syntaxfehler. Verwendung: !" + name + " <Alias> <Command> [Argumente]");
+			e.reply("Syntaxerror. Usage: !" + name + " <alias> <command> [arguments]");
 			return;
 		}
 
 		String name = args[0].toLowerCase();
 		if (Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name))
 				|| Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
-			e.reply("Es existiert bereits ein Befehl mit diesem Namen.");
+			e.reply("There is already a command with that name.");
 			return;
 		}
 		String cmd = args[1].toLowerCase();
@@ -47,9 +44,9 @@ public class AliasAddCommand extends Command {
 			arguments = sb.toString().trim();
 		}
 		if (Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
-			e.reply("Der Alias `" + name + "` wurde ersetzt.");
+			e.reply("The alias `" + name + "` has been replaced.");
 		} else {
-			e.reply("Der Alias `" + name + "` wurde erstellt.");
+			e.reply("The alias `" + name + "` has been created.");
 		}
 		Main.getGuildConfig(e.getGuild()).addAliasCommand(name, cmd, arguments);
 	}

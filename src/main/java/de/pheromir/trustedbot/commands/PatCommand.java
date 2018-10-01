@@ -8,7 +8,7 @@ public class PatCommand extends RandomImageCommand {
 		this.BASE_URL = "https://nekos.life/api/" + "pat";
 		this.jsonKey = "url";
 		this.name = "pat";
-		this.help = "Zeigt ein zufälliges Pat-Gif";
+		this.help = "Shows a random pat gif.";
 	}
 
 }

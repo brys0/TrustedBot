@@ -24,7 +24,7 @@ public class UrbanDictionaryCommand extends Command {
 		this.name = "urbandictionary";
 		this.aliases = new String[] { "ud" };
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
-		this.help = "Zeigt Definitionen zum gewählten Wort von UrbanDictionary an";
+		this.help = "Show the definitions of the specified word from the UrbanDictionary.";
 		this.guildOnly = false;
 		this.category = new Category("Miscellaneous");
 	}
@@ -35,25 +35,25 @@ public class UrbanDictionaryCommand extends Command {
 
 			@Override
 			public void cancelled() {
-				e.reply("Die Suche nach der Definition von `" + e.getArgs() + "` wurde abgebrochen.");
+				e.reply("The search for a definition of `" + e.getArgs() + "` has been cancelled.");
 			}
 
 			@Override
 			public void completed(HttpResponse<JsonNode> arg0) {
 				JSONArray ja = arg0.getBody().getObject().getJSONArray("list");
 				if (ja == null || ja.length() == 0) {
-					e.reply("Es wurde keine Definition für `" + e.getArgs() + "` gefunden.");
+					e.reply("Could not find a definition for `" + e.getArgs() + "`.");
 					return;
 				} else {
 					EmbedBuilder eb = new EmbedBuilder();
-					eb.setTitle("Definition: " + e.getArgs());
+					eb.setTitle("Definition of `" + e.getArgs() + "`");
 					eb.setAuthor("Urban Dictionary");
 					eb.setColor(e.getChannelType() == ChannelType.TEXT ? e.getSelfMember().getColor() : Color.BLUE);
 					for (int i = 0; i < (ja.length() <= 5 ? ja.length() : 5); i++) {
 						String def = ja.getJSONObject(i).getString("definition");
 						String ex = ja.getJSONObject(i).getString("example");
 						eb.appendDescription("**[" + (i + 1) + "]**\n**Definition:** "
-								+ def.substring(0, def.length()>200?197:def.length()) + (def.length()>200?"...":"") + "\n**Beispiel:** "
+								+ def.substring(0, def.length()>200?197:def.length()) + (def.length()>200?"...":"") + "\n**Example:** "
 								+ ex.substring(0, ex.length()>200?197:ex.length()) + (ex.length()>200?"...":"") +"\n\n");
 					}
 					e.reply(eb.build());
@@ -64,7 +64,7 @@ public class UrbanDictionaryCommand extends Command {
 
 			@Override
 			public void failed(UnirestException arg0) {
-				e.reply("Die Suche nach der Definition von `" + e.getArgs() + "` ist fehlgeschlagen: "
+				e.reply("An error occurred while getting the definition of `" + e.getArgs() + "`: "
 						+ arg0.getLocalizedMessage());
 			}
 		});

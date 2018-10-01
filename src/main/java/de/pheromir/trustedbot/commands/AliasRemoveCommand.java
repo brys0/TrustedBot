@@ -10,9 +10,11 @@ public class AliasRemoveCommand extends Command {
 
 	public AliasRemoveCommand() {
 		this.name = "aliasremove";
-		this.help = "Einen Alias für einen Befehl entfernen";
+		this.help = "Remove an alias.";
 		this.arguments = "<alias>";
 		this.guildOnly = true;
+		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
+		this.category = new Category("Command Aliases");
 	}
 
 	@Override
@@ -20,23 +22,18 @@ public class AliasRemoveCommand extends Command {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
-
-		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.");
-			return;
-		}
-
+		
 		if (args.length == 0) {
-			e.reply("Syntaxfehler. Verwendung: !" + name + " <Alias>");
+			e.reply("Syntaxerror. Usage: !" + name + " <alias>");
 			return;
 		}
 
 		String name = args[0].toLowerCase();
 		if (!Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
-			e.reply("Es existiert kein Alias mit diesem Namen.");
+			e.reply("There is no alias with the specified name.");
 			return;
 		}
 		Main.getGuildConfig(e.getGuild()).removeAliasCommand(name);
-		e.reply("Der Alias `" + name + "` wurde entfernt.");
+		e.reply("The alias `" + name + "` has been removed.");
 	}
 }

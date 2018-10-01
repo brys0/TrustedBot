@@ -9,8 +9,9 @@ public class TextCmdsCommand extends Command {
 
 	public TextCmdsCommand() {
 		this.name = "textcmds";
-		this.help = "Textbefehle auflisten";
+		this.help = "List all custom text-commands for the current guild.";
 		this.guildOnly = true;
+		this.category = new Category("Custom Commands");
 	}
 
 	@Override
@@ -19,7 +20,7 @@ public class TextCmdsCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		String cmds = "Es existieren derzeit folgende Textbefehle: ";
+		String cmds = "There are currently the following text-commands: ";
 		StringBuilder sb = new StringBuilder();
 		for (String str : Main.getGuildConfig(e.getGuild()).getCustomCommands().keySet()) {
 			sb.append("`" + str + "`, ");

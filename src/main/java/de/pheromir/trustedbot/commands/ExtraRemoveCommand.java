@@ -13,8 +13,8 @@ public class ExtraRemoveCommand extends Command {
 
 	public ExtraRemoveCommand() {
 		this.name = "extraremove";
-		this.help = "Extra-Rechte von einer Person entfernen.";
-		this.arguments = "<User-Tag/ID>";
+		this.help = "Removeextra permissions of the specified user.";
+		this.arguments = "<User-Mention>";
 		this.guildOnly = false;
 		this.ownerCommand = true;
 	}
@@ -32,19 +32,19 @@ public class ExtraRemoveCommand extends Command {
 				String id = m.group(1);
 				User mem = Main.jda.getUserById(id);
 				if (mem == null) {
-					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+					e.reply("The specified user couldn't be found.");
 					continue;
 				}
 				if (!Main.getExtraUsers().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention() + " hat gar Extra-Rechte.");
+					e.reply(mem.getAsMention() + " doesn't have extra permissions.");
 					continue;
 				} else {
-					e.reply(mem.getAsMention() + " hat nun keine Extra-Rechte mehr.");
+					e.reply(mem.getAsMention() + " no longer has extra permissions.");
 					Main.removeExtraUser(Long.parseLong(id));
 					continue;
 				}
 			} else {
-				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+				e.reply("The specified user couldn't be found.");
 				continue;
 			}
 		}

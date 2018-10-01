@@ -10,7 +10,7 @@ public class PauseCommand extends Command {
 
 	public PauseCommand() {
 		this.name = "pause";
-		this.help = "Musikwiedergabe pausieren";
+		this.help = "Pause the current track.";
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -19,7 +19,7 @@ public class PauseCommand extends Command {
 	protected void execute(CommandEvent e) {
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du musst mind. DJ sein um den Bot pausieren zu können.");
+			e.reply("You need DJ privileges to pause the playback.");
 			return;
 		}
 

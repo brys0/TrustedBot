@@ -9,8 +9,9 @@ public class VolumeCommand extends Command {
 
 	public VolumeCommand() {
 		this.name = "volume";
+		this.arguments = "<1-100>";
 		this.aliases = new String[] { "vol" };
-		this.help = "Musiklautstärke anpassen";
+		this.help = "Set the playback volume. (currently only for selected users available)";
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -18,11 +19,16 @@ public class VolumeCommand extends Command {
 	@Override
 	protected void execute(CommandEvent e) {
 		if (e.getArgs().isEmpty()) {
-			e.reply("Derzeitige Lautstärke: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
+			e.reply("Current volume: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
 			return;
 		}
 		if (!Main.getExtraUsers().contains(e.getAuthor().getIdLong())) {
-			e.reply("Aus Performancegründen ist dieser Befehl nur für ausgewählte User freigeschaltet. Sorry.");
+			e.reply("For performance reasons, this command is only available for selected users. Sorry.\n"
+					+ "You can control the volume in your discord-client by rightclicking me.");
+			return;
+		}
+		if(!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())) {
+			e.reply("You need DJ permissions to use this command.");
 			return;
 		}
 
@@ -30,10 +36,10 @@ public class VolumeCommand extends Command {
 		try {
 			vol = Integer.parseInt(e.getArgs());
 			if (vol < 1 || vol > 100) {
-				throw new NumberFormatException("Lautstärke außerhalb des Bereiches 1-100.");
+				throw new NumberFormatException("Volume out of range. (1-100)");
 			}
 		} catch (NumberFormatException ex) {
-			e.reply("Ungültiger Wert. Bitte einen Wert von 1-100 angeben.");
+			e.reply("Invalid value. Please specify a value between 1-100.");
 			return;
 		}
 		Main.getGuildConfig(e.getGuild()).setVolume(vol);

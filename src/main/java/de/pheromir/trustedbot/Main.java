@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.Command.Category;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.mashape.unirest.http.HttpResponse;
@@ -44,12 +47,13 @@ import de.pheromir.trustedbot.commands.LewdCommand;
 import de.pheromir.trustedbot.commands.LizardCommand;
 import de.pheromir.trustedbot.commands.MemoryCommand;
 import de.pheromir.trustedbot.commands.NekoCommand;
+import de.pheromir.trustedbot.commands.NumberFactCommand;
 import de.pheromir.trustedbot.commands.PatCommand;
 import de.pheromir.trustedbot.commands.PauseCommand;
 import de.pheromir.trustedbot.commands.PlayCommand;
 import de.pheromir.trustedbot.commands.PlayingCommand;
-import de.pheromir.trustedbot.commands.PlaylistCommand;
 import de.pheromir.trustedbot.commands.PrefixCommand;
+import de.pheromir.trustedbot.commands.QueueCommand;
 import de.pheromir.trustedbot.commands.RedditCommand;
 import de.pheromir.trustedbot.commands.ResumeCommand;
 import de.pheromir.trustedbot.commands.RewindCommand;
@@ -68,19 +72,19 @@ import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.config.SettingsManager;
 import de.pheromir.trustedbot.config.YamlConfiguration;
 import de.pheromir.trustedbot.events.CmdListener;
-import de.pheromir.trustedbot.events.GuildJoin;
-import de.pheromir.trustedbot.events.GuildLeave;
+import de.pheromir.trustedbot.events.GuildEvents;
 import de.pheromir.trustedbot.events.Shutdown;
 import de.pheromir.trustedbot.tasks.CBCheck;
-import de.pheromir.trustedbot.tasks.ClearRedditPostHistory;
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.User;
 
 public class Main {
 
@@ -114,33 +118,70 @@ public class Main {
 		Unirest.setDefaultHeader("User-Agent", "Mozilla/5.0");
 
 		/* COMMANDS KONFIGURIEREN */
-		CommandClientBuilder builder = new CommandClientBuilder();
-		builder.useHelpBuilder(false);
-		builder.setOwnerId(adminId);
-		builder.setGuildSettingsManager(new SettingsManager());
-		builder.addCommands(new StatusCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new MemoryCommand());
-		builder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand());
-		builder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new PlaylistCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand());
-		builder.addCommands(new GoogleCommand(), new RedditCommand(), new CBCommand(), new UrbanDictionaryCommand());
-		builder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand(), new PrefixCommand());
-		builder.setLinkedCacheSize(512);
-		builder.setListener(new CmdListener());
-		builder.setGame(Game.playing("Trusted-Community.eu"));
+		CommandClientBuilder cbuilder = new CommandClientBuilder();
+		cbuilder.setOwnerId(adminId);
+		cbuilder.setGuildSettingsManager(new SettingsManager());
+		// Owner Commands + Settings
+		cbuilder.addCommands(new StatusCommand(), new MemoryCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand());
+		// Music
+		cbuilder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new QueueCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand());
+		// Alias + Custom Commands
+		cbuilder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand());
+		// Subscription Commands
+		cbuilder.addCommands(new RedditCommand(), new CBCommand());
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
-			builder.addCommands(new TwitchCommand());
+			cbuilder.addCommands(new TwitchCommand());
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 5, 5, TimeUnit.MINUTES);
 		}
+		// Fun
+		cbuilder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand());
+		// Misc
+		cbuilder.addCommands(new GoogleCommand(), new UrbanDictionaryCommand());
 
-		builder.setEmojis("\u2705", "\u26A0", "\u274C");
-		commandClient = builder.build();
+		cbuilder.setLinkedCacheSize(512);
+		cbuilder.setListener(new CmdListener());
+		cbuilder.setGame(Game.playing("Trusted-Community.eu"));
+
+		//cbuilder.setEmojis("\u2705", "\u26A0", "\u274C");
+		cbuilder.setEmojis("\u2705", "", "");
+		
+		cbuilder.setHelpConsumer((event) -> {
+			StringBuilder builder = new StringBuilder("**Available commands for "+(event.getChannelType()==ChannelType.TEXT?"the requested Guild":"Direct Messages")+":**\n*Note: The command prefix may vary between guilds. The prefix in Direct Messages is always "+commandClient.getTextualPrefix()+".*\n");
+			Category category = null;
+			for (Command command : commandClient.getCommands()) {
+				if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner()) && (!command.isGuildOnly() || (event.isFromType(ChannelType.TEXT) && event.getMember().hasPermission(command.getUserPermissions())))) {
+					if (!Objects.equals(category, command.getCategory())) {
+						category = command.getCategory();
+						builder.append("\n\n__").append(category == null ? "No Category"
+								: category.getName()).append("__:\n");
+					}
+					builder.append("\n`").append(event.getChannelType()==ChannelType.TEXT?Main.getGuildConfig(event.getGuild()).getPrefix():commandClient.getTextualPrefix()).append(command.getName()).append(command.getArguments() == null
+							? "`"
+							: " " + command.getArguments() + "`").append(" - ").append(command.getHelp());
+				}
+			}
+			User owner = event.getJDA().getUserById(commandClient.getOwnerId());
+			if (owner != null) {
+				builder.append("\n\nFor additional help, contact **").append(owner.getName()).append("**#").append(owner.getDiscriminator());
+				if (commandClient.getServerInvite() != null)
+					builder.append(" or join ").append(commandClient.getServerInvite());
+			}
+			event.replyInDm(builder.toString(), unused -> {
+				if (event.isFromType(ChannelType.TEXT))
+					event.reactSuccess();
+			}, t -> event.reply("Help cannot be sent because you are blocking Direct Messages."));
+		});
+		
+		commandClient = cbuilder.build();
 		try {
 			/* BOT STARTEN */
 			jda = new JDABuilder(
-					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildLeave(), new GuildJoin(), new Shutdown()).setAutoReconnect(true).build();
+					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown()).setAutoReconnect(true).build();
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 15, 30, TimeUnit.MINUTES);
-			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new ClearRedditPostHistory(), 30, 30, TimeUnit.DAYS);
+			// Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new
+			// ClearRedditPostHistory(), 30, 30, TimeUnit.DAYS);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 15, 15, TimeUnit.MINUTES);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				Main.jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
@@ -164,7 +205,7 @@ public class Main {
 						@Override
 						public void completed(HttpResponse<JsonNode> r) {
 							JSONObject jo = r.getBody().getObject();
-							if(jo.has("error") && jo.getString("error").equals("invalid_client")) {
+							if (jo.has("error") && jo.getString("error").equals("invalid_client")) {
 								LOG.error("Spotify Token renew failed: Invalid Client");
 								spotifyToken = "none";
 								spotifyTask.shutdownNow();

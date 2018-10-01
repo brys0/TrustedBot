@@ -14,8 +14,9 @@ public class DJAddCommand extends Command {
 
 	public DJAddCommand() {
 		this.name = "djadd";
-		this.help = "DJ-Rechte an eine Person vergeben.";
-		this.arguments = "<Person>";
+		this.help = "Assign DJ permissions to the specified user.";
+		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
+		this.arguments = "<User-Mention>";
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -26,11 +27,6 @@ public class DJAddCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
-		if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("Du hast keine Rechte für diesen Befehl.");
-			return;
-		}
-
 		Pattern p = Pattern.compile("(\\d+)");
 		for (String arg : args) {
 			Matcher m = p.matcher(arg);
@@ -38,19 +34,19 @@ public class DJAddCommand extends Command {
 				String id = m.group(1);
 				Member mem = e.getGuild().getMemberById(id);
 				if (mem == null) {
-					e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+					e.reply("The specified user couldn't be found.");
 					continue;
 				}
 				if (Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention() + " ist bereits DJ.");
+					e.reply(mem.getAsMention() + " is already a DJ.");
 					continue;
 				} else {
-					e.reply(mem.getAsMention() + " ist nun DJ.");
+					e.reply(mem.getAsMention() + " is now a DJ.");
 					Main.getGuildConfig(e.getGuild()).addDJ(Long.parseLong(id));
 					continue;
 				}
 			} else {
-				e.reply("Es konnte kein entsprechender Nutzer gefunden werden.");
+				e.reply("The specified user couldn't be found.");
 				continue;
 			}
 		}

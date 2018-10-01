@@ -10,7 +10,7 @@ public class StatusCommand extends Command {
 
 	public StatusCommand() {
 		this.name = "status";
-		this.help = "Status des Bots setzen (Spielt/Schaut..)";
+		this.help = "Set the status of the bot. (is playing/listening..)";
 		this.arguments = "<play|watch|listen> <Text>";
 		this.guildOnly = false;
 		this.ownerCommand = true;

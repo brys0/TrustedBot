@@ -1,6 +1,7 @@
 package de.pheromir.trustedbot.commands;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -13,11 +14,12 @@ public class CBCommand extends Command {
 
 	public CBCommand() {
 		this.name = "cb";
-		this.help = "Chaturbatebenachrichtigungen für ein Benutzer im Channel de-/aktivieren.";
-		this.arguments = "<Username>";
+		this.help = "Enable/Disable notifications if the specified camgirl of chaturbate.com goes live.";
+		this.arguments = "[Username]";
 		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.guildOnly = true;
 		this.hidden = true;
+		this.category = new Category("Subscriptions");
 	}
 
 	@Override
@@ -27,14 +29,9 @@ public class CBCommand extends Command {
 			args = new String[0];
 
 		if (args.length == 0) {
-			ArrayList<String> streams = new ArrayList<>();
-			for (String str : GuildConfig.getCBList().keySet()) {
-				if (GuildConfig.getCBList().get(str).contains(e.getChannel().getIdLong())) {
-					streams.add(str);
-				}
-			}
+			ArrayList<String> streams = (ArrayList<String>) GuildConfig.getCBList().keySet().stream().filter(k -> GuildConfig.getCBList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
 			if (streams.isEmpty()) {
-				e.reply("In diesem Channel sind momenten keine CB-Benachrichtigungen aktiv.");
+				e.reply("There are currently no notifications active for this channel.");
 				return;
 			} else {
 				StringBuilder sb = new StringBuilder();
@@ -42,27 +39,27 @@ public class CBCommand extends Command {
 					sb.append("`" + str + "`, ");
 				}
 				String msg = sb.substring(0, sb.length() - 2);
-				e.reply("In diesem Channel sind momentan CB-Benachrichtigung für folgende Benutzer aktiv: " + msg);
+				e.reply("There are currently the following notifications active: " + msg);
 				return;
 			}
 		}
 		if (args.length != 1) {
-			e.reply("Syntaxfehler. Verwendung: `!" + this.name + " <Username>`");
+			e.reply("Syntaxerror. Usage: `!" + this.name + " [username]`");
 			return;
 		} else {
 			if (GuildConfig.getCBList().containsKey(e.getArgs().toLowerCase())
 					&& GuildConfig.getCBList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
 				GuildConfig.removeCBStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
-				e.reply("CB-Benachrichtigungen für " + e.getArgs().toLowerCase()
-						+ " sind in diesem Channel nun deaktiviert.");
+				e.reply("CB-notifications for " + e.getArgs().toLowerCase()
+						+ " have been disabled in this channel.");
 			} else {
 				if (!Methods.doesCBUserExist(e.getArgs())) {
-					e.reply("Es scheint keinen Benutzer mit diesem Namen zu geben (oder es ist ein Fehler aufgetreten).");
+					e.reply("There doesn't seem to be a user with this name (or an error occurred)");
 					return;
 				}
 				GuildConfig.addCBStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
-				e.reply("CB-Benachrichtigungen für " + e.getArgs().toLowerCase()
-						+ " sind in diesem Channel nun aktiviert.");
+				e.reply("CB-notifications for " + e.getArgs().toLowerCase()
+						+ " have been enabled in this channel.");
 			}
 			return;
 		}

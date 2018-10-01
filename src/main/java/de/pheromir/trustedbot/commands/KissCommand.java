@@ -8,7 +8,7 @@ public class KissCommand extends RandomImageCommand {
 		this.BASE_URL = "https://nekos.life/api/kiss";
 		this.jsonKey = "url";
 		this.name = "kiss";
-		this.help = "Zeigt ein zufälliges Kiss-Gif";
+		this.help = "Shows a random kiss gif.";
 	}
 
 }

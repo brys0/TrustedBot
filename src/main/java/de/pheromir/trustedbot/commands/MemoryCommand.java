@@ -11,7 +11,7 @@ public class MemoryCommand extends Command {
 	public MemoryCommand() {
 		this.name = "memory";
 		this.aliases = new String[] { "mem" };
-		this.help = "Speicherauslastung des Bots anzeigen";
+		this.help = "Shows the current memory usage.";
 		this.guildOnly = false;
 		this.ownerCommand = true;
 	}

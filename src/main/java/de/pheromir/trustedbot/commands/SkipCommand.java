@@ -11,7 +11,7 @@ public class SkipCommand extends Command {
 
 	public SkipCommand() {
 		this.name = "skip";
-		this.help = "Musiktrack überspringen";
+		this.help = "Skip the current track.";
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
@@ -24,7 +24,7 @@ public class SkipCommand extends Command {
 			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 					&& m.scheduler.getCurrentRequester() != e.getAuthor()
 					&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-				e.reply("Du kannst nur Songs skippen, die du selbst hinzugefügt hast.");
+				e.reply("You can only skip tracks that you requested.");
 				return;
 			}
 			m.scheduler.nextTrack();
@@ -34,23 +34,24 @@ public class SkipCommand extends Command {
 			try {
 				index = Integer.parseInt(e.getArgs()) - 1;
 			} catch (NumberFormatException ex) {
-				e.reply("Bitte eine gültige Zahl angeben.");
+				e.reply("Please enter a number between 1 - "+(m.scheduler.getRequestedTitles().size()+1)+".");
 				return;
 			}
-			if (index >= m.scheduler.getRequestedTitles().size()) {
-				e.reply("Bitte eine gültige Zahl angeben.");
+			if (index >= m.scheduler.getRequestedTitles().size() || index < 0) {
+				e.reply("Please enter a number between 1 - "+(m.scheduler.getRequestedTitles().size()+1)+".");
+				return;
 			}
 			if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()
 					&& m.scheduler.getRequestedTitles().get(index).getRequestor() != e.getAuthor()
 					&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-				e.reply("Du kannst nur Songs skippen, die du selbst hinzugefügt hast.");
+				e.reply("You can only skip tracks that you requested.");
 				return;
 			}
 			String title = m.scheduler.getRequestedTitles().get(index).getTrack().getInfo().title;
 			if (m.scheduler.skipTrackNr(index)) {
-				e.reply("`" + title + "` wurde übersprungen.");
+				e.reply("`" + title + "` skipped.");
 			} else {
-				e.reply("Hoppala, da ist wohl etwas schiefgegangen");
+				e.reply("Oops, looks like something went wrong.");
 			}
 		}
 	}

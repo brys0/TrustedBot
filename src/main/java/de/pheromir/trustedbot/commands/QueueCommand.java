@@ -13,12 +13,12 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 
-public class PlaylistCommand extends Command {
+public class QueueCommand extends Command {
 
-	public PlaylistCommand() {
-		this.name = "playlist";
-		this.aliases = new String[] { "q", "queue" };
-		this.help = "";
+	public QueueCommand() {
+		this.name = "queue";
+		this.aliases = new String[] { "q", "playlist" };
+		this.help = "Shows current queue.";
 		this.guildOnly = true;
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
 		this.category = new Category("Music");
@@ -42,8 +42,8 @@ public class PlaylistCommand extends Command {
 			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 					|| e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				musicManager.scheduler.setRepeat(!musicManager.scheduler.getRepeat());
-				e.reply(musicManager.scheduler.getRepeat() ? "Die Warteschlange wiederholt sich nun."
-						: "Die Warteschlange wiederholt sich nicht mehr.");
+				e.reply(musicManager.scheduler.getRepeat() ? "The queue is now repeating."
+						: "The queue is no longer repeating.");
 				return;
 			}
 		}
@@ -51,14 +51,14 @@ public class PlaylistCommand extends Command {
 		MessageBuilder mes = new MessageBuilder();
 		int amnt = titles.size() > 10 ? 10 : titles.size();
 
-		mes.append("**Warteschlange** (" + (amnt > 9 ? "Nächste 10 Titel)" : amnt + " Titel)"));
+		mes.append("**Queue** (" + (amnt > 10 ? "Next 10 tracks)" : amnt + " tracks)"));
 		EmbedBuilder m = new EmbedBuilder();
-		m.setTitle("Wiederholung der Warteschlange: " + (musicManager.scheduler.getRepeat() ? "an" : "aus"));
+		m.setTitle("Queue repeating: " + (musicManager.scheduler.getRepeat() ? "on" : "off"));
 		m.setColor(e.getGuild().getSelfMember().getColor());
-		m.appendDescription("Derzeit läuft: " + (musicManager.player.getPlayingTrack() == null ? "nichts"
+		m.appendDescription("Currently playing: " + (musicManager.player.getPlayingTrack() == null ? "nothing"
 				: musicManager.player.getPlayingTrack().getInfo().title + " ["
 						+ Methods.getTimeString(musicManager.player.getPlayingTrack().getInfo().length)
-						+ "], *hinzugefügt von "
+						+ "], *requested by "
 						+ (e.getGuild().getMember(musicManager.scheduler.getCurrentRequester()) != null
 								? (e.getGuild().getMember(musicManager.scheduler.getCurrentRequester()).getNickname() != null
 										? e.getGuild().getMember(musicManager.scheduler.getCurrentRequester()).getNickname()
@@ -68,11 +68,11 @@ public class PlaylistCommand extends Command {
 				+ "\n\n");
 
 		if (titles.size() == 0) {
-			m.appendDescription("Es sind keine weiteren Titel eingereiht.");
+			m.appendDescription("The queue is empty.");
 		}
 		for (int i = 0; i < amnt; i++) {
 			m.appendDescription("**[" + (i + 1) + "]** " + titles.get(i).getTrack().getInfo().title + " ["
-					+ Methods.getTimeString(titles.get(i).getTrack().getDuration()) + "], *hinzugefügt von "
+					+ Methods.getTimeString(titles.get(i).getTrack().getDuration()) + "], *requested by "
 					+ (e.getGuild().getMember(titles.get(i).getRequestor()) != null
 							? (e.getGuild().getMember(titles.get(i).getRequestor()).getNickname() != null
 									? e.getGuild().getMember(titles.get(i).getRequestor()).getNickname()
@@ -80,7 +80,7 @@ public class PlaylistCommand extends Command {
 							: titles.get(i).getRequestor().getName())
 					+ "*\n\n");
 		}
-		m.setFooter("Bestimmten Titel überspringen: !skip [Nr]", e.getJDA().getSelfUser().getAvatarUrl());
+		m.setFooter("Skip specified track: !skip [id]", e.getJDA().getSelfUser().getAvatarUrl());
 		mes.setEmbed(m.build());
 		e.reply(mes.build());
 	}

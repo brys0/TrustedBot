@@ -36,7 +36,7 @@ public class PlayingCommand extends Command {
 	public PlayingCommand() {
 		this.name = "playing";
 		this.aliases = new String[] { "np" };
-		this.help = "";
+		this.help = "Shows the currently playing track.";
 		this.guildOnly = true;
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
 		this.category = new Category("Music");
@@ -47,33 +47,39 @@ public class PlayingCommand extends Command {
 		GuildConfig m = Main.getGuildConfig(e.getGuild());
 		AudioTrack track = m.player.getPlayingTrack();
 		if (track == null) {
-			e.reply("Derzeit wird nichts gespielt.");
+			e.reply("Currently nothing is playing");
 			return;
 		}
+		EmbedBuilder b = new EmbedBuilder();
+		b.setFooter("Requested by " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
+				? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
+						? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
+						: m.scheduler.getCurrentRequester().getName())
+				: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
+		b.setColor(e.getSelfMember().getColor());
 		if (!track.getInfo().uri.contains("youtube") || Main.youtubeKey.equals("none") || Main.youtubeKey.isEmpty()) {
 			boolean skip = false;
 			ArrayList<Field> fields = new ArrayList<>();
 			if (track.getDuration() == Long.MAX_VALUE) {
 				IcecastMeta icm = new IcecastMeta(track.getInfo().uri + ".xspf");
-				if (!icm.getTitle().equals("Unbekannt (Fehler")) {
+				if (!icm.getTitle().equals("Unknown (Error)")) {
 					skip = true;
-					fields.add(new Field("Titel:", icm.getTitle(), false));
+					fields.add(new Field("Title:", icm.getTitle(), false));
 					if (icm.getCurrentListeners() != -1) {
-						fields.add(new Field("Zuhörer:", icm.getCurrentListeners() + "", false));
+						fields.add(new Field("Listeners:", icm.getCurrentListeners() + "", false));
 					}
 				}
 			}
 			if (!skip) {
-				fields.add(new Field("Titel:", track.getInfo().title, false));
+				fields.add(new Field("Title:", track.getInfo().title, false));
 			}
-			fields.add(new Field("Von:", track.getInfo().author, false));
-			fields.add(new Field("Zeit:", "[" + Methods.getTimeString(track.getPosition()) + "/"
+			fields.add(new Field("By:", track.getInfo().author, false));
+			fields.add(new Field("Duration:", "[" + Methods.getTimeString(track.getPosition()) + "/"
 					+ Methods.getTimeString(track.getDuration()) + "]", false));
-			EmbedBuilder b = new EmbedBuilder();
-			b.setTitle(m.player.isPaused() ? "Pausiert:" : "Derzeit läuft:");
-			b.setColor(e.getSelfMember().getColor());
+
+			b.setTitle(m.player.isPaused() ? "Paused:" : "Currently playing:");
 			b.getFields().addAll(fields);
-			b.setFooter("Hinzugefügt von " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
+			b.setFooter("Requested by " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
 					? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
 							? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
 							: m.scheduler.getCurrentRequester().getName())
@@ -92,23 +98,16 @@ public class PlayingCommand extends Command {
 			if (ytcache.stream().anyMatch(c -> {
 				if (c.getID().equals(videoId)) {
 					ArrayList<Field> fields = new ArrayList<>();
-					fields.add(new Field("Kanal:", c.getChannel(), false));
-					fields.add(new Field("Dauer:",
+					fields.add(new Field("Channel:", c.getChannel(), false));
+					fields.add(new Field("Duration:",
 							"[" + Methods.getTimeString(track.getPosition()) + "/" + c.getDurationString() + "]",
 							false));
-					fields.add(new Field("Beschreibung:", c.getDescription(), false));
+					fields.add(new Field("Description:", c.getDescription(), false));
 
-					EmbedBuilder b = new EmbedBuilder();
 					b.setThumbnail(c.getThumbnailURL());
-					b.setTitle(m.player.isPaused() ? "Pausiert: "
-							: "Derzeit läuft: " + c.getTitle(), m.player.getPlayingTrack().getInfo().uri);
-					b.setColor(e.getSelfMember().getColor());
+					b.setTitle(m.player.isPaused() ? "Paused: "
+							: "Currently playing: " + c.getTitle(), m.player.getPlayingTrack().getInfo().uri);
 					b.getFields().addAll(fields);
-					b.setFooter("Hinzugefügt von " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
-							? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
-									? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
-									: m.scheduler.getCurrentRequester().getName())
-							: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
 					e.reply(b.build());
 					return true;
 				}
@@ -141,21 +140,15 @@ public class PlayingCommand extends Command {
 				String thumbnail = targetVideo.getSnippet().getThumbnails().getMedium().getUrl();
 				ytcache.add(new YouTubeTitleCache(videoId1, title, dur, desc, author, thumbnail));
 				ArrayList<Field> fields = new ArrayList<>();
-				fields.add(new Field("Kanal:", author, false));
-				fields.add(new Field("Dauer:", "[" + Methods.getTimeString(track.getPosition()) + "/"
+				fields.add(new Field("Channel:", author, false));
+				fields.add(new Field("Duration:", "[" + Methods.getTimeString(track.getPosition()) + "/"
 						+ (dur == 0 ? "Stream" : Methods.getTimeString(dur)) + "]", false));
-				fields.add(new Field("Beschreibung:", desc, false));
-
-				EmbedBuilder b = new EmbedBuilder();
+				fields.add(new Field("Description:", desc, false));
 				b.setThumbnail(thumbnail);
-				b.setTitle(m.player.isPaused() ? "Pausiert: "
-						: "Derzeit läuft: " + title, m.player.getPlayingTrack().getInfo().uri);
-				b.setColor(e.getSelfMember().getColor());
+				b.setTitle(m.player.isPaused() ? "Paused: "
+						: "Currently playing: " + title, m.player.getPlayingTrack().getInfo().uri);
 				b.getFields().addAll(fields);
-				b.setFooter("Hinzugefügt von "
-						+ e.getGuild().getMember(m.scheduler.getCurrentRequester()).getEffectiveName(), m.scheduler.getCurrentRequester().getAvatarUrl());
 				e.reply(b.build());
-
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

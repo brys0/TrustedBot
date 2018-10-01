@@ -42,7 +42,7 @@ public class IcecastMeta {
 
 	public String getTitle() {
 		if (xpath == null) {
-			return "Unbekannt (Fehler)";
+			return "Unknown (Error)";
 		}
 		try {
 			XPathExpression expr = xpath.compile("//track/title/text()");

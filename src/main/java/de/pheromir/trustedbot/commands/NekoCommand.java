@@ -9,7 +9,7 @@ public class NekoCommand extends RandomImageCommand {
 		this.jsonKey = "neko";
 		this.name = "neko";
 		this.aliases = new String[] { "catgirl" };
-		this.help = "Zeigt ein zufälliges Neko-Bild";
+		this.help = "Shows a random neko picture.";
 	}
 
 }

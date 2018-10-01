@@ -30,7 +30,7 @@ public class CBCheck implements Runnable {
 						Main.onlineCBList.add(username);
 
 						EmbedBuilder eb = new EmbedBuilder();
-						eb.setTitle(username + " ist nun online!", url);
+						eb.setTitle(username + " is now online!", url);
 						eb.setAuthor("Chaturbate");
 						eb.setThumbnail("https://ssl-ccstatic.highwebmedia.com/images/logo-standard.png");
 						eb.setImage("https://roomimg.stream.highwebmedia.com/ri/" + username + ".jpg");
