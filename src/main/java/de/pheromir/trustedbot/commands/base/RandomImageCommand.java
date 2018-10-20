@@ -8,7 +8,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Methods;
-import de.pheromir.trustedbot.Exceptions.HttpErrorException;
+import de.pheromir.trustedbot.exceptions.HttpErrorException;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;

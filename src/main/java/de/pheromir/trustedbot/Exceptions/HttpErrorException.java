@@ -1,4 +1,4 @@
-package de.pheromir.trustedbot.Exceptions;
+package de.pheromir.trustedbot.exceptions;
 
 public class HttpErrorException extends Exception {
 

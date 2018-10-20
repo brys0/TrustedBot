@@ -24,7 +24,7 @@ import com.google.api.services.youtube.model.VideoListResponse;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
-import de.pheromir.trustedbot.Exceptions.HttpErrorException;
+import de.pheromir.trustedbot.exceptions.HttpErrorException;
 
 public class Methods {
 

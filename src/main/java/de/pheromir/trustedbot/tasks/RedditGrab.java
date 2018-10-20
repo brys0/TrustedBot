@@ -5,8 +5,8 @@ import org.json.JSONObject;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
-import de.pheromir.trustedbot.Exceptions.HttpErrorException;
 import de.pheromir.trustedbot.config.GuildConfig;
+import de.pheromir.trustedbot.exceptions.HttpErrorException;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
 import net.dv8tion.jda.core.entities.TextChannel;

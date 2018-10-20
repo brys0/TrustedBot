@@ -9,6 +9,7 @@ import de.pheromir.trustedbot.config.SettingsManager;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class GuildEvents extends ListenerAdapter {
@@ -17,13 +18,13 @@ public class GuildEvents extends ListenerAdapter {
 	public void onGuildJoin(GuildJoinEvent e) {
 		Main.getGuildConfig(e.getGuild());
 	}
-	
+
 	@Override
 	public void onGuildLeave(GuildLeaveEvent e) {
 		Main.getGuildConfig(e.getGuild()).delete();
 		SettingsManager.guildConfigs.remove(e.getGuild().getIdLong());
 	}
-	
+
 	@Override
 	public void onTextChannelDelete(TextChannelDeleteEvent e) {
 		ArrayList<String> cbstreams = (ArrayList<String>) GuildConfig.getCBList().keySet().stream().filter(k -> GuildConfig.getCBList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
@@ -32,6 +33,16 @@ public class GuildEvents extends ListenerAdapter {
 		cbstreams.forEach(s -> GuildConfig.removeCBStream(s, e.getChannel().getIdLong()));
 		twstreams.forEach(s -> GuildConfig.removeTwitchStream(s, e.getChannel().getIdLong()));
 		reddits.forEach(s -> GuildConfig.removeSubreddit(s, e.getChannel().getIdLong()));
+	}
+
+	@Override
+	public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
+		if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getUser().getIdLong())) {
+			Main.getGuildConfig(e.getGuild()).removeDJ(e.getUser().getIdLong());
+		}
+		if (Main.getExtraUsers().contains(e.getUser().getIdLong())) {
+			Main.removeExtraUser(e.getUser().getIdLong());
+		}
 	}
 
 }

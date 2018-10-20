@@ -2,8 +2,8 @@ package de.pheromir.trustedbot.tasks;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
-import de.pheromir.trustedbot.Exceptions.HttpErrorException;
 import de.pheromir.trustedbot.config.GuildConfig;
+import de.pheromir.trustedbot.exceptions.HttpErrorException;
 import net.dv8tion.jda.core.EmbedBuilder;
 
 public class CBCheck implements Runnable {
