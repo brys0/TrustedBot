@@ -291,6 +291,9 @@ public class Main {
 					+ " GuildId VARCHAR(64) NOT NULL," + " Text LONGTEXT NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (Name, GuildId));");
+			
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Blacklist"
+					+ " (Url VARCHAR(191) PRIMARY KEY);");
 
 		} catch (IOException e) {
 			e.printStackTrace();

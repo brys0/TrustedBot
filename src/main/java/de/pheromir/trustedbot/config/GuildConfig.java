@@ -665,7 +665,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		sq.openConnection();
 		try {
 			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Reddit_Posts (Url) VALUES (?)");
-			prep.setString(1, post);
+			prep.setString(1, post.length()>190?post.substring(0, 190):post);
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
@@ -679,7 +679,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		sq.openConnection();
 		try {
 			PreparedStatement prep = sq.getConnection().prepareStatement("SELECT * FROM Reddit_Posts WHERE Url = ?");
-			prep.setString(1, post);
+			prep.setString(1, post.length()>190?post.substring(0, 190):post);
 			ResultSet res = prep.executeQuery();
 			if (res.next()) {
 				sq.closeConnection();
@@ -697,6 +697,57 @@ public class GuildConfig implements GuildSettingsProvider {
 		Methods.mySQLQuery("TRUNCATE TABLE Reddit_Posts");
 	}
 
+	public static void addBlacklistEntry(String url) {
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Blacklist (Url) VALUES (?)");
+			prep.setString(1, url.length()>190?url.substring(0, 190):url);
+			prep.execute();
+			sq.closeConnection();
+		} catch (SQLException e) {
+			System.out.println("Blacklist add history failed: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	public static void removeBlacklistEntry(String url) {
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep = sq.getConnection().prepareStatement("DELETE IGNORE FROM Blacklist WHERE Url = ?");
+			prep.setString(1, url.length()>190?url.substring(0, 190):url);
+			prep.execute();
+			sq.closeConnection();
+		} catch (SQLException e) {
+			System.out.println("Blacklist add history failed: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public static boolean BlacklistContains(String url) {
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep = sq.getConnection().prepareStatement("SELECT * FROM Blacklist WHERE Url = ?");
+			prep.setString(1, url.length()>190?url.substring(0, 190):url);
+			ResultSet res = prep.executeQuery();
+			if (res.next()) {
+				sq.closeConnection();
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			System.out.println("Checking Blacklist failed: " + e.getMessage());
+			return true;
+		}
+	}
+
+	public static void clearBlacklist() {
+		Methods.mySQLQuery("TRUNCATE TABLE Blacklist");
+	}
+	
 	public void delete() {
 		MySQL sq = Main.getMySQL();
 		sq.openConnection();
