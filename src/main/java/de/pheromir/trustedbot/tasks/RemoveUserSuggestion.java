@@ -1,12 +1,10 @@
 package de.pheromir.trustedbot.tasks;
 
-import java.util.TimerTask;
-
 import de.pheromir.trustedbot.Main;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
-public class RemoveUserSuggestion extends TimerTask {
+public class RemoveUserSuggestion implements Runnable {
 
 	private Guild g;
 	private User user;
