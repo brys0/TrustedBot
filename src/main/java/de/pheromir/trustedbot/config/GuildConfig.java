@@ -685,6 +685,7 @@ public class GuildConfig implements GuildSettingsProvider {
 				sq.closeConnection();
 				return true;
 			} else {
+				sq.closeConnection();
 				return false;
 			}
 		} catch (SQLException e) {
@@ -736,6 +737,7 @@ public class GuildConfig implements GuildSettingsProvider {
 				sq.closeConnection();
 				return true;
 			} else {
+				sq.closeConnection();
 				return false;
 			}
 		} catch (SQLException e) {
