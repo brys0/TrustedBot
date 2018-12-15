@@ -43,6 +43,7 @@ public class CBCheck implements Runnable {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
+					Main.exceptionAmount++;
 					continue;
 				}
 			}

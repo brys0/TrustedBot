@@ -35,8 +35,8 @@ public class ForwardCommand extends Command {
 			e.reactError();
 			return;
 		}
-		time += Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration();
 		
+		time += Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration();
 		Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().setPosition(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration() < time
 			? Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration()
 			: (time < 0) ? 0 : time);

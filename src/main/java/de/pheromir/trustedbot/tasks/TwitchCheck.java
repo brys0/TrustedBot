@@ -44,7 +44,7 @@ public class TwitchCheck implements Runnable {
 
 					for (Long chId : GuildConfig.getTwitchList().get(twitchname)) {
 						Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname + " is now live at "
-								+ url + "!").embed(eb.build()).complete();
+								+ url + " !").embed(eb.build()).complete();
 					}
 				}
 			}
@@ -52,6 +52,7 @@ public class TwitchCheck implements Runnable {
 				Thread.sleep(2500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				Main.exceptionAmount++;
 			}
 		}
 	}

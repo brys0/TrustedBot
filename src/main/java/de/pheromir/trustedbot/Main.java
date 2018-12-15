@@ -107,6 +107,7 @@ public class Main {
 	public static Configuration cfg;
 	public static CommandClient commandClient;
 	public static ScheduledExecutorService spotifyTask;
+	public static long exceptionAmount = 0;
 
 	public static void main(String[] args) {
 		LOG.debug("Starting DiscordBot...");

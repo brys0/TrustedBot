@@ -54,7 +54,7 @@ public class Methods {
 			}
 			return r.getBody();
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			throw new HttpErrorException("An error occurred during the request: "+e.getLocalizedMessage(), e);
+			throw new HttpErrorException("An error occurred during the request: " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -65,18 +65,24 @@ public class Methods {
 	public static String getTimeString(long millis) {
 		if (millis == Long.MAX_VALUE || millis == 0L)
 			return "Stream";
-		long second = (millis / 1000) % 60;
-		long minute = (millis / (1000 * 60)) % 60;
-		long hour = (millis / (1000 * 60 * 60)) % 24;
-		if (hour > 0)
-			return String.format("%02d:%02d:%02d", hour, minute, second);
+		long days = TimeUnit.MILLISECONDS.toDays(millis);
+        millis -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+        if(days > 0)
+        	return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
+		if (hours > 0)
+			return String.format("%02d:%02d:%02d", hours, minutes, seconds);
 		else
-			return String.format("%02d:%02d", minute, second);
+			return String.format("%02d:%02d", minutes, seconds);
 	}
 
 	/*
-	 * CONVERT TIMESTRING INTO TIMEMILLIS
-	 * Method Copyright (c) 2017 Frederik Ar. Mikkelsen
+	 * CONVERT TIMESTRING INTO TIMEMILLIS Method Copyright (c) 2017 Frederik Ar.
+	 * Mikkelsen
 	 * https://github.com/Frederikam/FredBoat/blob/dev/FredBoat/src/main/java/
 	 * fredboat/util/TextUtils.java
 	 */

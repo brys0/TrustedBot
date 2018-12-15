@@ -667,10 +667,11 @@ public class GuildConfig implements GuildSettingsProvider {
 			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Reddit_Posts (Url) VALUES (?)");
 			prep.setString(1, post.length()>190?post.substring(0, 190):post);
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
 			System.out.println("Reddit add history failed: " + e.getMessage());
 			e.printStackTrace();
+		} finally {
+			sq.closeConnection();
 		}
 	}
 

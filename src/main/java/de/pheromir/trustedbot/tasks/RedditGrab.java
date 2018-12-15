@@ -64,10 +64,10 @@ public class RedditGrab implements Runnable {
 					Thread.sleep(500L);
 				}
 				res = null;
-			} catch (InterruptedException e) {
+			} catch (HttpErrorException | InterruptedException e) {
 				e.printStackTrace();
-			} catch (HttpErrorException e) {
-				e.printStackTrace();
+				Main.exceptionAmount++;
+				continue;
 			}
 		}
 	}
