@@ -6,7 +6,9 @@ import java.net.URLEncoder;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
+import de.pheromir.trustedbot.Main;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 
 public class GoogleCommand extends Command {
 
@@ -23,6 +25,10 @@ public class GoogleCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
 		String url;
 		try {
 			url = String.format(BASE_URL, URLEncoder.encode(e.getArgs(), "UTF-8"));

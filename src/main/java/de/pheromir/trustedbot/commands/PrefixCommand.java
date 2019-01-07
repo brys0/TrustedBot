@@ -5,6 +5,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 
 public class PrefixCommand extends Command {
 
@@ -19,6 +20,10 @@ public class PrefixCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
 		if (e.getArgs().isEmpty()) {
 			e.reply("Current prefix: " + Main.getGuildConfig(e.getGuild()).getPrefix());
 			return;

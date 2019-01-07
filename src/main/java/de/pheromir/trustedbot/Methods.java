@@ -34,7 +34,7 @@ public class Methods {
 	 * GENERAL HTTP CONNECTIONS
 	 */
 
-	public static JSONObject httpRequestJSON(String url) throws HttpErrorException {
+	public static JSONObject httpRequestJSON(String url) throws HttpErrorException, InterruptedException, ExecutionException, TimeoutException {
 		String resp = httpRequest(url);
 		if (resp.isEmpty()) {
 			throw new HttpErrorException("An error occurred during the request: empty response");
@@ -45,17 +45,15 @@ public class Methods {
 
 	}
 
-	public static String httpRequest(String url) throws HttpErrorException {
+	public static String httpRequest(String url) throws InterruptedException, ExecutionException, TimeoutException, HttpErrorException {
 		Future<HttpResponse<String>> future = Unirest.get(url).asStringAsync();
-		try {
+
 			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
 			if (r.getStatus() == 404) {
 				throw new HttpErrorException();
 			}
 			return r.getBody();
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			throw new HttpErrorException("An error occurred during the request: " + e.getLocalizedMessage(), e);
-		}
+
 	}
 
 	/*
@@ -78,6 +76,24 @@ public class Methods {
 			return String.format("%02d:%02d:%02d", hours, minutes, seconds);
 		else
 			return String.format("%02d:%02d", minutes, seconds);
+	}
+	
+	public static String getTimeString2(long millis) {
+		if (millis == Long.MAX_VALUE || millis == 0L)
+			return "Stream";
+		long days = TimeUnit.MILLISECONDS.toDays(millis);
+        millis -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
+        minutes++;
+        if(days > 0)
+        	return String.format("%02d:%02d:%02d", days, hours, minutes);
+		if (hours > 0)
+			return String.format("%02d:%02d", hours, minutes);
+		else
+			return String.format("%02d", minutes);
 	}
 
 	/*
@@ -203,7 +219,7 @@ public class Methods {
 		try {
 			res = httpRequest("https://de.chaturbate.com/" + username);
 			return !res.contains("HTTP 404 - Seite nicht gefunden");
-		} catch (HttpErrorException e) {
+		} catch (HttpErrorException | InterruptedException | ExecutionException | TimeoutException e) {
 			return false;
 		}
 	}

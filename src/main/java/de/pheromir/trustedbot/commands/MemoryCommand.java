@@ -18,10 +18,11 @@ public class MemoryCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		String ans = "Uptime: " + Methods.getTimeString(System.currentTimeMillis() - Main.startMillis) + "\n"
-				+ "Maximaler Speicher: " + Runtime.getRuntime().maxMemory() / 1024L / 1024L + " MB\n"
-				+ "Reservierter Speicher: " + Runtime.getRuntime().totalMemory() / 1024L / 1024L + " MB\n"
-				+ "Freier Speicher: " + Runtime.getRuntime().freeMemory() / 1024L / 1024L + " MB";
+		String ans = "Exceptions: " + Main.exceptionAmount + "\n" + "Uptime: "
+				+ Methods.getTimeString(System.currentTimeMillis() - Main.startMillis) + "\n" + "Maximaler Speicher: "
+				+ Runtime.getRuntime().maxMemory() / 1024L / 1024L + " MB\n" + "Reservierter Speicher: "
+				+ Runtime.getRuntime().totalMemory() / 1024L / 1024L + " MB\n" + "Freier Speicher: "
+				+ Runtime.getRuntime().freeMemory() / 1024L / 1024L + " MB";
 
 		e.reply(ans);
 	}

@@ -29,6 +29,7 @@ public class GuildConfig implements GuildSettingsProvider {
 	public final AudioPlayer player;
 	public final TrackScheduler scheduler;
 	private List<Long> djs;
+	private List<String> disabledCommands;
 	private HashMap<User, ArrayList<Suggestion>> suggestions;
 	private HashMap<String, CustomCommand> customCommands;
 	private HashMap<String, AliasCommand> aliasCommands;
@@ -50,6 +51,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		guildId = g.getIdLong();
 		djs = new ArrayList<>();
 		volume = 100;
+		disabledCommands = new ArrayList<>();
 		suggestions = new HashMap<>();
 		customCommands = new HashMap<>();
 		aliasCommands = new HashMap<>();
@@ -59,6 +61,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		initialize();
 		downloadGeneralGuild();
 		downloadDJs();
+		downloadDisabledCommands();
 		downloadAliasCommands();
 		downloadCustomCommands();
 		g.getAudioManager().setSendingHandler(getSendHandler());
@@ -698,57 +701,78 @@ public class GuildConfig implements GuildSettingsProvider {
 	public static void clearSubredditPostHistory() {
 		Methods.mySQLQuery("TRUNCATE TABLE Reddit_Posts");
 	}
-
-	public static void addBlacklistEntry(String url) {
+	
+	public void disableCommand(String cmd) {
+		cmd = cmd.toLowerCase();
+		if(!isCommandDisabled(cmd)) {
+			disabledCommands.add(cmd);
+		}
 		MySQL sq = Main.getMySQL();
 		sq.openConnection();
 		try {
-			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Blacklist (Url) VALUES (?)");
-			prep.setString(1, url.length()>190?url.substring(0, 190):url);
+			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO DisabledCommands (GuildId, Command) VALUES (?, ?)");
+			prep.setString(1, guildId.toString());
+			prep.setString(2, cmd);
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
-			System.out.println("Blacklist add history failed: " + e.getMessage());
+			System.out.println("DisabledCommand add failed: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
 	}
 	
-	public static void removeBlacklistEntry(String url) {
+	public void enableCommand(String cmd) {
+		cmd = cmd.toLowerCase();
+		if(isCommandDisabled(cmd)) {
+			disabledCommands.remove(cmd);
+		}
 		MySQL sq = Main.getMySQL();
 		sq.openConnection();
 		try {
-			PreparedStatement prep = sq.getConnection().prepareStatement("DELETE IGNORE FROM Blacklist WHERE Url = ?");
-			prep.setString(1, url.length()>190?url.substring(0, 190):url);
+			PreparedStatement prep = sq.getConnection().prepareStatement("DELETE IGNORE FROM DisabledCommands WHERE GuildId = ? AND Command = ?");
+			prep.setString(1, guildId.toString());
+			prep.setString(2, cmd);
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
-			System.out.println("Blacklist add history failed: " + e.getMessage());
+			System.out.println("DisabledCommand remove failed: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
 	}
-
-	public static boolean BlacklistContains(String url) {
-		MySQL sq = Main.getMySQL();
-		sq.openConnection();
+	
+	public boolean isCommandDisabled(String cmd) {
+		return disabledCommands.contains(cmd.toLowerCase());
+	}
+	
+	public List<String> getDisabledCommands() {
+		return disabledCommands;
+	}
+	
+	public void downloadDisabledCommands() {
+		MySQL sql = Main.getMySQL();
+		sql.openConnection();
+		PreparedStatement state;
+		ResultSet res = null;
 		try {
-			PreparedStatement prep = sq.getConnection().prepareStatement("SELECT * FROM Blacklist WHERE Url = ?");
-			prep.setString(1, url.length()>190?url.substring(0, 190):url);
-			ResultSet res = prep.executeQuery();
-			if (res.next()) {
-				sq.closeConnection();
-				return true;
-			} else {
-				sq.closeConnection();
-				return false;
+			state = sql.getConnection().prepareStatement("SELECT Command FROM DisabledCommands WHERE GuildId = ?");
+			state.setString(1, g.getId());
+			res = state.executeQuery();
+			while (res.next()) {
+				disabledCommands.add(res.getString("Command"));
 			}
+			sql.closeConnection();
 		} catch (SQLException e) {
-			System.out.println("Checking Blacklist failed: " + e.getMessage());
-			return true;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (res != null)
+					res.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-	}
-
-	public static void clearBlacklist() {
-		Methods.mySQLQuery("TRUNCATE TABLE Blacklist");
 	}
 	
 	public void delete() {

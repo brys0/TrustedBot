@@ -12,6 +12,7 @@ import de.pheromir.trustedbot.music.QueueTrack;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 
 public class QueueCommand extends Command {
 
@@ -26,6 +27,10 @@ public class QueueCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 		ArrayList<QueueTrack> titles = musicManager.scheduler.getRequestedTitles();
 

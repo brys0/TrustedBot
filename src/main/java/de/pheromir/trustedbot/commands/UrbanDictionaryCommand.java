@@ -12,6 +12,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import de.pheromir.trustedbot.Main;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -27,10 +28,16 @@ public class UrbanDictionaryCommand extends Command {
 		this.help = "Show the definitions of the specified word from the UrbanDictionary.";
 		this.guildOnly = false;
 		this.category = new Category("Miscellaneous");
+		this.cooldown = 30;
+		this.cooldownScope = CooldownScope.USER_GUILD;
 	}
 
 	@Override
 	protected void execute(CommandEvent e) {
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
 		Unirest.get(BASE_URL).routeParam("sw", e.getArgs()).asJsonAsync(new Callback<JsonNode>() {
 
 			@Override

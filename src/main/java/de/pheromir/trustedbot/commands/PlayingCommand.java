@@ -25,6 +25,7 @@ import de.pheromir.trustedbot.music.IcecastMeta;
 import de.pheromir.trustedbot.music.YouTubeTitleCache;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
 
 public class PlayingCommand extends Command {
@@ -44,6 +45,10 @@ public class PlayingCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
 		GuildConfig m = Main.getGuildConfig(e.getGuild());
 		AudioTrack track = m.player.getPlayingTrack();
 		if (track == null) {

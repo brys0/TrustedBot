@@ -6,6 +6,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 
 public class RewindCommand extends Command {
 
@@ -19,6 +20,10 @@ public class RewindCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("You need DJ privileges to rewind the track.");

@@ -64,6 +64,7 @@ import de.pheromir.trustedbot.commands.StopCommand;
 import de.pheromir.trustedbot.commands.TextCmdAddCommand;
 import de.pheromir.trustedbot.commands.TextCmdRemoveCommand;
 import de.pheromir.trustedbot.commands.TextCmdsCommand;
+import de.pheromir.trustedbot.commands.ToggleCommand;
 import de.pheromir.trustedbot.commands.TwitchCommand;
 import de.pheromir.trustedbot.commands.UrbanDictionaryCommand;
 import de.pheromir.trustedbot.commands.VolumeCommand;
@@ -109,10 +110,14 @@ public class Main {
 	public static ScheduledExecutorService spotifyTask;
 	public static long exceptionAmount = 0;
 
+	public static final String COMMAND_DISABLED = "This command is disabled in this guild.";
+
 	public static void main(String[] args) {
 		LOG.debug("Starting DiscordBot...");
 
 		loadConfig();
+		
+		System.out.println("AdminID: "+adminId);
 
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
@@ -123,7 +128,7 @@ public class Main {
 		cbuilder.setOwnerId(adminId);
 		cbuilder.setGuildSettingsManager(new SettingsManager());
 		// Owner Commands + Settings
-		cbuilder.addCommands(new StatusCommand(), new MemoryCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand());
+		cbuilder.addCommands(new StatusCommand(), new MemoryCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand(), new ToggleCommand());
 		// Music
 		cbuilder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new QueueCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand());
 		// Alias + Custom Commands
@@ -143,27 +148,36 @@ public class Main {
 		cbuilder.setListener(new CmdListener());
 		cbuilder.setGame(Game.playing("Trusted-Community.eu"));
 
-		//cbuilder.setEmojis("\u2705", "\u26A0", "\u274C");
+		// cbuilder.setEmojis("\u2705", "\u26A0", "\u274C");
 		cbuilder.setEmojis("\u2705", "", "");
-		
+
 		cbuilder.setHelpConsumer((event) -> {
-			StringBuilder builder = new StringBuilder("**Available commands for "+(event.getChannelType()==ChannelType.TEXT?"the requested Guild":"Direct Messages")+":**\n*Note: The command prefix may vary between guilds. The prefix in Direct Messages is always "+commandClient.getTextualPrefix()+".*\n");
+			StringBuilder builder = new StringBuilder("**Available commands for "
+					+ (event.getChannelType() == ChannelType.TEXT ? "the requested Guild" : "Direct Messages")
+					+ ":**\n*Note: The command prefix may vary between guilds. The prefix in Direct Messages is always "
+					+ commandClient.getTextualPrefix() + ".*\n");
 			Category category = null;
 			for (Command command : commandClient.getCommands()) {
-				if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner()) && (!command.isGuildOnly() || (event.isFromType(ChannelType.TEXT) && event.getMember().hasPermission(command.getUserPermissions())))) {
+				if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner()) && (!command.isGuildOnly()
+						&& event.getChannelType() == ChannelType.PRIVATE
+						|| (event.isFromType(ChannelType.TEXT)
+								&& event.getMember().hasPermission(command.getUserPermissions())
+								&& !Main.getGuildConfig(event.getGuild()).isCommandDisabled(command.getName())))) {
 					if (!Objects.equals(category, command.getCategory())) {
 						category = command.getCategory();
 						builder.append("\n\n__").append(category == null ? "No Category"
 								: category.getName()).append("__:\n");
 					}
-					builder.append("\n`").append(event.getChannelType()==ChannelType.TEXT?Main.getGuildConfig(event.getGuild()).getPrefix():commandClient.getTextualPrefix()).append(command.getName()).append(command.getArguments() == null
-							? "`"
-							: " " + command.getArguments() + "`").append(" - ").append(command.getHelp());
+					builder.append("\n`").append(event.getChannelType() == ChannelType.TEXT
+							? Main.getGuildConfig(event.getGuild()).getPrefix()
+							: commandClient.getTextualPrefix()).append(command.getName()).append(command.getArguments() == null
+									? "`"
+									: " " + command.getArguments() + "`").append(" - ").append(command.getHelp());
 				}
 			}
 			User owner = event.getJDA().getUserById(commandClient.getOwnerId());
 			if (owner != null) {
-				builder.append("\n\nFor additional help, contact **").append(owner.getName()).append("**#").append(owner.getDiscriminator());
+				//builder.append("\n\nFor additional help, contact **").append(owner.getName()).append("**#").append(owner.getDiscriminator());
 				if (commandClient.getServerInvite() != null)
 					builder.append(" or join ").append(commandClient.getServerInvite());
 			}
@@ -172,7 +186,7 @@ public class Main {
 					event.reactSuccess();
 			}, t -> event.reply("Help cannot be sent because you are blocking Direct Messages."));
 		});
-		
+
 		commandClient = cbuilder.build();
 		try {
 			/* BOT STARTEN */
@@ -184,14 +198,6 @@ public class Main {
 			// Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new
 			// ClearRedditPostHistory(), 30, 30, TimeUnit.DAYS);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 15, 15, TimeUnit.MINUTES);
-			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-				Main.jda.getPresence().setGame(Game.playing("Trusted-Community.eu"));
-			}, 0, 60, TimeUnit.SECONDS);
-			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-				Main.jda.getPresence().setGame(Game.playing(String.format("%d / %d / %d", Runtime.getRuntime().freeMemory()
-						/ 1024L / 1024L, Runtime.getRuntime().totalMemory() / 1024L
-								/ 1024L, Runtime.getRuntime().maxMemory() / 1024L / 1024L)));
-			}, 30, 60, TimeUnit.SECONDS);
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
 				spotifyTask = Executors.newScheduledThreadPool(1);
 				spotifyTask.scheduleAtFixedRate(() -> {
@@ -232,7 +238,9 @@ public class Main {
 			} else {
 				System.out.println("Bot-Token ungültig");
 			}
+			return;
 		}
+		System.out.println("Bot startup complete.");
 	}
 
 	private static void loadConfig() {
@@ -250,7 +258,7 @@ public class Main {
 		try {
 			cfg = yaml.load(configFile);
 			token = cfg.getString("Token");
-			adminId = cfg.getString("AdminID");
+			adminId = cfg.getString("AdminID").replaceAll("[A-Za-z]+", "");
 			youtubeKey = cfg.getString("API-Keys.YouTube");
 			twitchKey = cfg.getString("API-Keys.Twitch");
 			spotifyClient = cfg.getString("API-Keys.Spotify.Client");
@@ -292,9 +300,11 @@ public class Main {
 					+ " GuildId VARCHAR(64) NOT NULL," + " Text LONGTEXT NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (Name, GuildId));");
-			
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Blacklist"
-					+ " (Url VARCHAR(191) PRIMARY KEY);");
+
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS DisabledCommands" + " (GuildId VARCHAR(64) NOT NULL,"
+					+ " Command VARCHAR(128) NOT NULL,"
+					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
+					+ " PRIMARY KEY (GuildId, Command));");
 
 		} catch (IOException e) {
 			e.printStackTrace();

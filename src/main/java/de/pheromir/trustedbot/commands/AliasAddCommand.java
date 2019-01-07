@@ -5,6 +5,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 
 public class AliasAddCommand extends Command {
 
@@ -19,6 +20,10 @@ public class AliasAddCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
@@ -36,7 +41,7 @@ public class AliasAddCommand extends Command {
 		}
 		String cmd = args[1].toLowerCase();
 		String arguments = "";
-		if (args.length > 2) {
+		if (args.length >= 2) {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 2; i < args.length; i++) {
 				sb.append(args[i] + " ");

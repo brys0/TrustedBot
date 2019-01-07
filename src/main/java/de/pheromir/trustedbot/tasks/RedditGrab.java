@@ -1,5 +1,8 @@
 package de.pheromir.trustedbot.tasks;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,7 +21,14 @@ public class RedditGrab implements Runnable {
 		Thread.currentThread().setName("RedditGrabber");
 		for (String subreddit : GuildConfig.getRedditList().keySet()) {
 			try {
-				JSONObject res = Methods.httpRequestJSON(String.format("https://www.reddit.com/r/%s/hot/.json", subreddit));
+				JSONObject res;
+				try {
+				res = Methods.httpRequestJSON(String.format("https://www.reddit.com/r/%s/hot/.json", subreddit));
+				} catch (InterruptedException | HttpErrorException | ExecutionException | TimeoutException e) {
+					e.printStackTrace();
+					Main.exceptionAmount++;
+					continue;
+				}
 				if (!res.has("data"))
 					continue;
 				JSONObject data = res.getJSONObject("data");
@@ -64,7 +74,7 @@ public class RedditGrab implements Runnable {
 					Thread.sleep(500L);
 				}
 				res = null;
-			} catch (HttpErrorException | InterruptedException e) {
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 				Main.exceptionAmount++;
 				continue;

@@ -37,6 +37,7 @@ import de.pheromir.trustedbot.tasks.RemoveUserSuggestion;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
@@ -55,6 +56,10 @@ public class PlayCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
 		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
 		AudioManager audioManager = e.getGuild().getAudioManager();
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
@@ -148,7 +153,13 @@ public class PlayCommand extends Command {
 			}
 		}
 		musicManager.player.setPaused(false);
-
+		final boolean loadPlaylist;
+		if(e.getArgs().contains("--playlist")) {
+			loadPlaylist = true;
+		}  else {
+			loadPlaylist = false;
+		}
+		
 		Main.playerManager.loadItemOrdered(musicManager, toLoad, new AudioLoadResultHandler() {
 
 			@Override
@@ -175,9 +186,18 @@ public class PlayCommand extends Command {
 					firstTrack = playlist.getTracks().get(0);
 				}
 				audioManager.openAudioConnection(vc);
-				musicManager.scheduler.queue(firstTrack, e.getAuthor());
-				e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration())
+				if(loadPlaylist) {
+					playlist.getTracks().forEach(track -> {
+						musicManager.scheduler.queue(track, e.getAuthor());
+						e.reply("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration())
 						+ "] has been added to the queue.");
+					});
+				} else {
+					musicManager.scheduler.queue(firstTrack, e.getAuthor());
+					e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration())
+							+ "] has been added to the queue.");
+				}
+				
 			}
 
 			@Override

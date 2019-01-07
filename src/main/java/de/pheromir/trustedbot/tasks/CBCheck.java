@@ -1,5 +1,8 @@
 package de.pheromir.trustedbot.tasks;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.config.GuildConfig;
@@ -17,8 +20,9 @@ public class CBCheck implements Runnable {
 				String res;
 				try {
 					res = Methods.httpRequest(url);
-				} catch (HttpErrorException e1) {
+				} catch (HttpErrorException | InterruptedException | ExecutionException | TimeoutException e1) {
 					e1.printStackTrace();
+					Main.exceptionAmount++;
 					continue;
 				}
 				if (Main.onlineCBList.contains(username)) {

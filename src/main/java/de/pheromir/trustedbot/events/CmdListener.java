@@ -24,13 +24,17 @@ public class CmdListener implements CommandListener {
 		GuildConfig gc = Main.getGuildConfig(e.getGuild());
 		if (content.startsWith(Main.commandClient.getTextualPrefix())
 				|| gc.getPrefixes().stream().anyMatch(s -> content.toLowerCase().startsWith(s.toLowerCase()))) {
-			String cmd = "";
+			final String cmd;
 			if (content.startsWith(Main.commandClient.getTextualPrefix())) {
 				cmd = content.substring(Main.commandClient.getTextualPrefix().length(), content.length()).trim().split(" ")[0];
 			} else {
 				cmd = contentRaw.substring(Main.getGuildConfig(e.getGuild()).getPrefix().length(), contentRaw.length()).split(" ")[0];
 			}
 			if (gc.getAliasCommands().containsKey(cmd)) {
+				if(Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
+					e.getChannel().sendMessage(Main.COMMAND_DISABLED).complete();
+					return;
+				}
 				AliasCommand ac = gc.getAliasCommands().get(cmd);
 				Command command = Main.commandClient.getCommands().stream().filter(cmd1 -> cmd1.isCommandFor(ac.getCommand())).findAny().orElse(null);
 				if (command != null) {
@@ -43,6 +47,10 @@ public class CmdListener implements CommandListener {
 				}
 
 			} else if (gc.getCustomCommands().containsKey(cmd)) {
+				if(Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
+					e.getChannel().sendMessage(Main.COMMAND_DISABLED).complete();;
+					return;
+				}
 				CustomCommand cc = gc.getCustomCommands().get(cmd);
 				e.getChannel().sendMessage(cc.getResponse()).complete();
 				return;

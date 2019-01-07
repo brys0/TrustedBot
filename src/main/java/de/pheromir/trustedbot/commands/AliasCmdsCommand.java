@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
+import net.dv8tion.jda.core.entities.ChannelType;
 
 public class AliasCmdsCommand extends Command {
 
@@ -16,9 +17,14 @@ public class AliasCmdsCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		String[] args = e.getArgs().split(" ");
-		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
-			args = new String[0];
+		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
+		if(Main.getGuildConfig(e.getGuild()).getAliasCommands().size() < 1) {
+			e.reply("There are currently no aliases.");
+			return;
+		}
 
 		String cmds = "There are currently the following aliases: ";
 		StringBuilder sb = new StringBuilder();
