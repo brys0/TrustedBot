@@ -34,7 +34,7 @@ public class GoogleCommand extends Command {
 			url = String.format(BASE_URL, URLEncoder.encode(e.getArgs(), "UTF-8"));
 			e.reply(url);
 		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
+			Main.LOG.error("", e1);
 			e.reply("Oops, looks like something went wrong.");
 		}
 	}

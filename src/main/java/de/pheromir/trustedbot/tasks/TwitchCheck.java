@@ -11,9 +11,12 @@ public class TwitchCheck implements Runnable {
 
 	@Override
 	public void run() {
-		Thread.currentThread().setName("Twitch-Check");
+		Thread.currentThread().setName("Twitch-Task");
 		for (String twitchname : GuildConfig.getTwitchList().keySet()) {
 			JSONObject res = Methods.getStreamInfo(twitchname);
+			if(res == null) {
+				continue;
+			}
 			if (Main.onlineTwitchList.contains(twitchname)) {
 				if (res.isNull("stream")) {
 					Main.onlineTwitchList.remove(twitchname);
@@ -51,8 +54,8 @@ public class TwitchCheck implements Runnable {
 			try {
 				Thread.sleep(2500);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
-				Main.exceptionAmount++;
+				Main.LOG.error("", e);
+				continue;
 			}
 		}
 	}

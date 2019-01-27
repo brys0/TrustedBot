@@ -43,10 +43,8 @@ public abstract class RandomImageCommand extends Command {
 					? e.getSelfMember().getColor()
 					: Color.BLUE).build());
 		} catch (JSONException | HttpErrorException | InterruptedException | ExecutionException | TimeoutException e1) {
-			e.reply("Es ist ein Fehler aufgetreten.");
-			Main.exceptionAmount++;
-			e1.printStackTrace();
-		}
+			Main.LOG.error(e1.getStackTrace().toString());
+		}	
 	}
 
 }

@@ -18,7 +18,7 @@ public class MemoryCommand extends Command {
 
 	@Override
 	protected void execute(CommandEvent e) {
-		String ans = "Exceptions: " + Main.exceptionAmount + "\n" + "Uptime: "
+		String ans = "Uptime: "
 				+ Methods.getTimeString(System.currentTimeMillis() - Main.startMillis) + "\n" + "Maximaler Speicher: "
 				+ Runtime.getRuntime().maxMemory() / 1024L / 1024L + " MB\n" + "Reservierter Speicher: "
 				+ Runtime.getRuntime().totalMemory() / 1024L / 1024L + " MB\n" + "Freier Speicher: "

@@ -26,7 +26,7 @@ public class MySQL {
 		try {
 			cfg = yaml.load(Main.configFile);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
 			return;
 		}
 
@@ -45,9 +45,9 @@ public class MySQL {
 			this.conn = conn;
 			return conn;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
 		}
 		return null;
 	}
@@ -71,8 +71,8 @@ public class MySQL {
 			st = conn.prepareStatement(query);
 			st.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Failed to send update " + query + ".");
+			Main.LOG.error("", e);
+			Main.LOG.error("Failed to send update "+query+".");
 		} finally {
 			this.closeRessources(null, st);
 		}
@@ -83,14 +83,14 @@ public class MySQL {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Main.LOG.error("", e);
 			}
 		}
 		if (st != null) {
 			try {
 				st.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Main.LOG.error("", e);
 			}
 		}
 	}
@@ -99,7 +99,7 @@ public class MySQL {
 		try {
 			this.conn.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
 		} finally {
 			this.conn = null;
 		}

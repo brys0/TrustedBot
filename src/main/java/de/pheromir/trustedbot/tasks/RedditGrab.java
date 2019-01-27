@@ -18,15 +18,14 @@ public class RedditGrab implements Runnable {
 
 	@Override
 	public void run() {
-		Thread.currentThread().setName("RedditGrabber");
+		Thread.currentThread().setName("Reddit-Task");
 		for (String subreddit : GuildConfig.getRedditList().keySet()) {
 			try {
 				JSONObject res;
 				try {
 				res = Methods.httpRequestJSON(String.format("https://www.reddit.com/r/%s/hot/.json", subreddit));
 				} catch (InterruptedException | HttpErrorException | ExecutionException | TimeoutException e) {
-					e.printStackTrace();
-					Main.exceptionAmount++;
+					Main.LOG.error("", e);
 					continue;
 				}
 				if (!res.has("data"))
@@ -75,8 +74,7 @@ public class RedditGrab implements Runnable {
 				}
 				res = null;
 			} catch (InterruptedException e) {
-				e.printStackTrace();
-				Main.exceptionAmount++;
+				Main.LOG.error("", e);
 				continue;
 			}
 		}

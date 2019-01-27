@@ -32,8 +32,8 @@ public class DJRemoveCommand extends Command {
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 
+		Pattern p = Pattern.compile("(\\d+)");
 		for (String arg : args) {
-			Pattern p = Pattern.compile("(\\d+)");
 			Matcher m = p.matcher(arg);
 			if (m.find()) {
 				String id = m.group(1);

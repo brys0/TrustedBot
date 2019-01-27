@@ -14,15 +14,14 @@ public class CBCheck implements Runnable {
 	@Override
 	public void run() {
 		synchronized (GuildConfig.getCBList()) {
-			Thread.currentThread().setName("CB-Check");
+			Thread.currentThread().setName("CB-Task");
 			for (String username : GuildConfig.getCBList().keySet()) {
 				String url = "https://de.chaturbate.com/" + username;
 				String res;
 				try {
 					res = Methods.httpRequest(url);
 				} catch (HttpErrorException | InterruptedException | ExecutionException | TimeoutException e1) {
-					e1.printStackTrace();
-					Main.exceptionAmount++;
+					Main.LOG.error("", e1);
 					continue;
 				}
 				if (Main.onlineCBList.contains(username)) {
@@ -47,7 +46,7 @@ public class CBCheck implements Runnable {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					Main.exceptionAmount++;
+					Main.LOG.error("", e);
 					continue;
 				}
 			}

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
@@ -108,6 +109,9 @@ public class Main {
 	public static Configuration cfg;
 	public static CommandClient commandClient;
 	public static ScheduledExecutorService spotifyTask;
+	public static ScheduledFuture<?> redditTask;
+	public static ScheduledFuture<?> cbTask;
+	public static ScheduledFuture<?> twitchTask;
 	public static long exceptionAmount = 0;
 
 	public static final String COMMAND_DISABLED = "This command is disabled in this guild.";
@@ -117,7 +121,7 @@ public class Main {
 
 		loadConfig();
 		
-		System.out.println("AdminID: "+adminId);
+		Main.LOG.debug("AdminID: "+adminId);
 
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
@@ -137,7 +141,7 @@ public class Main {
 		cbuilder.addCommands(new RedditCommand(), new CBCommand());
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			cbuilder.addCommands(new TwitchCommand());
-			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 5, 5, TimeUnit.MINUTES);
+			twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 5, 5, TimeUnit.MINUTES);
 		}
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand());
@@ -194,13 +198,12 @@ public class Main {
 					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown()).setAutoReconnect(true).build();
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
-			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 15, 30, TimeUnit.MINUTES);
-			// Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new
-			// ClearRedditPostHistory(), 30, 30, TimeUnit.DAYS);
-			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 15, 15, TimeUnit.MINUTES);
+			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 15, 30, TimeUnit.MINUTES);
+			cbTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 15, 15, TimeUnit.MINUTES);
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
 				spotifyTask = Executors.newScheduledThreadPool(1);
 				spotifyTask.scheduleAtFixedRate(() -> {
+					Thread.currentThread().setName("Spotify-Task");
 					Unirest.post("https://accounts.spotify.com/api/token").basicAuth(spotifyClient, spotifySecret).header("Content-Type", "application/x-www-form-urlencoded").body("grant_type=client_credentials").asJsonAsync(new Callback<JsonNode>() {
 
 						@Override
@@ -232,26 +235,25 @@ public class Main {
 			}
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
-			System.out.print("Fehler beim Start des Bots: ");
 			if (e instanceof InterruptedException) {
-				e.printStackTrace();
+				LOG.error("Fehler beim Start des Bots:", e);
 			} else {
-				System.out.println("Bot-Token ungültig");
+				LOG.error("Fehler beim Start des Bots: Bot-Token ungültig");
 			}
 			return;
 		}
-		System.out.println("Bot startup complete.");
+		LOG.info("Bot startup complete.");
+		new Thread(new ConsoleCommands()).start();
 	}
 
 	private static void loadConfig() {
 		if (!configFile.exists()) {
 			try {
 				Files.copy(Main.class.getResourceAsStream("/config.yml"), Paths.get("config.yml"), StandardCopyOption.REPLACE_EXISTING);
-				System.out.println("-- Please set up the configuration file --");
-				Thread.sleep(30000);
+				LOG.error("-- Please set up the configuration file --");
 				System.exit(1);
-			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
+			} catch (IOException e) {
+				LOG.error("", e);
 			}
 		}
 
@@ -307,7 +309,7 @@ public class Main {
 					+ " PRIMARY KEY (GuildId, Command));");
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error("", e);
 		}
 	}
 
@@ -326,7 +328,7 @@ public class Main {
 			try {
 				yaml.save(cfg, configFile);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.error("", e);
 			}
 		}
 	}
@@ -338,7 +340,7 @@ public class Main {
 			try {
 				yaml.save(cfg, configFile);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.error("", e);
 			}
 		}
 	}

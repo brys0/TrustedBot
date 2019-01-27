@@ -155,7 +155,7 @@ public class PlayingCommand extends Command {
 				b.getFields().addAll(fields);
 				e.reply(b.build());
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				Main.LOG.error("", e1);
 			}
 		}
 	}

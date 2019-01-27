@@ -115,7 +115,7 @@ public class PlayCommand extends Command {
 								try {
 									printAndAddSuggestions(getVideoSuggestions(artist+" "+title), e);
 								} catch (IOException e1) {
-									e1.printStackTrace();
+									Main.LOG.error(e1.getStackTrace().toString());
 									
 								}
 								return;
@@ -143,7 +143,7 @@ public class PlayCommand extends Command {
 					printAndAddSuggestions(getVideoSuggestions(e.getArgs()), e);
 					return;
 				} catch (IOException e1) {
-					e1.printStackTrace();
+					Main.LOG.error(e1.getStackTrace().toString());
 					e.reply("An error occurred.");
 					return;
 				}

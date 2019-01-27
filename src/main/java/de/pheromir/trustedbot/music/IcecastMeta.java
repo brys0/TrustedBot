@@ -14,6 +14,8 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 
+import de.pheromir.trustedbot.Main;
+
 public class IcecastMeta {
 
 	private URL url;
@@ -35,7 +37,7 @@ public class IcecastMeta {
 
 			xpath = xpathFactory.newXPath();
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			Main.LOG.error("", e1);
 			xpath = null;
 		}
 	}
@@ -52,7 +54,7 @@ public class IcecastMeta {
 			} else
 				return "Unbekannt";
 		} catch (XPathExpressionException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
 		}
 		return null;
 	}
@@ -72,7 +74,7 @@ public class IcecastMeta {
 				}
 			}
 		} catch (XPathExpressionException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
 		}
 		return -1;
 	}

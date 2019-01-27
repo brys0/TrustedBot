@@ -169,7 +169,7 @@ public class Methods {
 			return Duration.parse(targetVideo.getContentDetails().getDuration()).toMillis();
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
 		}
 		return 0;
 	}
@@ -209,9 +209,9 @@ public class Methods {
 			}
 			return true;
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
+			return false;
 		}
-		return false;
 	}
 
 	public static boolean doesCBUserExist(String username) {
@@ -238,7 +238,7 @@ public class Methods {
 			JSONObject res = new JSONObject(r.getBody().toString());
 			return res;
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			e.printStackTrace();
+			Main.LOG.error("", e);
 			return null;
 		}
 	}
