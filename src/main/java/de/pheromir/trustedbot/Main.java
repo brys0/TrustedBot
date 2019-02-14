@@ -35,7 +35,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import de.pheromir.trustedbot.commands.AliasAddCommand;
 import de.pheromir.trustedbot.commands.AliasCmdsCommand;
 import de.pheromir.trustedbot.commands.AliasRemoveCommand;
-import de.pheromir.trustedbot.commands.CBCommand;
 import de.pheromir.trustedbot.commands.DJAddCommand;
 import de.pheromir.trustedbot.commands.DJRemoveCommand;
 import de.pheromir.trustedbot.commands.ExtraAddCommand;
@@ -76,7 +75,6 @@ import de.pheromir.trustedbot.config.YamlConfiguration;
 import de.pheromir.trustedbot.events.CmdListener;
 import de.pheromir.trustedbot.events.GuildEvents;
 import de.pheromir.trustedbot.events.Shutdown;
-import de.pheromir.trustedbot.tasks.CBCheck;
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
 import net.dv8tion.jda.core.AccountType;
@@ -110,7 +108,6 @@ public class Main {
 	public static CommandClient commandClient;
 	public static ScheduledExecutorService spotifyTask;
 	public static ScheduledFuture<?> redditTask;
-	public static ScheduledFuture<?> cbTask;
 	public static ScheduledFuture<?> twitchTask;
 	public static long exceptionAmount = 0;
 
@@ -138,7 +135,7 @@ public class Main {
 		// Alias + Custom Commands
 		cbuilder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand());
 		// Subscription Commands
-		cbuilder.addCommands(new RedditCommand(), new CBCommand());
+		cbuilder.addCommands(new RedditCommand());
 		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
 			cbuilder.addCommands(new TwitchCommand());
 			twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 5, 5, TimeUnit.MINUTES);
@@ -154,7 +151,7 @@ public class Main {
 
 		// cbuilder.setEmojis("\u2705", "\u26A0", "\u274C");
 		cbuilder.setEmojis("\u2705", "", "");
-
+		
 		cbuilder.setHelpConsumer((event) -> {
 			StringBuilder builder = new StringBuilder("**Available commands for "
 					+ (event.getChannelType() == ChannelType.TEXT ? "the requested Guild" : "Direct Messages")
@@ -199,7 +196,6 @@ public class Main {
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 15, 30, TimeUnit.MINUTES);
-			cbTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 15, 15, TimeUnit.MINUTES);
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
 				spotifyTask = Executors.newScheduledThreadPool(1);
 				spotifyTask.scheduleAtFixedRate(() -> {
@@ -286,11 +282,6 @@ public class Main {
 					+ " PRIMARY KEY (ChannelId, Subreddit));");
 
 			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Reddit_Posts" + " (Url VARCHAR(191) PRIMARY KEY);");
-
-			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Chaturbate" + " (ChannelId VARCHAR(64) NOT NULL,"
-					+ " Username VARCHAR(32) NOT NULL," + " GuildId VARCHAR(64) NOT NULL,"
-					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
-					+ " PRIMARY KEY (ChannelId, Username));");
 
 			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS AliasCommands" + " (Name VARCHAR(128) NOT NULL,"
 					+ " GuildId VARCHAR(64) NOT NULL," + " Command VARCHAR(64) NOT NULL,"

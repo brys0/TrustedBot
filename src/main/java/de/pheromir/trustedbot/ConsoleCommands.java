@@ -4,7 +4,6 @@ import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import de.pheromir.trustedbot.tasks.CBCheck;
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
 
@@ -32,15 +31,8 @@ public class ConsoleCommands implements Runnable {
 				Main.twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 1, 5, TimeUnit.MINUTES);
 				Main.LOG.info("Twitch-Notifications neugestartet.");
 				
-			} else if(cmd.equalsIgnoreCase("cbtask")) {
-				if(!Main.cbTask.isCancelled()) {
-					Main.cbTask.cancel(true);
-				}
-				Main.cbTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 1, 15, TimeUnit.MINUTES);
-				Main.LOG.info("CB-Task neugestartet.");
-				
 			} else if (cmd.equalsIgnoreCase("help")) {
-				Main.LOG.info("Verfügbare Befehle: help, redditTask, twitchTask, cbTask");
+				Main.LOG.info("Verfügbare Befehle: help, redditTask, twitchTask");
 				
 			} else {
 				Main.LOG.info("Unbekannter Befehl. 'help' für eine Liste aller Befehle.");

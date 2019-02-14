@@ -26,7 +26,7 @@ public abstract class RandomImageCommand extends Command {
 		this.help = "Shows a random picture.";
 		this.guildOnly = false;
 		this.category = new Category("Fun");
-		this.cooldown = 60;
+		this.cooldown = 10;
 		this.cooldownScope = CooldownScope.USER_GUILD;
 	}
 

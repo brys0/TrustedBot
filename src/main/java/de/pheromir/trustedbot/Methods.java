@@ -1,6 +1,7 @@
 package de.pheromir.trustedbot;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -214,25 +215,15 @@ public class Methods {
 		}
 	}
 
-	public static boolean doesCBUserExist(String username) {
-		String res;
-		try {
-			res = httpRequest("https://de.chaturbate.com/" + username);
-			return !res.contains("HTTP 404 - Seite nicht gefunden");
-		} catch (HttpErrorException | InterruptedException | ExecutionException | TimeoutException e) {
-			return false;
-		}
-	}
-
 	/*
 	 * GET THE STREAM INFO OF A TWITCH USER, IF STREAMING
 	 */
 
-	public static JSONObject getStreamInfo(String twitchname) {
+	public static JSONObject getStreamInfo(String twitchname) throws ConnectException {
 		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/kraken/streams/" + twitchname
 				+ "?stream_type=live").header("client-id", Main.twitchKey).asStringAsync();
 		try {
-			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
+			HttpResponse<String> r = future.get(30, TimeUnit.SECONDS);
 			if (r.getStatus() == 404)
 				return null;
 			JSONObject res = new JSONObject(r.getBody().toString());
