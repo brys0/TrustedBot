@@ -35,6 +35,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import de.pheromir.trustedbot.commands.AliasAddCommand;
 import de.pheromir.trustedbot.commands.AliasCmdsCommand;
 import de.pheromir.trustedbot.commands.AliasRemoveCommand;
+import de.pheromir.trustedbot.commands.CreditsCommand;
 import de.pheromir.trustedbot.commands.DJAddCommand;
 import de.pheromir.trustedbot.commands.DJRemoveCommand;
 import de.pheromir.trustedbot.commands.ExtraAddCommand;
@@ -58,6 +59,7 @@ import de.pheromir.trustedbot.commands.RedditCommand;
 import de.pheromir.trustedbot.commands.ResumeCommand;
 import de.pheromir.trustedbot.commands.RewindCommand;
 import de.pheromir.trustedbot.commands.SeekCommand;
+import de.pheromir.trustedbot.commands.SetCreditsCommand;
 import de.pheromir.trustedbot.commands.SkipCommand;
 import de.pheromir.trustedbot.commands.StatusCommand;
 import de.pheromir.trustedbot.commands.StopCommand;
@@ -68,6 +70,7 @@ import de.pheromir.trustedbot.commands.ToggleCommand;
 import de.pheromir.trustedbot.commands.TwitchCommand;
 import de.pheromir.trustedbot.commands.UrbanDictionaryCommand;
 import de.pheromir.trustedbot.commands.VolumeCommand;
+import de.pheromir.trustedbot.commands.base.RandomImageCommand;
 import de.pheromir.trustedbot.config.Configuration;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.config.SettingsManager;
@@ -140,6 +143,9 @@ public class Main {
 			cbuilder.addCommands(new TwitchCommand());
 			twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 5, 5, TimeUnit.MINUTES);
 		}
+		// Money
+		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand());
+		
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand());
 		// Misc
@@ -174,6 +180,9 @@ public class Main {
 							: commandClient.getTextualPrefix()).append(command.getName()).append(command.getArguments() == null
 									? "`"
 									: " " + command.getArguments() + "`").append(" - ").append(command.getHelp());
+					if(command instanceof RandomImageCommand && ((RandomImageCommand)command).getCreditCost() > 0) {
+						builder.append(" **["+((RandomImageCommand)command).getCreditCost()+" credits]**");
+					}
 				}
 			}
 			User owner = event.getJDA().getUserById(commandClient.getOwnerId());
@@ -298,6 +307,12 @@ public class Main {
 					+ " Command VARCHAR(128) NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (GuildId, Command));");
+			
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Credits" + " (GuildId VARCHAR(64) NOT NULL,"
+					+ " UserId VARCHAR(64) NOT NULL,"
+					+ " Amount BIGINT NOT NULL DEFAULT 0,"
+					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
+					+ " PRIMARY KEY (GuildId, UserId));");
 
 		} catch (IOException e) {
 			LOG.error("", e);

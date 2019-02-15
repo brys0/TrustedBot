@@ -11,6 +11,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
+import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.exceptions.HttpErrorException;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -20,31 +21,44 @@ public abstract class RandomImageCommand extends Command {
 
 	protected String BASE_URL;
 	protected String jsonKey;
+	protected Long creditsCost;
 
 	public RandomImageCommand() {
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS };
 		this.help = "Shows a random picture.";
-		this.guildOnly = false;
+		this.guildOnly = true;
 		this.category = new Category("Fun");
 		this.cooldown = 10;
 		this.cooldownScope = CooldownScope.USER_GUILD;
+		this.creditsCost = 1L;
 	}
 
 	@Override
 	protected void execute(CommandEvent e) {
-		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
+		if (e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
 			e.reply(Main.COMMAND_DISABLED);
+			return;
+		}
+		GuildConfig gc = Main.getGuildConfig(e.getGuild());
+		if (gc.getUserCredits(e.getMember().getUser().getIdLong()) < creditsCost) {
+			e.reply("You need at least "+creditsCost+" credits to use this command.");
 			return;
 		}
 		String imgUrl;
 		try {
 			imgUrl = Methods.httpRequestJSON(BASE_URL).getString(jsonKey);
+			e.reply("- "+creditsCost+(creditsCost==1?" credit":" credits"));
 			e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT
 					? e.getSelfMember().getColor()
 					: Color.BLUE).build());
+			gc.setUserCredits(e.getMember().getUser().getIdLong(), gc.getUserCredits(e.getMember().getUser().getIdLong()) - creditsCost);
 		} catch (JSONException | HttpErrorException | InterruptedException | ExecutionException | TimeoutException e1) {
 			Main.LOG.error("", e1);
-		}	
+		}
+	}
+	
+	public long getCreditCost() {
+		return creditsCost;
 	}
 
 }

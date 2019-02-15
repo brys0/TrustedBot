@@ -14,6 +14,7 @@ public class LewdCommand extends RandomImageCommand {
 		this.help = "Shows a random lewd neko picture. (NSFW-Channels only!)";
 		this.BASE_URL = "https://nekos.life/api/" + "lewd/" + "neko";
 		this.jsonKey = "neko";
+		this.creditsCost = 5L;
 	}
 	
 	@Override

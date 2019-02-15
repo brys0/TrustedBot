@@ -31,6 +31,7 @@ public class GuildConfig implements GuildSettingsProvider {
 	private List<Long> djs;
 	private List<String> disabledCommands;
 	private HashMap<User, ArrayList<Suggestion>> suggestions;
+	private HashMap<Long, Long> credits;
 	private HashMap<String, CustomCommand> customCommands;
 	private HashMap<String, AliasCommand> aliasCommands;
 	private String cmdPrefix;
@@ -49,6 +50,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		guildId = g.getIdLong();
 		djs = new ArrayList<>();
 		volume = 100;
+		credits = new HashMap<>();
 		disabledCommands = new ArrayList<>();
 		suggestions = new HashMap<>();
 		customCommands = new HashMap<>();
@@ -188,6 +190,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sql.closeConnection();
 		} catch (SQLException e) {
+			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -213,15 +216,137 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sql.closeConnection();
 		} catch (SQLException e) {
-			Main.LOG.error("", e);
+			sql.closeConnection();
+			Main.LOG.error("Error downloading DJs: ", e);
 		} finally {
 			try {
 				if (res != null)
 					res.close();
 			} catch (SQLException e) {
-				Main.LOG.error("", e);
+				Main.LOG.error("Error downloading DJs: ", e);
 			}
 		}
+	}
+
+	public void downloadCredits() {
+		MySQL sql = Main.getMySQL();
+		sql.openConnection();
+		PreparedStatement state;
+		ResultSet res = null;
+		try {
+			state = sql.getConnection().prepareStatement("SELECT UserId, Amount FROM Credits WHERE GuildId = ?");
+			state.setString(1, g.getId());
+			res = state.executeQuery();
+			while (res.next()) {
+				credits.put(Long.parseLong(res.getString("UserId")), res.getLong("Amount"));
+			}
+			sql.closeConnection();
+		} catch (SQLException e) {
+			sql.closeConnection();
+			Main.LOG.error("Error downloading DJs: ", e);
+		} finally {
+			try {
+				if (res != null)
+					res.close();
+			} catch (SQLException e) {
+				Main.LOG.error("Error downloading DJs: ", e);
+			}
+		}
+	}
+	
+	public void setUserCredits(Long userId, Long amount) {
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep;
+			if(userCreditsExist(userId)) {
+				prep = sq.getConnection().prepareStatement("UPDATE Credits SET Amount = ? WHERE GuildId = ? AND UserId = ?");
+			} else {
+				prep = sq.getConnection().prepareStatement("INSERT INTO Credits (Amount, GuildId, UserId) VALUES (?, ?, ?)");
+			}
+			prep.setLong(1, amount);
+			prep.setString(2, g.getId());
+			prep.setString(3, userId.toString());
+			prep.execute();
+			credits.put(userId, amount);
+			sq.closeConnection();
+		} catch (SQLException e) {
+			sq.closeConnection();
+			Main.LOG.error("Set UserCredits failed: ", e);
+		}
+	}
+	
+	public void deleteUserCredits(Long userId) {
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep = sq.getConnection().prepareStatement("DELETE IGNORE FROM Credits WHERE GuildId = ? AND UserId = ?");
+			prep.setString(1, g.getId());
+			prep.setString(2, userId.toString());
+			prep.execute();
+			sq.closeConnection();
+		} catch (SQLException e) {
+			sq.closeConnection();
+			Main.LOG.error("Delete UserCredits failed: ", e);
+		}
+	}
+
+	public boolean userCreditsExist(Long userId) {
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep = sq.getConnection().prepareStatement("SELECT Amount FROM Credits WHERE UserId = ? AND GuildId = ?");
+			prep.setString(1, userId.toString());
+			prep.setString(2, guildId.toString());
+			ResultSet res = prep.executeQuery();
+			boolean exists = res.next();
+			sq.closeConnection();
+			return exists;
+		} catch (SQLException e) {
+			sq.closeConnection();
+			Main.LOG.error("Credit existance check failed: " + e);
+			return false;
+		}
+	}
+
+	public Long getUserCredits(Long userId) {
+		if (credits.containsKey(userId)) {
+			return credits.get(userId);
+		} else {
+			if (!userCreditsExist(userId)) {
+				credits.put(userId, 0L);
+				setUserCredits(userId, 0L);
+				return 0L;
+			} else {
+				MySQL sql = Main.getMySQL();
+				sql.openConnection();
+				PreparedStatement state;
+				ResultSet res = null;
+				try {
+					state = sql.getConnection().prepareStatement("SELECT Amount FROM Credits WHERE UserId = ? AND GuildId = ?");
+					state.setString(1, userId.toString());
+					state.setString(2, g.getId());
+					res = state.executeQuery();
+					while (res.next()) {
+						credits.put(userId, res.getLong("Amount"));
+						break;
+					}
+					sql.closeConnection();
+					return credits.get(userId);
+				} catch (SQLException e) {
+					sql.closeConnection();
+					Main.LOG.error("", e);
+				} finally {
+					try {
+						if (res != null)
+							res.close();
+					} catch (SQLException e) {
+						Main.LOG.error("", e);
+					}
+				}
+			}
+		}
+		return 0L;
 	}
 
 	public void downloadCustomCommands() {
@@ -239,6 +364,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sql.closeConnection();
 		} catch (SQLException e) {
+			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -263,6 +389,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("CustomCommand add failed: ", e);
 		}
 	}
@@ -281,6 +408,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("CustomCommand remove failed: ", e);
 		}
 
@@ -305,6 +433,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sql.closeConnection();
 		} catch (SQLException e) {
+			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -330,6 +459,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("AliasCommand add failed: " + e);
 		}
 	}
@@ -348,6 +478,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("AliasCommand remove failed: " + e);
 		}
 
@@ -381,6 +512,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("Twitch add failed: " + e);
 		}
 	}
@@ -407,6 +539,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("Twitch remove failed: " + e);
 		}
 	}
@@ -439,6 +572,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("Reddit add failed: " + e);
 		}
 	}
@@ -465,6 +599,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("Reddit remove failed: " + e);
 		}
 	}
@@ -499,6 +634,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sql.closeConnection();
 		} catch (SQLException e) {
+			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -536,6 +672,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sql.closeConnection();
 		} catch (SQLException e) {
+			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -556,7 +693,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		sq.openConnection();
 		try {
 			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Reddit_Posts (Url) VALUES (?)");
-			prep.setString(1, post.length()>190?post.substring(0, 190):post);
+			prep.setString(1, post.length() > 190 ? post.substring(0, 190) : post);
 			prep.execute();
 		} catch (SQLException e) {
 			Main.LOG.error("Reddit add history failed: " + e);
@@ -570,17 +707,14 @@ public class GuildConfig implements GuildSettingsProvider {
 		sq.openConnection();
 		try {
 			PreparedStatement prep = sq.getConnection().prepareStatement("SELECT * FROM Reddit_Posts WHERE Url = ?");
-			prep.setString(1, post.length()>190?post.substring(0, 190):post);
+			prep.setString(1, post.length() > 190 ? post.substring(0, 190) : post);
 			ResultSet res = prep.executeQuery();
-			if (res.next()) {
-				sq.closeConnection();
-				return true;
-			} else {
-				sq.closeConnection();
-				return false;
-			}
+			boolean exists = res.next();
+			sq.closeConnection();
+			return exists;
 		} catch (SQLException e) {
 			Main.LOG.error("Checking Reddit history failed: " + e);
+			sq.closeConnection();
 			return false;
 		}
 	}
@@ -588,10 +722,10 @@ public class GuildConfig implements GuildSettingsProvider {
 	public static void clearSubredditPostHistory() {
 		Methods.mySQLQuery("TRUNCATE TABLE Reddit_Posts");
 	}
-	
+
 	public void disableCommand(String cmd) {
 		cmd = cmd.toLowerCase();
-		if(!isCommandDisabled(cmd)) {
+		if (!isCommandDisabled(cmd)) {
 			disabledCommands.add(cmd);
 		}
 		MySQL sq = Main.getMySQL();
@@ -603,14 +737,15 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("DisabledCommand add failed: " + e);
 		}
-		
+
 	}
-	
+
 	public void enableCommand(String cmd) {
 		cmd = cmd.toLowerCase();
-		if(isCommandDisabled(cmd)) {
+		if (isCommandDisabled(cmd)) {
 			disabledCommands.remove(cmd);
 		}
 		MySQL sq = Main.getMySQL();
@@ -622,19 +757,20 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.execute();
 			sq.closeConnection();
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("DisabledCommand remove failed: " + e);
 		}
-		
+
 	}
-	
+
 	public boolean isCommandDisabled(String cmd) {
 		return disabledCommands.contains(cmd.toLowerCase());
 	}
-	
+
 	public List<String> getDisabledCommands() {
 		return disabledCommands;
 	}
-	
+
 	public void downloadDisabledCommands() {
 		MySQL sql = Main.getMySQL();
 		sql.openConnection();
@@ -649,6 +785,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 			sql.closeConnection();
 		} catch (SQLException e) {
+			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -659,7 +796,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 		}
 	}
-	
+
 	public void delete() {
 		MySQL sq = Main.getMySQL();
 		sq.openConnection();
@@ -670,6 +807,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			sq.closeConnection();
 			SettingsManager.guildConfigs.remove(this.guildId);
 		} catch (SQLException e) {
+			sq.closeConnection();
 			Main.LOG.error("General delete failed: " + e);
 		}
 	}

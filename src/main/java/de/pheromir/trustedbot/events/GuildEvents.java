@@ -9,6 +9,7 @@ import de.pheromir.trustedbot.config.SettingsManager;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -32,6 +33,11 @@ public class GuildEvents extends ListenerAdapter {
 		twstreams.forEach(s -> GuildConfig.removeTwitchStream(s, e.getChannel().getIdLong()));
 		reddits.forEach(s -> GuildConfig.removeSubreddit(s, e.getChannel().getIdLong()));
 	}
+	
+	@Override
+	public void onGuildMemberJoin(GuildMemberJoinEvent e) {
+		Main.getGuildConfig(e.getGuild()).setUserCredits(e.getMember().getUser().getIdLong(), 0L);
+	}
 
 	@Override
 	public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
@@ -41,6 +47,7 @@ public class GuildEvents extends ListenerAdapter {
 		if (Main.getExtraUsers().contains(e.getUser().getIdLong())) {
 			Main.removeExtraUser(e.getUser().getIdLong());
 		}
+		Main.getGuildConfig(e.getGuild()).deleteUserCredits(e.getMember().getUser().getIdLong());
 	}
 
 }
