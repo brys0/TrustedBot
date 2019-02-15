@@ -2,19 +2,18 @@ package de.pheromir.trustedbot.commands;
 
 import java.util.ArrayList;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.music.QueueTrack;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 
-public class QueueCommand extends Command {
+public class QueueCommand extends TrustedCommand {
 
 	public QueueCommand() {
 		this.name = "queue";
@@ -26,11 +25,7 @@ public class QueueCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
-		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
-			e.reply(Main.COMMAND_DISABLED);
-			return;
-		}
+	protected void exec(CommandEvent e) {
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 		ArrayList<QueueTrack> titles = musicManager.scheduler.getRequestedTitles();
 

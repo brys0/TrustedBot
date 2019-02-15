@@ -60,6 +60,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		player.addListener(scheduler);
 		initialize();
 		downloadGeneralGuild();
+		downloadCredits();
 		downloadDJs();
 		downloadDisabledCommands();
 		downloadAliasCommands();

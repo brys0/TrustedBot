@@ -3,13 +3,13 @@ package de.pheromir.trustedbot.commands;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import net.dv8tion.jda.core.entities.User;
 
-public class ExtraRemoveCommand extends Command {
+public class ExtraRemoveCommand extends TrustedCommand {
 
 	public ExtraRemoveCommand() {
 		this.name = "extraremove";
@@ -20,7 +20,7 @@ public class ExtraRemoveCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
+	protected void exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];

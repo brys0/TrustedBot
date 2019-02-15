@@ -1,12 +1,12 @@
 package de.pheromir.trustedbot.commands;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 
-public class StatusCommand extends Command {
+public class StatusCommand extends TrustedCommand {
 
 	public StatusCommand() {
 		this.name = "status";
@@ -17,7 +17,7 @@ public class StatusCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
+	protected void exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		JDA api = e.getJDA();
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)

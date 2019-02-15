@@ -1,13 +1,12 @@
 package de.pheromir.trustedbot.commands;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 
-public class TextCmdAddCommand extends Command {
+public class TextCmdAddCommand extends TrustedCommand {
 
 	public TextCmdAddCommand() {
 		this.name = "textcmdadd";
@@ -19,15 +18,11 @@ public class TextCmdAddCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
-		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
-			e.reply(Main.COMMAND_DISABLED);
-			return;
-		}
+	protected void exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
-
+		
 		if (args.length < 2) {
 			e.reply("Syntaxerror. Usage: !" + name + " <command> <response>");
 			return;

@@ -14,21 +14,20 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.music.IcecastMeta;
 import de.pheromir.trustedbot.music.YouTubeTitleCache;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
 
-public class PlayingCommand extends Command {
+public class PlayingCommand extends TrustedCommand {
 
 	String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
 	Pattern compiledPattern = Pattern.compile(pattern);
@@ -44,15 +43,11 @@ public class PlayingCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
-		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
-			e.reply(Main.COMMAND_DISABLED);
-			return;
-		}
+	protected void exec(CommandEvent e) {
 		GuildConfig m = Main.getGuildConfig(e.getGuild());
 		AudioTrack track = m.player.getPlayingTrack();
 		if (track == null) {
-			e.reply("Currently nothing is playing");
+			e.reply("Nothing is playing at the moment.");
 			return;
 		}
 		EmbedBuilder b = new EmbedBuilder();

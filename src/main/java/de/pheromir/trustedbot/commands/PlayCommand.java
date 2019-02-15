@@ -17,7 +17,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -31,17 +30,17 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.music.Suggestion;
 import de.pheromir.trustedbot.tasks.RemoveUserSuggestion;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-public class PlayCommand extends Command {
+public class PlayCommand extends TrustedCommand {
 
 	String pattern = "^^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	Pattern compiledPattern = Pattern.compile(pattern);
@@ -55,11 +54,7 @@ public class PlayCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
-		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
-			e.reply(Main.COMMAND_DISABLED);
-			return;
-		}
+	protected void exec(CommandEvent e) {
 		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
 		AudioManager audioManager = e.getGuild().getAudioManager();
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());

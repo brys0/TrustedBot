@@ -46,7 +46,6 @@ import de.pheromir.trustedbot.commands.HugCommand;
 import de.pheromir.trustedbot.commands.KissCommand;
 import de.pheromir.trustedbot.commands.LewdCommand;
 import de.pheromir.trustedbot.commands.LizardCommand;
-import de.pheromir.trustedbot.commands.MemoryCommand;
 import de.pheromir.trustedbot.commands.NekoCommand;
 import de.pheromir.trustedbot.commands.NumberFactCommand;
 import de.pheromir.trustedbot.commands.PatCommand;
@@ -61,6 +60,7 @@ import de.pheromir.trustedbot.commands.RewindCommand;
 import de.pheromir.trustedbot.commands.SeekCommand;
 import de.pheromir.trustedbot.commands.SetCreditsCommand;
 import de.pheromir.trustedbot.commands.SkipCommand;
+import de.pheromir.trustedbot.commands.StatsCommand;
 import de.pheromir.trustedbot.commands.StatusCommand;
 import de.pheromir.trustedbot.commands.StopCommand;
 import de.pheromir.trustedbot.commands.TextCmdAddCommand;
@@ -70,7 +70,7 @@ import de.pheromir.trustedbot.commands.ToggleCommand;
 import de.pheromir.trustedbot.commands.TwitchCommand;
 import de.pheromir.trustedbot.commands.UrbanDictionaryCommand;
 import de.pheromir.trustedbot.commands.VolumeCommand;
-import de.pheromir.trustedbot.commands.base.RandomImageCommand;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.Configuration;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.config.SettingsManager;
@@ -120,8 +120,8 @@ public class Main {
 		LOG.debug("Starting DiscordBot...");
 
 		loadConfig();
-		
-		Main.LOG.debug("AdminID: "+adminId);
+
+		Main.LOG.debug("AdminID: " + adminId);
 
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
@@ -132,7 +132,7 @@ public class Main {
 		cbuilder.setOwnerId(adminId);
 		cbuilder.setGuildSettingsManager(new SettingsManager());
 		// Owner Commands + Settings
-		cbuilder.addCommands(new StatusCommand(), new MemoryCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand(), new ToggleCommand());
+		cbuilder.addCommands(new StatusCommand(), new StatsCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand(), new ToggleCommand());
 		// Music
 		cbuilder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new QueueCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand());
 		// Alias + Custom Commands
@@ -145,7 +145,7 @@ public class Main {
 		}
 		// Money
 		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand());
-		
+
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand());
 		// Misc
@@ -157,14 +157,16 @@ public class Main {
 
 		// cbuilder.setEmojis("\u2705", "\u26A0", "\u274C");
 		cbuilder.setEmojis("\u2705", "", "");
-		
+
 		cbuilder.setHelpConsumer((event) -> {
 			StringBuilder builder = new StringBuilder("**Available commands for "
 					+ (event.getChannelType() == ChannelType.TEXT ? "the requested Guild" : "Direct Messages")
 					+ ":**\n*Note: The command prefix may vary between guilds. The prefix in Direct Messages is always "
 					+ commandClient.getTextualPrefix() + ".*\n");
+			builder.append("\nCommands with the `[NSFW]`-tag can only be used in NSFW-Channels.\n");
 			Category category = null;
-			for (Command command : commandClient.getCommands()) {
+			for (Command command1 : commandClient.getCommands()) {
+				TrustedCommand command = (TrustedCommand) command1;
 				if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner()) && (!command.isGuildOnly()
 						&& event.getChannelType() == ChannelType.PRIVATE
 						|| (event.isFromType(ChannelType.TEXT)
@@ -180,14 +182,19 @@ public class Main {
 							: commandClient.getTextualPrefix()).append(command.getName()).append(command.getArguments() == null
 									? "`"
 									: " " + command.getArguments() + "`").append(" - ").append(command.getHelp());
-					if(command instanceof RandomImageCommand && ((RandomImageCommand)command).getCreditCost() > 0) {
-						builder.append(" **["+((RandomImageCommand)command).getCreditCost()+" credits]**");
+					if (command.isNSFW()) {
+						builder.append(" *[NSFW]*");
+					}
+					if (command.costsCredits()) {
+						builder.append(" **[" + command.getCreditCost() + " credit"
+								+ (command.getCreditCost() == 1 ? "" : "s") + "]**");
 					}
 				}
 			}
 			User owner = event.getJDA().getUserById(commandClient.getOwnerId());
 			if (owner != null) {
-				//builder.append("\n\nFor additional help, contact **").append(owner.getName()).append("**#").append(owner.getDiscriminator());
+				// builder.append("\n\nFor additional help, contact
+				// **").append(owner.getName()).append("**#").append(owner.getDiscriminator());
 				if (commandClient.getServerInvite() != null)
 					builder.append(" or join ").append(commandClient.getServerInvite());
 			}
@@ -307,10 +314,9 @@ public class Main {
 					+ " Command VARCHAR(128) NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (GuildId, Command));");
-			
+
 			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Credits" + " (GuildId VARCHAR(64) NOT NULL,"
-					+ " UserId VARCHAR(64) NOT NULL,"
-					+ " Amount BIGINT NOT NULL DEFAULT 0,"
+					+ " UserId VARCHAR(64) NOT NULL," + " Amount BIGINT NOT NULL DEFAULT 0,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (GuildId, UserId));");
 

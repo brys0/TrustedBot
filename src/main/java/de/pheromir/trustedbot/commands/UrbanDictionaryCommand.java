@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import org.json.JSONArray;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -12,12 +11,12 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import de.pheromir.trustedbot.Main;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 
-public class UrbanDictionaryCommand extends Command {
+public class UrbanDictionaryCommand extends TrustedCommand {
 
 	private static final String BASE_URL = "http://api.urbandictionary.com/v0/define?term={sw}";
 
@@ -33,11 +32,7 @@ public class UrbanDictionaryCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
-		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
-			e.reply(Main.COMMAND_DISABLED);
-			return;
-		}
+	protected void exec(CommandEvent e) {
 		Unirest.get(BASE_URL).routeParam("sw", e.getArgs()).asJsonAsync(new Callback<JsonNode>() {
 
 			@Override

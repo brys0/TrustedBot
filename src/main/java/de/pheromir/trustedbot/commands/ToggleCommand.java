@@ -4,9 +4,10 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import net.dv8tion.jda.core.Permission;
 
-public class ToggleCommand extends Command {
+public class ToggleCommand extends TrustedCommand {
 
 	public ToggleCommand() {
 		this.name = "toggle";
@@ -18,7 +19,7 @@ public class ToggleCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
+	protected void exec(CommandEvent e) {
 		String[] args2 = e.getArgs().split(" ");
 		final String[] args;
 		if ((args2[0].equals("") || args2[0].isEmpty()) && args2.length == 1)

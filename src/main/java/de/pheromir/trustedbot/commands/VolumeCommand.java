@@ -1,12 +1,11 @@
 package de.pheromir.trustedbot.commands;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
-import net.dv8tion.jda.core.entities.ChannelType;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 
-public class VolumeCommand extends Command {
+public class VolumeCommand extends TrustedCommand {
 
 	public VolumeCommand() {
 		this.name = "volume";
@@ -18,11 +17,7 @@ public class VolumeCommand extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent e) {
-		if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
-			e.reply(Main.COMMAND_DISABLED);
-			return;
-		}
+	protected void exec(CommandEvent e) {
 		if (e.getArgs().isEmpty()) {
 			e.reply("Current volume: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
 			return;
