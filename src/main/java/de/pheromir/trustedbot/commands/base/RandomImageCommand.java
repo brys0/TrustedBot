@@ -14,8 +14,6 @@ public abstract class RandomImageCommand extends TrustedCommand {
 
 	protected String BASE_URL;
 	protected String jsonKey;
-	
-	
 
 	public RandomImageCommand() {
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS };

@@ -32,6 +32,7 @@ public class GuildConfig implements GuildSettingsProvider {
 	private List<String> disabledCommands;
 	private HashMap<User, ArrayList<Suggestion>> suggestions;
 	private HashMap<Long, Long> credits;
+	private ArrayList<Long> rewardClaimed;
 	private HashMap<String, CustomCommand> customCommands;
 	private HashMap<String, AliasCommand> aliasCommands;
 	private String cmdPrefix;
@@ -51,6 +52,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		djs = new ArrayList<>();
 		volume = 100;
 		credits = new HashMap<>();
+		rewardClaimed = new ArrayList<>();
 		disabledCommands = new ArrayList<>();
 		suggestions = new HashMap<>();
 		customCommands = new HashMap<>();
@@ -66,6 +68,20 @@ public class GuildConfig implements GuildSettingsProvider {
 		downloadAliasCommands();
 		downloadCustomCommands();
 		g.getAudioManager().setSendingHandler(getSendHandler());
+	}
+	
+	public void addRewardClaimed(long userId) {
+		if(!rewardClaimed.contains(userId)) {
+			rewardClaimed.add(userId);
+		}
+	}
+	
+	public boolean getRewardClaimed(long userId) {
+		return rewardClaimed.contains(userId);
+	}
+	
+	public void resetDailyRewards() {
+		rewardClaimed.clear();
 	}
 
 	public void initialize() {

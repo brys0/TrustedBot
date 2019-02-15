@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,7 @@ import de.pheromir.trustedbot.commands.AliasRemoveCommand;
 import de.pheromir.trustedbot.commands.CreditsCommand;
 import de.pheromir.trustedbot.commands.DJAddCommand;
 import de.pheromir.trustedbot.commands.DJRemoveCommand;
+import de.pheromir.trustedbot.commands.DailyCommand;
 import de.pheromir.trustedbot.commands.ExtraAddCommand;
 import de.pheromir.trustedbot.commands.ExtraRemoveCommand;
 import de.pheromir.trustedbot.commands.ForwardCommand;
@@ -112,6 +114,7 @@ public class Main {
 	public static ScheduledExecutorService spotifyTask;
 	public static ScheduledFuture<?> redditTask;
 	public static ScheduledFuture<?> twitchTask;
+	public static ScheduledFuture<?> rewardTask;
 	public static long exceptionAmount = 0;
 
 	public static final String COMMAND_DISABLED = "This command is disabled in this guild.";
@@ -144,7 +147,7 @@ public class Main {
 			twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 5, 5, TimeUnit.MINUTES);
 		}
 		// Money
-		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand());
+		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand(), new DailyCommand());
 
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand());
@@ -212,6 +215,15 @@ public class Main {
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 15, 30, TimeUnit.MINUTES);
+			rewardTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+				LocalTime today = LocalTime.now();
+				int hour = today.getHour();
+				int min = today.getMinute();
+				if (hour == 0 && min == 0) {
+					Main.LOG.debug("Resetting daily rewards..");
+					jda.getGuilds().forEach(gld -> Main.getGuildConfig(gld).resetDailyRewards());
+				}
+			}, 1, 1, TimeUnit.MINUTES);
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
 				spotifyTask = Executors.newScheduledThreadPool(1);
 				spotifyTask.scheduleAtFixedRate(() -> {
