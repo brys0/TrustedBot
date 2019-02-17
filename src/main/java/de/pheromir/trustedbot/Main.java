@@ -1,5 +1,6 @@
 package de.pheromir.trustedbot;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
 
 import org.json.JSONObject;
@@ -119,6 +121,7 @@ public class Main {
 	public static ScheduledFuture<?> rewardTask;
 	public static ScheduledFuture<?> avatarTask;
 	public static long exceptionAmount = 0;
+	public static BufferedImage overlay;
 
 	public static final String COMMAND_DISABLED = "This command is disabled in this guild.";
 
@@ -156,7 +159,7 @@ public class Main {
 		// Misc
 		cbuilder.addCommands(new GoogleCommand(), new UrbanDictionaryCommand());
 
-		cbuilder.setLinkedCacheSize(512);
+		cbuilder.setLinkedCacheSize(0);
 		cbuilder.setListener(new CmdListener());
 		cbuilder.setGame(Game.playing("Trusted-Community.eu"));
 
@@ -167,11 +170,12 @@ public class Main {
 
 		commandClient = cbuilder.build();
 		try {
-			/* BOT STARTEN */
+	/* - - - - - - - - - - -  BOT STARTEN  - - - - - - - - - - - - - - */
 			jda = new JDABuilder(
 					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown()).setAutoReconnect(true).build();
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
+			// - - - - TASKS - - - - -
 			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 15, 30, TimeUnit.MINUTES);
 			rewardTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				LocalTime today = LocalTime.now();
@@ -182,13 +186,31 @@ public class Main {
 					jda.getGuilds().forEach(gld -> Main.getGuildConfig(gld).resetDailyRewards());
 				}
 			}, 1, 1, TimeUnit.MINUTES);
+			
 			avatarTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				try {
-					jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).complete();
+					jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).queue();
+					
+//						try {
+//							BufferedImage bg = ImageIO.read(Unirest.get(Methods.getRandomLizardURL()).asBinary().getBody());
+//							//BufferedImage bgBlur = Images.blur(Images.blur(Images.blur(Images.blur(Images.blur(Images.blur(bg))))));
+//							BufferedImage servericon = Images.overlay(bg, Images.resize(overlay, Math.min(bg.getHeight(), bg.getWidth()), Math.min(bg.getHeight(), bg.getWidth())));
+//							ByteArrayOutputStream os = new ByteArrayOutputStream();
+//							ImageIO.write(servericon, "png", os);
+//							InputStream is = new ByteArrayInputStream(os.toByteArray());
+//							jda.getGuildById(392063800393728021L).getManager().setIcon(Icon.from(is)).queue();
+//							
+//						} catch (JSONException | IOException | HttpErrorException | InterruptedException
+//								| ExecutionException | TimeoutException e) {
+//							LOG.error("", e);
+//						}
+						
+					
 				} catch (Exception e) {
 					LOG.error("", e);
 				}
 			}, 0, 1, TimeUnit.HOURS);
+			
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
 				spotifyTask = Executors.newScheduledThreadPool(1);
 				spotifyTask.scheduleAtFixedRate(() -> {
@@ -222,6 +244,7 @@ public class Main {
 					});
 				}, 0, 3600, TimeUnit.SECONDS);
 			}
+			// - - - - - - - 
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
 			if (e instanceof InterruptedException) {
@@ -247,6 +270,9 @@ public class Main {
 		}
 
 		try {
+			
+			overlay = ImageIO.read(new File("discord-overlay.png"));
+			
 			cfg = yaml.load(configFile);
 			token = cfg.getString("Token");
 			adminId = cfg.getString("AdminID").replaceAll("[A-Za-z]+", "");

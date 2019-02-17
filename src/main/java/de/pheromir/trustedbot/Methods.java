@@ -235,8 +235,14 @@ public class Methods {
 		}
 	}
 	
+	
+	
 	public static String getRandomAvatarURL() throws JSONException, HttpErrorException, InterruptedException, ExecutionException, TimeoutException {
 		return Methods.httpRequestJSON("https://nekos.life/api/v2/img/avatar").getString("url");
+	}
+	
+	public static String getRandomLizardURL() throws JSONException, HttpErrorException, InterruptedException, ExecutionException, TimeoutException {
+		return Methods.httpRequestJSON("https://nekos.life/api/v2/img/lizard").getString("url");
 	}
 	
 
