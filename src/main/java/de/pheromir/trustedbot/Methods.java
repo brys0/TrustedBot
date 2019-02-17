@@ -13,6 +13,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.api.client.http.HttpRequest;
@@ -233,6 +234,11 @@ public class Methods {
 			return null;
 		}
 	}
+	
+	public static String getRandomAvatarURL() throws JSONException, HttpErrorException, InterruptedException, ExecutionException, TimeoutException {
+		return Methods.httpRequestJSON("https://nekos.life/api/v2/img/avatar").getString("url");
+	}
+	
 
 	public static void mySQLQuery(String query) {
 		MySQL sql = Main.getMySQL();

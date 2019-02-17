@@ -24,6 +24,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.Command.Category;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -89,6 +90,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.User;
 
 public class Main {
@@ -115,6 +117,7 @@ public class Main {
 	public static ScheduledFuture<?> redditTask;
 	public static ScheduledFuture<?> twitchTask;
 	public static ScheduledFuture<?> rewardTask;
+	public static ScheduledFuture<?> avatarTask;
 	public static long exceptionAmount = 0;
 
 	public static final String COMMAND_DISABLED = "This command is disabled in this guild.";
@@ -148,7 +151,6 @@ public class Main {
 		}
 		// Money
 		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand(), new DailyCommand());
-
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand());
 		// Misc
@@ -161,51 +163,7 @@ public class Main {
 		// cbuilder.setEmojis("\u2705", "\u26A0", "\u274C");
 		cbuilder.setEmojis("\u2705", "", "");
 
-		cbuilder.setHelpConsumer((event) -> {
-			StringBuilder builder = new StringBuilder("**Available commands for "
-					+ (event.getChannelType() == ChannelType.TEXT ? "the requested Guild" : "Direct Messages")
-					+ ":**\n*Note: The command prefix may vary between guilds. The prefix in Direct Messages is always "
-					+ commandClient.getTextualPrefix() + ".*\n");
-			builder.append("\nCommands with the `[NSFW]`-tag can only be used in NSFW-Channels.\n");
-			Category category = null;
-			for (Command command1 : commandClient.getCommands()) {
-				TrustedCommand command = (TrustedCommand) command1;
-				if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner()) && (!command.isGuildOnly()
-						&& event.getChannelType() == ChannelType.PRIVATE
-						|| (event.isFromType(ChannelType.TEXT)
-								&& event.getMember().hasPermission(command.getUserPermissions())
-								&& !Main.getGuildConfig(event.getGuild()).isCommandDisabled(command.getName())))) {
-					if (!Objects.equals(category, command.getCategory())) {
-						category = command.getCategory();
-						builder.append("\n\n__").append(category == null ? "No Category"
-								: category.getName()).append("__:\n");
-					}
-					builder.append("\n`").append(event.getChannelType() == ChannelType.TEXT
-							? Main.getGuildConfig(event.getGuild()).getPrefix()
-							: commandClient.getTextualPrefix()).append(command.getName()).append(command.getArguments() == null
-									? "`"
-									: " " + command.getArguments() + "`").append(" - ").append(command.getHelp());
-					if (command.isNSFW()) {
-						builder.append(" *[NSFW]*");
-					}
-					if (command.costsCredits()) {
-						builder.append(" **[" + command.getCreditCost() + " credit"
-								+ (command.getCreditCost() == 1 ? "" : "s") + "]**");
-					}
-				}
-			}
-			User owner = event.getJDA().getUserById(commandClient.getOwnerId());
-			if (owner != null) {
-				// builder.append("\n\nFor additional help, contact
-				// **").append(owner.getName()).append("**#").append(owner.getDiscriminator());
-				if (commandClient.getServerInvite() != null)
-					builder.append(" or join ").append(commandClient.getServerInvite());
-			}
-			event.replyInDm(builder.toString(), unused -> {
-				if (event.isFromType(ChannelType.TEXT))
-					event.reactSuccess();
-			}, t -> event.reply("Help cannot be sent because you are blocking Direct Messages."));
-		});
+		cbuilder.setHelpConsumer((event) -> getHelpConsumer(event));
 
 		commandClient = cbuilder.build();
 		try {
@@ -224,6 +182,13 @@ public class Main {
 					jda.getGuilds().forEach(gld -> Main.getGuildConfig(gld).resetDailyRewards());
 				}
 			}, 1, 1, TimeUnit.MINUTES);
+			avatarTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+				try {
+					jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).complete();
+				} catch (Exception e) {
+					LOG.error("", e);
+				}
+			}, 0, 1, TimeUnit.HOURS);
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
 				spotifyTask = Executors.newScheduledThreadPool(1);
 				spotifyTask.scheduleAtFixedRate(() -> {
@@ -371,6 +336,51 @@ public class Main {
 
 	public static MySQL getMySQL() {
 		return new MySQL();
+	}
+
+	public static void getHelpConsumer(CommandEvent event) {
+		StringBuilder builder = new StringBuilder("**Available commands for "
+				+ (event.getChannelType() == ChannelType.TEXT ? "the requested Guild" : "Direct Messages")
+				+ ":**\n*Note: The command prefix may vary between guilds. The prefix in Direct Messages is always "
+				+ commandClient.getTextualPrefix() + ".*\n");
+		builder.append("\nCommands with the `[NSFW]`-tag can only be used in NSFW-Channels.\n");
+		Category category = null;
+		for (Command command1 : commandClient.getCommands()) {
+			TrustedCommand command = (TrustedCommand) command1;
+			if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner()) &&
+					(!command.isGuildOnly() && event.getChannelType() == ChannelType.PRIVATE
+							|| (event.isFromType(ChannelType.TEXT) && event.getMember().hasPermission(command.getUserPermissions())
+									&& !Main.getGuildConfig(event.getGuild()).isCommandDisabled(command.getName())))) {
+				if (!Objects.equals(category, command.getCategory())) {
+					category = command.getCategory();
+					builder.append("\n\n__").append(category == null ? "No Category"
+							: category.getName()).append("__:\n");
+				}
+				builder.append("\n`").append(event.getChannelType() == ChannelType.TEXT
+						? Main.getGuildConfig(event.getGuild()).getPrefix()
+						: commandClient.getTextualPrefix()).append(command.getName()).append(command.getArguments() == null
+								? "`"
+								: " " + command.getArguments() + "`").append(" - ").append(command.getHelp());
+				if (command.isNSFW()) {
+					builder.append(" *[NSFW]*");
+				}
+				if (command.costsCredits()) {
+					builder.append(" **[" + command.getCreditCost() + " credit"
+							+ (command.getCreditCost() == 1 ? "" : "s") + "]**");
+				}
+			}
+		}
+		User owner = event.getJDA().getUserById(commandClient.getOwnerId());
+		if (owner != null) {
+			// builder.append("\n\nFor additional help, contact
+			// **").append(owner.getName()).append("**#").append(owner.getDiscriminator());
+			if (commandClient.getServerInvite() != null)
+				builder.append(" or join ").append(commandClient.getServerInvite());
+		}
+		event.replyInDm(builder.toString(), unused -> {
+			if (event.isFromType(ChannelType.TEXT))
+				event.reactSuccess();
+		}, t -> event.reply("Help cannot be sent because you are blocking Direct Messages."));
 	}
 
 }
