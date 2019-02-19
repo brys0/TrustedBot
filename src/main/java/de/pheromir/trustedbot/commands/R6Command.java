@@ -24,6 +24,7 @@ public class R6Command extends TrustedCommand {
 	@Override
 	protected void exec(CommandEvent e) {
 		try {
+			e.getChannel().sendTyping().complete();
 			RainbowSixStats stats = new RainbowSixStats(e.getArgs());
 
 			EmbedBuilder eb = new EmbedBuilder();
@@ -39,7 +40,7 @@ public class R6Command extends TrustedCommand {
 					+ RainbowSixStats.translateRank(stats.getCurrentRank())+ "\n~~-----~~", true);
 			eb.addField("MMR", "**Now:** "+stats.getCurrentMMR() + "\n**Max:** " + stats.getMaxMMR() + "\n~~-----~~", true);
 
-			eb.addField("Level", stats.getLevel() + "\n\n~~-----~~", true);
+			eb.addField("General", "**Level:** "+stats.getLevel() + "\n**Playtime:** "+stats.getPlaytime()+" hours\n~~-----~~", true);
 			eb.addField("Fav. Operators", "**Attacker:** " + stats.getFavAttacker() + "\n**Defender:** "
 					+ stats.getFavDefender() + "\n~~-----~~", true);
 

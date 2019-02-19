@@ -14,8 +14,9 @@ public class RainbowSixStats {
 	private String updatedAgo;
 	private String uuid;
 	private String username;
-
+	
 	private int level;
+	private int playtime;
 	private int currentRank;
 	private int currentMMR;
 	private String mainRegion;
@@ -53,9 +54,11 @@ public class RainbowSixStats {
 
 		wins = Integer.parseInt(jo.getString("p_data").split(",")[26]);
 		losses = Integer.parseInt(jo.getString("p_data").split(",")[27]);
+		playtime = (int) Math.round((double)(Integer.parseInt(jo.getString("p_data").split(",")[0].replaceAll("\\D", "")) + Integer.parseInt(jo.getString("p_data").split(",")[5])) / (double)(60*60));
 		wlr = Math.floor(((double) wins / (double) (wins + losses)) * 10000.0) / 100.0;
+		
 		kills = Integer.parseInt(jo.getString("p_data").split(",")[1]);
-		deaths = Integer.parseInt(jo.getString("p_data").split(",")[7]);
+		deaths = Integer.parseInt(jo.getString("p_data").split(",")[2]);
 		kd = Double.parseDouble(jo.getString("kd")) / 100;
 
 		favAttacker = jo.getString("favattacker");
@@ -140,6 +143,10 @@ public class RainbowSixStats {
 
 	public int getLevel() {
 		return level;
+	}
+	
+	public int getPlaytime() {
+		return playtime;
 	}
 
 	public String getFavAttacker() {
