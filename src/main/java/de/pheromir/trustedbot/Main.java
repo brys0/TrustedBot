@@ -59,6 +59,7 @@ import de.pheromir.trustedbot.commands.PlayCommand;
 import de.pheromir.trustedbot.commands.PlayingCommand;
 import de.pheromir.trustedbot.commands.PrefixCommand;
 import de.pheromir.trustedbot.commands.QueueCommand;
+import de.pheromir.trustedbot.commands.R6Command;
 import de.pheromir.trustedbot.commands.RedditCommand;
 import de.pheromir.trustedbot.commands.ResumeCommand;
 import de.pheromir.trustedbot.commands.RewindCommand;
@@ -157,7 +158,7 @@ public class Main {
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand());
 		// Misc
-		cbuilder.addCommands(new GoogleCommand(), new UrbanDictionaryCommand());
+		cbuilder.addCommands(new GoogleCommand(), new UrbanDictionaryCommand(), new R6Command());
 
 		cbuilder.setLinkedCacheSize(0);
 		cbuilder.setListener(new CmdListener());

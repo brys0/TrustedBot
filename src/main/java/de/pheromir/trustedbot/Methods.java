@@ -50,12 +50,11 @@ public class Methods {
 	public static String httpRequest(String url) throws InterruptedException, ExecutionException, TimeoutException, HttpErrorException {
 		Future<HttpResponse<String>> future = Unirest.get(url).asStringAsync();
 
-			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
+			HttpResponse<String> r = future.get(30, TimeUnit.SECONDS);
 			if (r.getStatus() == 404) {
 				throw new HttpErrorException();
 			}
 			return r.getBody();
-
 	}
 
 	/*
