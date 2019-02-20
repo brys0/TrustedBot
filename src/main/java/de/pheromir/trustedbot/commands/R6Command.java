@@ -44,10 +44,15 @@ public class R6Command extends TrustedCommand {
 			eb.addField("Fav. Operators", "**Attacker:** " + stats.getFavAttacker() + "\n**Defender:** "
 					+ stats.getFavDefender() + "\n~~-----~~", true);
 
-			eb.addField("Matches", "**Wins:** " + stats.getWins() + "\n**Losses:** " + stats.getLosses()
-					+ "\n**WLR:** " + stats.getWinLoseRate() + "%" + "\n~~-----~~", true);
-			eb.addField("Stats", "**Kills:** " + stats.getKills() + "\n**Deaths:** " + stats.getDeaths()
-					+ "\n**Overall KD:** " + stats.getKillDeathRate() + "\n~~-----~~", true);
+			eb.addField("Ranked Matches", "**Wins:** " + stats.getRankedWins() + "\n**Losses:** " + stats.getRankedLosses()
+					+ "\n**WLR:** " + stats.getRankedWinLoseRate() + "%" + "\n~~-----~~", true);
+			eb.addField("Ranked Stats", "**Kills:** " + stats.getRankedKills() + "\n**Deaths:** " + stats.getRankedDeaths()
+					+ "\n**Overall KD:** " + stats.getRankedKDR() + "\n~~-----~~", true);
+			
+			eb.addField("Casual Matches", "**Wins:** " + stats.getCasualWins() + "\n**Losses:** " + stats.getCasualLosses()
+			+ "\n**WLR:** " + stats.getCasualWinLoseRate() + "%" + "\n~~-----~~", true);
+	eb.addField("Casual Stats", "**Kills:** " + stats.getCasualKills() + "\n**Deaths:** " + stats.getCasualDeaths()
+			+ "\n**Overall KD:** " + stats.getCasualKDR() + "\n~~-----~~", true);
 
 			eb.addField(RainbowSixStats.translateSeason(RainbowSixStats.currentSeason - 1), "**Rank**: "
 					+ RainbowSixStats.translateRank(stats.getLastThreeSeasonRanks()[1][0]) + "\n**MMR:** "
@@ -63,6 +68,7 @@ public class R6Command extends TrustedCommand {
 				e.reply("I'm sorry, but I couldn't find the requested user.");
 				return;
 			} else {
+				e.reply("An error occurred. Sorry.");
 				Main.LOG.error("", e1);
 			}
 		}

@@ -14,7 +14,8 @@ public class RainbowSixStats {
 	private String updatedAgo;
 	private String uuid;
 	private String username;
-	
+	private String p_user;
+
 	private int level;
 	private int playtime;
 	private int currentRank;
@@ -24,12 +25,19 @@ public class RainbowSixStats {
 	private String favAttacker;
 	private String favDefender;
 
-	private int wins;
-	private int losses;
-	private double wlr;
-	private int kills;
-	private int deaths;
-	private double kd;
+	private int r_wins;
+	private int r_losses;
+	private double r_wlr;
+	private int r_kills;
+	private int r_deaths;
+	private double r_kd;
+
+	private int c_wins;
+	private int c_losses;
+	private double c_wlr;
+	private int c_kills;
+	private int c_deaths;
+	private double c_kd;
 
 	// int[rank][mmr]
 	private int[][] seasons;
@@ -48,18 +56,36 @@ public class RainbowSixStats {
 		jo = Unirest.get(apiUrl).asJson().getBody().getObject();
 
 		username = jo.getString("p_name");
+		p_user = jo.getString("p_user");
 		level = Integer.parseInt(jo.getString("p_level"));
 		currentRank = Integer.parseInt(jo.getString("p_currentrank"));
 		currentMMR = Integer.parseInt(jo.getString("p_currentmmr"));
 
-		wins = Integer.parseInt(jo.getString("p_data").split(",")[26]);
-		losses = Integer.parseInt(jo.getString("p_data").split(",")[27]);
-		playtime = (int) Math.round((double)(Integer.parseInt(jo.getString("p_data").split(",")[0].replaceAll("\\D", "")) + Integer.parseInt(jo.getString("p_data").split(",")[5])) / (double)(60*60));
-		wlr = Math.floor(((double) wins / (double) (wins + losses)) * 10000.0) / 100.0;
-		
-		kills = Integer.parseInt(jo.getString("p_data").split(",")[1]);
-		deaths = Integer.parseInt(jo.getString("p_data").split(",")[2]);
-		kd = Double.parseDouble(jo.getString("kd")) / 100;
+		String[] p_data = jo.getString("p_data").split(",");
+
+		r_wins = Integer.parseInt(p_data[26]);
+		r_losses = Integer.parseInt(p_data[27]);
+		r_wlr = Math.floor(((double) r_wins / (double) (r_wins + r_losses)) * 10000.0) / 100.0;
+		r_wlr = Double.isNaN(r_wlr) ? 0d : r_wlr;
+
+		r_kills = Integer.parseInt(p_data[1]);
+		r_deaths = Integer.parseInt(p_data[2]);
+		r_kd = Double.parseDouble(jo.getString("kd")) / 100;
+
+		c_wins = Integer.parseInt(p_data[8]);
+		c_losses = Integer.parseInt(p_data[9]);
+		c_wlr = Math.floor(((double) c_wins / (double) (c_wins + c_losses)) * 10000.0) / 100.0;
+		c_wlr = Double.isNaN(c_wlr) ? 0d : c_wlr;
+
+		c_kills = Integer.parseInt(p_data[6]);
+		c_deaths = Integer.parseInt(p_data[7]);
+		c_kd = Math.round(((double)c_kills / (c_deaths == 0.0 ? 1 : (double)c_deaths)) * 100.0)/100.0;
+
+		String ranked_playtime_str = p_data[0].replaceAll("\\D", "");
+		int ranked_playtime = ranked_playtime_str.isEmpty() ? 0 : Integer.parseInt(ranked_playtime_str);
+		String casual_playtime_str = p_data[5].replaceAll("\\D", "");
+		int casual_playtime = casual_playtime_str.isEmpty() ? 0 : Integer.parseInt(casual_playtime_str);
+		playtime = Math.round((ranked_playtime + casual_playtime) / (60 * 60));
 
 		favAttacker = jo.getString("favattacker");
 		favDefender = jo.getString("favdefender");
@@ -70,14 +96,16 @@ public class RainbowSixStats {
 
 		// 1 season before
 		if (jo.getString("season" + (currentSeason - 1)).split(":").length == 2) {
-			seasons[1][0] = Integer.parseInt(jo.getString("season" + (currentSeason - 1)).split(":")[0]);
-			seasons[1][1] = Integer.parseInt(jo.getString("season" + (currentSeason - 1)).split(":")[1]);
+			String[] tempSeason = jo.getString("season" + (currentSeason - 1)).split(":");
+			seasons[1][0] = Integer.parseInt(tempSeason[0]);
+			seasons[1][1] = Integer.parseInt(tempSeason[1]);
 		}
 
 		// 2 seasons before
 		if (jo.getString("season" + (currentSeason - 2)).split(":").length == 2) {
-			seasons[2][0] = Integer.parseInt(jo.getString("season" + (currentSeason - 2)).split(":")[0]);
-			seasons[2][1] = Integer.parseInt(jo.getString("season" + (currentSeason - 2)).split(":")[1]);
+			String[] tempSeason = jo.getString("season" + (currentSeason - 2)).split(":");
+			seasons[2][0] = Integer.parseInt(tempSeason[0]);
+			seasons[2][1] = Integer.parseInt(tempSeason[1]);
 		}
 
 		updatedAgo = jo.getString("updatedon").replaceAll("(<u>|</u>)", "");
@@ -101,28 +129,52 @@ public class RainbowSixStats {
 		return username;
 	}
 
-	public int getWins() {
-		return wins;
+	public int getRankedWins() {
+		return r_wins;
 	}
 
-	public int getLosses() {
-		return losses;
+	public int getRankedLosses() {
+		return r_losses;
 	}
 
-	public double getWinLoseRate() {
-		return wlr;
+	public double getRankedWinLoseRate() {
+		return r_wlr;
 	}
 
-	public int getKills() {
-		return kills;
+	public int getRankedKills() {
+		return r_kills;
 	}
 
-	public int getDeaths() {
-		return deaths;
+	public int getRankedDeaths() {
+		return r_deaths;
 	}
 
-	public double getKillDeathRate() {
-		return kd;
+	public double getRankedKDR() {
+		return r_kd;
+	}
+	
+	public int getCasualWins() {
+		return c_wins;
+	}
+
+	public int getCasualLosses() {
+		return c_losses;
+	}
+
+	public double getCasualWinLoseRate() {
+		return c_wlr;
+	}
+
+	public int getCasualKills() {
+		return c_kills;
+	}
+
+	public int getCasualDeaths() {
+		return c_deaths;
+	}
+
+	public double getCasualKDR() {
+		return c_kd;
 	}
 
 	public int getCurrentRank() {
@@ -144,7 +196,7 @@ public class RainbowSixStats {
 	public int getLevel() {
 		return level;
 	}
-	
+
 	public int getPlaytime() {
 		return playtime;
 	}
@@ -166,7 +218,7 @@ public class RainbowSixStats {
 	}
 
 	public String getAvatarURL() {
-		return String.format("https://ubisoft-avatars.akamaized.net/%s/default_256_256.png", uuid);
+		return String.format("https://ubisoft-avatars.akamaized.net/%s/default_256_256.png", p_user);
 	}
 
 	public int[][] getLastThreeSeasonRanks() {
