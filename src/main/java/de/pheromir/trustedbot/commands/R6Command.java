@@ -25,7 +25,7 @@ public class R6Command extends TrustedCommand {
 	protected void exec(CommandEvent e) {
 		try {
 			e.getChannel().sendTyping().complete();
-			RainbowSixStats stats = new RainbowSixStats(e.getArgs());
+			RainbowSixStats stats = new RainbowSixStats(e.getArgs().replaceAll("[^\\w\\d_\\.]", ""));
 
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setAuthor(stats.getUsername(), stats.getProfileURL(), stats.getAvatarURL());
@@ -36,23 +36,27 @@ public class R6Command extends TrustedCommand {
 			eb.setTitle("View __" + stats.getUsername() + "__'s Full Stats on R6Tab", stats.getProfileURL());
 			eb.setThumbnail(String.format("https://r6tab.com/images/discordranks/%d.png?width=80&height=80", stats.getCurrentRank()));
 
-			eb.addField("Rank", "**Now:** "+RainbowSixStats.translateRank(stats.getCurrentRank()) + "\n**Max:** "
-					+ RainbowSixStats.translateRank(stats.getCurrentRank())+ "\n~~-----~~", true);
-			eb.addField("MMR", "**Now:** "+stats.getCurrentMMR() + "\n**Max:** " + stats.getMaxMMR() + "\n~~-----~~", true);
+			eb.addField("Rank", "**Now:** " + RainbowSixStats.translateRank(stats.getCurrentRank()) + "\n**Max:** "
+					+ RainbowSixStats.translateRank(stats.getCurrentRank()) + "\n~~-----~~", true);
+			eb.addField("MMR", "**Now:** " + stats.getCurrentMMR() + "\n**Max:** " + stats.getMaxMMR()
+					+ "\n~~-----~~", true);
 
-			eb.addField("General", "**Level:** "+stats.getLevel() + "\n**Playtime:** "+stats.getPlaytime()+" hours\n~~-----~~", true);
+			eb.addField("General", "**Level:** " + stats.getLevel() + "\n**Playtime:** " + stats.getPlaytime()
+					+ " hours\n~~-----~~", true);
 			eb.addField("Fav. Operators", "**Attacker:** " + stats.getFavAttacker() + "\n**Defender:** "
 					+ stats.getFavDefender() + "\n~~-----~~", true);
 
-			eb.addField("Ranked Matches", "**Wins:** " + stats.getRankedWins() + "\n**Losses:** " + stats.getRankedLosses()
-					+ "\n**WLR:** " + stats.getRankedWinLoseRate() + "%" + "\n~~-----~~", true);
-			eb.addField("Ranked Stats", "**Kills:** " + stats.getRankedKills() + "\n**Deaths:** " + stats.getRankedDeaths()
-					+ "\n**Overall KD:** " + stats.getRankedKDR() + "\n~~-----~~", true);
-			
-			eb.addField("Casual Matches", "**Wins:** " + stats.getCasualWins() + "\n**Losses:** " + stats.getCasualLosses()
-			+ "\n**WLR:** " + stats.getCasualWinLoseRate() + "%" + "\n~~-----~~", true);
-	eb.addField("Casual Stats", "**Kills:** " + stats.getCasualKills() + "\n**Deaths:** " + stats.getCasualDeaths()
-			+ "\n**Overall KD:** " + stats.getCasualKDR() + "\n~~-----~~", true);
+			eb.addField("Ranked Matches", "**Wins:** " + stats.getRankedWins() + "\n**Losses:** "
+					+ stats.getRankedLosses() + "\n**WLR:** " + stats.getRankedWinLoseRate() + "%"
+					+ "\n~~-----~~", true);
+			eb.addField("Ranked Stats", "**Kills:** " + stats.getRankedKills() + "\n**Deaths:** "
+					+ stats.getRankedDeaths() + "\n**Overall KD:** " + stats.getRankedKDR() + "\n~~-----~~", true);
+
+			eb.addField("Casual Matches", "**Wins:** " + stats.getCasualWins() + "\n**Losses:** "
+					+ stats.getCasualLosses() + "\n**WLR:** " + stats.getCasualWinLoseRate() + "%"
+					+ "\n~~-----~~", true);
+			eb.addField("Casual Stats", "**Kills:** " + stats.getCasualKills() + "\n**Deaths:** "
+					+ stats.getCasualDeaths() + "\n**Overall KD:** " + stats.getCasualKDR() + "\n~~-----~~", true);
 
 			eb.addField(RainbowSixStats.translateSeason(RainbowSixStats.currentSeason - 1), "**Rank**: "
 					+ RainbowSixStats.translateRank(stats.getLastThreeSeasonRanks()[1][0]) + "\n**MMR:** "
