@@ -25,7 +25,7 @@ public class R6Command extends TrustedCommand {
 	protected void exec(CommandEvent e) {
 		try {
 			e.getChannel().sendTyping().complete();
-			RainbowSixStats stats = new RainbowSixStats(e.getArgs().replaceAll("[^\\w\\d_\\.]", ""));
+			RainbowSixStats stats = new RainbowSixStats(e.getArgs().replaceAll("[^\\w\\d_\\.-]", ""));
 
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setAuthor(stats.getUsername(), stats.getProfileURL(), stats.getAvatarURL());
