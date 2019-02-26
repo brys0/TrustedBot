@@ -47,13 +47,7 @@ import de.pheromir.trustedbot.commands.ExtraAddCommand;
 import de.pheromir.trustedbot.commands.ExtraRemoveCommand;
 import de.pheromir.trustedbot.commands.ForwardCommand;
 import de.pheromir.trustedbot.commands.GoogleCommand;
-import de.pheromir.trustedbot.commands.HugCommand;
-import de.pheromir.trustedbot.commands.KissCommand;
-import de.pheromir.trustedbot.commands.LewdCommand;
-import de.pheromir.trustedbot.commands.LizardCommand;
-import de.pheromir.trustedbot.commands.NekoCommand;
 import de.pheromir.trustedbot.commands.NumberFactCommand;
-import de.pheromir.trustedbot.commands.PatCommand;
 import de.pheromir.trustedbot.commands.PauseCommand;
 import de.pheromir.trustedbot.commands.PlayCommand;
 import de.pheromir.trustedbot.commands.PlayingCommand;
@@ -77,6 +71,22 @@ import de.pheromir.trustedbot.commands.TwitchCommand;
 import de.pheromir.trustedbot.commands.UrbanDictionaryCommand;
 import de.pheromir.trustedbot.commands.VolumeCommand;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.commands.images.CatCommand;
+import de.pheromir.trustedbot.commands.images.CuddleCommand;
+import de.pheromir.trustedbot.commands.images.DogCommand;
+import de.pheromir.trustedbot.commands.images.GooseCommand;
+import de.pheromir.trustedbot.commands.images.HugCommand;
+import de.pheromir.trustedbot.commands.images.KemoCommand;
+import de.pheromir.trustedbot.commands.images.KissCommand;
+import de.pheromir.trustedbot.commands.images.LewdCommand;
+import de.pheromir.trustedbot.commands.images.LewdKemoCommand;
+import de.pheromir.trustedbot.commands.images.LewdYuriCommand;
+import de.pheromir.trustedbot.commands.images.LizardCommand;
+import de.pheromir.trustedbot.commands.images.NekoCommand;
+import de.pheromir.trustedbot.commands.images.PatCommand;
+import de.pheromir.trustedbot.commands.images.PokeCommand;
+import de.pheromir.trustedbot.commands.images.TickleCommand;
+import de.pheromir.trustedbot.commands.images.YuriCommand;
 import de.pheromir.trustedbot.config.Configuration;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.config.SettingsManager;
@@ -156,7 +166,7 @@ public class Main {
 		// Money
 		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand(), new DailyCommand());
 		// Fun
-		cbuilder.addCommands(new NekoCommand(), new LewdCommand(), new PatCommand(), new LizardCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand());
+		cbuilder.addCommands(new NekoCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new NumberFactCommand(), new LewdCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
 		// Misc
 		cbuilder.addCommands(new GoogleCommand(), new UrbanDictionaryCommand(), new R6Command());
 

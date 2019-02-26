@@ -1,4 +1,4 @@
-package de.pheromir.trustedbot.commands.custom;
+package de.pheromir.trustedbot.commands.base;
 
 public class CustomCommand {
 

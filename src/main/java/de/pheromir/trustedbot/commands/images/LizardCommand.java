@@ -1,4 +1,4 @@
-package de.pheromir.trustedbot.commands;
+package de.pheromir.trustedbot.commands.images;
 
 import de.pheromir.trustedbot.commands.base.RandomImageCommand;
 

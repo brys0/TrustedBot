@@ -5,8 +5,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.CommandListener;
 
 import de.pheromir.trustedbot.Main;
-import de.pheromir.trustedbot.commands.custom.AliasCommand;
-import de.pheromir.trustedbot.commands.custom.CustomCommand;
+import de.pheromir.trustedbot.commands.base.AliasCommand;
+import de.pheromir.trustedbot.commands.base.CustomCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
