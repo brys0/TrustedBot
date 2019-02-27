@@ -8,7 +8,6 @@ public class NekoGifCommand extends RandomImageCommand {
 		this.BASE_URL = "https://nekos.life/api/v2/img/ngif";
 		this.jsonKey = "url";
 		this.name = "nekogif";
-		this.aliases = new String[] { "catgirlgif" };
 		this.help = "Shows a random neko gif.";
 	}
 
