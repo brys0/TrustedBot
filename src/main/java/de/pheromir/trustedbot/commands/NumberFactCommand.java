@@ -19,7 +19,7 @@ public class NumberFactCommand extends TrustedCommand {
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
 		this.help = "Shows a fact about the given number.";
 		this.guildOnly = false;
-		this.category = new Category("Fun");
+		this.category = new Category("Miscellaneous");
 		this.cooldown = 30;
 		this.cooldownScope = CooldownScope.USER_GUILD;
 	}
