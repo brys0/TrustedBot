@@ -21,7 +21,6 @@ public class ColorChooserCommand extends TrustedCommand {
 		this.aliases = new String[] { "color", "colors" };
 		this.help = "Creates a Message for users to choose a role-color using reactions";
 		this.guildOnly = true;
-		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.botPermissions = new Permission[] { Permission.MANAGE_ROLES };
 		this.waiter = waiter;
 	}
