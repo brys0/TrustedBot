@@ -9,6 +9,7 @@ import de.pheromir.trustedbot.config.SettingsManager;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -48,6 +49,11 @@ public class GuildEvents extends ListenerAdapter {
 			Main.removeExtraUser(e.getUser().getIdLong());
 		}
 		Main.getGuildConfig(e.getGuild()).deleteUserCredits(e.getMember().getUser().getIdLong());
+	}
+	
+	@Override
+	public void onGuildReady(GuildReadyEvent e) {
+		Main.getGuildConfig(e.getGuild());
 	}
 
 }

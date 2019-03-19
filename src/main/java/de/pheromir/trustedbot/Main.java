@@ -27,6 +27,7 @@ import com.jagrosh.jdautilities.command.Command.Category;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -39,6 +40,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import de.pheromir.trustedbot.commands.AliasAddCommand;
 import de.pheromir.trustedbot.commands.AliasCmdsCommand;
 import de.pheromir.trustedbot.commands.AliasRemoveCommand;
+import de.pheromir.trustedbot.commands.ColorChooserCommand;
 import de.pheromir.trustedbot.commands.CreditsCommand;
 import de.pheromir.trustedbot.commands.DJAddCommand;
 import de.pheromir.trustedbot.commands.DJRemoveCommand;
@@ -150,6 +152,7 @@ public class Main {
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
 		Unirest.setDefaultHeader("User-Agent", "Mozilla/5.0");
+		EventWaiter waiter = new EventWaiter();
 
 		/* COMMANDS KONFIGURIEREN */
 		CommandClientBuilder cbuilder = new CommandClientBuilder();
@@ -172,7 +175,7 @@ public class Main {
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
 		// Misc
-		cbuilder.addCommands(new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command());
+		cbuilder.addCommands(new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new ColorChooserCommand(waiter));
 
 		cbuilder.setLinkedCacheSize(0);
 		cbuilder.setListener(new CmdListener());
@@ -187,7 +190,7 @@ public class Main {
 		try {
 			/* - - - - - - - - - - -  BOT STARTEN  - - - - - - - - - - - - - - */
 			jda = new JDABuilder(
-					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown()).setAutoReconnect(true).build();
+					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown(), waiter).setAutoReconnect(true).build();
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 			// - - - - TASKS - - - - -

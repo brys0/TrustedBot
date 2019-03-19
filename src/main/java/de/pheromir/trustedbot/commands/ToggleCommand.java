@@ -46,22 +46,22 @@ public class ToggleCommand extends TrustedCommand {
 			e.reply("Syntaxerror. Usage: `!" + this.name + " [command]`");
 			return;
 		} else {
-			if(args[0].equalsIgnoreCase("toggle")) {
+			Command c = Main.commandClient.getCommands().stream().filter(cmd -> cmd.isCommandFor(args[0])).findAny().orElse(null);
+			if (c == null
+					&& !Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(args[0].toLowerCase())
+					&& !Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(args[0].toLowerCase())) {
+				e.reply("You can't disable a non-existant command.");
+				return;
+			}
+			if(((c == null) ? args[0] : c.getName()).equalsIgnoreCase("toggle")) {
 				e.reply("You can't disable this command.");
 				return;
 			}
-			if (Main.getGuildConfig(e.getGuild()).getDisabledCommands().contains(args[0].toLowerCase())) {
-				Main.getGuildConfig(e.getGuild()).enableCommand(args[0]);
-				e.reply("The command `" + args[0].toLowerCase() + "` is now enabled.");
+			if (Main.getGuildConfig(e.getGuild()).getDisabledCommands().contains(((c == null) ? args[0] : c.getName()))) {
+				Main.getGuildConfig(e.getGuild()).enableCommand(((c == null) ? args[0] : c.getName()));
+				e.reply("The command `" + ((c == null) ? args[0] : c.getName()) + "` is now enabled.");
 				return;
 			} else {
-				Command c = Main.commandClient.getCommands().stream().filter(cmd -> cmd.isCommandFor(args[0])).findAny().orElse(null);
-				if (c == null
-						&& !Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(args[0].toLowerCase())
-						&& !Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(args[0].toLowerCase())) {
-					e.reply("You can't disable a non-existant command.");
-					return;
-				}
 				Main.getGuildConfig(e.getGuild()).disableCommand((c == null) ? args[0] : c.getName());
 				e.reply("The command `" + ((c == null) ? args[0] : c.getName()) + "` is now disabled.");
 				return;
