@@ -1,7 +1,5 @@
 package de.pheromir.trustedbot.tasks;
 
-import java.net.ConnectException;
-
 import org.json.JSONObject;
 
 import de.pheromir.trustedbot.Main;
@@ -18,7 +16,7 @@ public class TwitchCheck implements Runnable {
 			JSONObject res;
 			try {
 				res = Methods.getStreamInfo(twitchname);
-			} catch (ConnectException e1) {
+			} catch (Exception e1) {
 				Main.LOG.error("", e1);
 				continue;
 			}

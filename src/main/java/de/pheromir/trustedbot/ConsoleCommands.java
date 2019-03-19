@@ -15,6 +15,7 @@ public class ConsoleCommands implements Runnable {
 
 	@Override
 	public void run() {
+		Thread.currentThread().setName("CONSOLE");
 		@SuppressWarnings("resource")
 		Scanner scan = new Scanner(System.in);
 		while(true) {
@@ -65,6 +66,21 @@ public class ConsoleCommands implements Runnable {
 				
 			} else if (cmd.equalsIgnoreCase("help")) {
 				Main.LOG.info("Available commands: help, redditTask, twitchTask");
+			} else if (cmd.equalsIgnoreCase("stop")) {
+				Main.LOG.info("Shuttung down everything..");
+				if(!Main.redditTask.isCancelled()) {
+					Main.redditTask.cancel(true);
+				}
+				if(!Main.twitchTask.isCancelled()) {
+					Main.twitchTask.cancel(true);
+				}
+				if(!Main.avatarTask.isCancelled()) {
+					Main.avatarTask.cancel(true);
+				}
+				if(!Main.rewardTask.isCancelled()) {
+					Main.rewardTask.cancel(true);
+				}
+				Main.jda.shutdownNow();
 			} else {
 				Main.LOG.info("Unknown command. Type 'help' for a list of commands.");
 			}

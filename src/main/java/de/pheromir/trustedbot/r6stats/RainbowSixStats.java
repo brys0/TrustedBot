@@ -2,13 +2,14 @@ package de.pheromir.trustedbot.r6stats;
 
 import javax.naming.NameNotFoundException;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.Unirest;
 
 public class RainbowSixStats {
 
-	public static int currentSeason = 12;
+	public static int currentSeason = 13;
 
 	private String apiUrl;
 	private String updatedAgo;
@@ -57,42 +58,40 @@ public class RainbowSixStats {
 
 		username = jo.getString("p_name");
 		p_user = jo.getString("p_user");
-		level = Integer.parseInt(jo.getString("p_level"));
-		currentRank = Integer.parseInt(jo.getString("p_currentrank"));
-		currentMMR = Integer.parseInt(jo.getString("p_currentmmr"));
+		level = jo.getInt("p_level");
+		currentRank = jo.getInt("p_currentrank");
+		currentMMR = jo.getInt("p_currentmmr");
 
-		String[] p_data = jo.getString("p_data").split(",");
+		JSONArray p_data = jo.getJSONArray("data");
 
-		r_wins = Integer.parseInt(p_data[26]);
-		r_losses = Integer.parseInt(p_data[27]);
+		r_wins = p_data.getInt(26);
+		r_losses = p_data.getInt(27);
 		r_wlr = Math.floor(((double) r_wins / (double) (r_wins + r_losses)) * 10000.0) / 100.0;
 		r_wlr = Double.isNaN(r_wlr) ? 0d : r_wlr;
 
-		r_kills = Integer.parseInt(p_data[1]);
-		r_deaths = Integer.parseInt(p_data[2]);
-		r_kd = Double.parseDouble(jo.getString("kd")) / 100;
+		r_kills = p_data.getInt(1);
+		r_deaths = p_data.getInt(2);
+		r_kd = (jo.getInt("kd") / 100.0);
 
-		c_wins = Integer.parseInt(p_data[8]);
-		c_losses = Integer.parseInt(p_data[9]);
+		c_wins = p_data.getInt(8);
+		c_losses = p_data.getInt(9);
 		c_wlr = Math.floor(((double) c_wins / (double) (c_wins + c_losses)) * 10000.0) / 100.0;
 		c_wlr = Double.isNaN(c_wlr) ? 0d : c_wlr;
 
-		c_kills = Integer.parseInt(p_data[6]);
-		c_deaths = Integer.parseInt(p_data[7]);
+		c_kills = p_data.getInt(6);
+		c_deaths = p_data.getInt(7);
 		c_kd = Math.round(((double)c_kills / (c_deaths == 0.0 ? 1 : (double)c_deaths)) * 100.0)/100.0;
 
-		String ranked_playtime_str = p_data[0].replaceAll("\\D", "");
-		int ranked_playtime = ranked_playtime_str.isEmpty() ? 0 : Integer.parseInt(ranked_playtime_str);
-		String casual_playtime_str = p_data[5].replaceAll("\\D", "");
-		int casual_playtime = casual_playtime_str.isEmpty() ? 0 : Integer.parseInt(casual_playtime_str);
+		int ranked_playtime = p_data.getInt(0);
+		int casual_playtime = p_data.getInt(5);
 		playtime = Math.round((ranked_playtime + casual_playtime) / (60 * 60));
 
 		favAttacker = jo.getString("favattacker");
 		favDefender = jo.getString("favdefender");
 
 		// latest season
-		seasons[0][0] = Integer.parseInt(jo.getString("p_maxrank"));
-		seasons[0][1] = Integer.parseInt(jo.getString("p_maxmmr"));
+		seasons[0][0] = jo.getInt("p_maxrank");
+		seasons[0][1] = jo.getInt("p_maxmmr");
 
 		// 1 season before
 		if (jo.getString("season" + (currentSeason - 1)).split(":").length == 2) {
@@ -110,11 +109,11 @@ public class RainbowSixStats {
 
 		updatedAgo = jo.getString("updatedon").replaceAll("(<u>|</u>)", "");
 
-		if (currentMMR == Integer.parseInt(jo.getString("p_EU_currentmmr"))) {
+		if (currentMMR == jo.getInt("p_EU_currentmmr")) {
 			mainRegion = "Europe";
-		} else if (currentMMR == Integer.parseInt(jo.getString("p_NA_currentmmr"))) {
+		} else if (currentMMR == jo.getInt("p_NA_currentmmr")) {
 			mainRegion = "America";
-		} else if (currentMMR == Integer.parseInt(jo.getString("p_AS_currentmmr"))) {
+		} else if (currentMMR == jo.getInt("p_AS_currentmmr")) {
 			mainRegion = "Asia";
 		} else {
 			mainRegion = "Unknown";

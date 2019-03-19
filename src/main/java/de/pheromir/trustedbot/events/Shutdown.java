@@ -14,6 +14,7 @@ public class Shutdown extends ListenerAdapter {
 	public void onShutdown(ShutdownEvent e) {
 		try {
 			Unirest.shutdown();
+			System.exit(0);
 		} catch (IOException e1) {
 			Main.LOG.error("", e);
 		}
