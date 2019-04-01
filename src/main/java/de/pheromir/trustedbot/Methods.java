@@ -1,7 +1,6 @@
 package de.pheromir.trustedbot;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -26,7 +25,7 @@ import com.google.api.services.youtube.model.VideoListResponse;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
-import de.pheromir.trustedbot.exceptions.HttpErrorException;
+import de.pheromir.trustedbot.misc.HttpErrorException;
 
 public class Methods {
 
@@ -191,50 +190,6 @@ public class Methods {
 			return false;
 		}
 	}
-
-	/*
-	 * CHECK IF A TWITCH USER EXISTS
-	 */
-
-	public static boolean doesTwitchUserExist(String twitchname) {
-		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/helix/users?login="
-				+ twitchname).header("client-id", Main.twitchKey).asStringAsync();
-		try {
-			HttpResponse<String> r = future.get(1, TimeUnit.MINUTES);
-			if (r.getStatus() == 404) {
-				return false;
-			}
-			JSONObject res = new JSONObject(r.getBody().toString());
-			if (res.getJSONArray("data").length() == 0) {
-				return false;
-			}
-			return true;
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			Main.LOG.error("", e);
-			return false;
-		}
-	}
-
-	/*
-	 * GET THE STREAM INFO OF A TWITCH USER, IF STREAMING
-	 */
-
-	public static JSONObject getStreamInfo(String twitchname) throws ConnectException {
-		Future<HttpResponse<String>> future = Unirest.get("https://api.twitch.tv/kraken/streams/" + twitchname
-				+ "?stream_type=live").header("client-id", Main.twitchKey).asStringAsync();
-		try {
-			HttpResponse<String> r = future.get(30, TimeUnit.SECONDS);
-			if (r.getStatus() == 404)
-				return null;
-			JSONObject res = new JSONObject(r.getBody().toString());
-			return res;
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			Main.LOG.error("", e);
-			return null;
-		}
-	}
-	
-	
 	
 	public static String getRandomAvatarURL() throws JSONException, HttpErrorException, InterruptedException, ExecutionException, TimeoutException {
 		return Methods.httpRequestJSON("https://nekos.life/api/v2/img/avatar").getString("url");

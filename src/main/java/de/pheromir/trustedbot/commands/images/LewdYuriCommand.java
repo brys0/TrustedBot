@@ -9,7 +9,6 @@ public class LewdYuriCommand extends RandomImageCommand {
 		this.help = "Shows a random lewd yuri picture.";
 		this.BASE_URL = "https://nekos.life/api/v2/img/yuri";
 		this.jsonKey = "url";
-		this.creditsCost = 5L;
 		this.nsfw = true;
 	}
 }

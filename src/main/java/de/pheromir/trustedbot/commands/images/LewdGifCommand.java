@@ -9,7 +9,6 @@ public class LewdGifCommand extends RandomImageCommand {
 		this.help = "Shows a random lewd neko gif.";
 		this.BASE_URL = "https://nekos.life/api/v2/img/nsfw_neko_gif";
 		this.jsonKey = "url";
-		this.creditsCost = 5L;
 		this.nsfw = true;
 	}
 }

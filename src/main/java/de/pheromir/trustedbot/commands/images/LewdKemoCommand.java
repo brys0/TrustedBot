@@ -9,7 +9,6 @@ public class LewdKemoCommand extends RandomImageCommand {
 		this.help = "Shows a random lewd kemonomimi picture.";
 		this.BASE_URL = "https://nekos.life/api/v2/img/lewdkemo";
 		this.jsonKey = "url";
-		this.creditsCost = 5L;
 		this.nsfw = true;
 	}
 }

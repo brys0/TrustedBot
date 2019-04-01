@@ -10,7 +10,7 @@
 	</appender>
 
 	<appender name="FILE-AUDIT"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		class="de.pheromir.trustedbot.misc.DiscordFileAppender">
 		<file>logs/latest.log</file>
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">

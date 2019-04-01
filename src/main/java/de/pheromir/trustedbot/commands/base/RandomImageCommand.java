@@ -22,7 +22,6 @@ public abstract class RandomImageCommand extends TrustedCommand {
 		this.category = new Category("Fun");
 		this.cooldown = 10;
 		this.cooldownScope = CooldownScope.USER_GUILD;
-		this.creditsCost = 1L;
 		this.nsfw = false;
 	}
 

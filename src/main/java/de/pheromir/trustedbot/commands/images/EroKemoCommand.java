@@ -9,7 +9,6 @@ public class EroKemoCommand extends RandomImageCommand {
 		this.help = "Shows a random erotic kemonomimi picture.";
 		this.BASE_URL = "https://nekos.life/api/v2/img/erokemo";
 		this.jsonKey = "url";
-		this.creditsCost = 2L;
 		this.nsfw = true;
 	}
 }
