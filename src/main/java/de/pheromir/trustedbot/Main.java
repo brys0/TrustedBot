@@ -40,6 +40,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import de.pheromir.trustedbot.commands.AliasAddCommand;
 import de.pheromir.trustedbot.commands.AliasCmdsCommand;
 import de.pheromir.trustedbot.commands.AliasRemoveCommand;
+import de.pheromir.trustedbot.commands.CoinflipCommand;
 import de.pheromir.trustedbot.commands.ColorChooserCommand;
 import de.pheromir.trustedbot.commands.CreditsCommand;
 import de.pheromir.trustedbot.commands.DJAddCommand;
@@ -172,6 +173,8 @@ public class Main {
 		}
 		// Money
 		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand(), new DailyCommand());
+		// Minigames and Gambling
+		cbuilder.addCommands(new CoinflipCommand());
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
 		// Misc
@@ -181,7 +184,6 @@ public class Main {
 		cbuilder.setListener(new CmdListener());
 		cbuilder.setGame(Game.playing("Trusted-Community.eu"));
 
-		// cbuilder.setEmojis("\u2705", "\u26A0", "\u274C");
 		cbuilder.setEmojis("\u2705", "", "");
 
 		cbuilder.setHelpConsumer((event) -> getHelpConsumer(event));
