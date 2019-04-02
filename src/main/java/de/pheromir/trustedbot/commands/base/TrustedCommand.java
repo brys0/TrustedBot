@@ -12,6 +12,7 @@ public abstract class TrustedCommand extends Command {
 
 	protected long creditsCost;
 	protected boolean nsfw;
+	protected String[] argsArray;
 	
 	public TrustedCommand() {
 		this.creditsCost = 0;
@@ -20,6 +21,10 @@ public abstract class TrustedCommand extends Command {
 	
 	@Override
 	protected void execute(CommandEvent e) {
+		argsArray = e.getArgs().split(" ");
+		if ((argsArray[0].equals("") || argsArray[0].isEmpty()) && argsArray.length == 1)
+			argsArray = new String[0];
+		
 		GuildConfig gc = Main.getGuildConfig(e.getGuild());
 		if (e.getChannelType() == ChannelType.TEXT && gc.isCommandDisabled(this.name) && !this.isOwnerCommand()) {
 			e.reply(Main.COMMAND_DISABLED);
@@ -37,13 +42,18 @@ public abstract class TrustedCommand extends Command {
 			e.reply("- " + getCreditCost() + (getCreditCost() == 1 ? " credit" : " credits"));
 		}
 		exec(e);
-		gc.setUserCredits(e.getMember().getUser().getIdLong(), gc.getUserCredits(e.getMember().getUser().getIdLong()) - this.getCreditCost());
+		if(costsCredits())
+			gc.setUserCredits(e.getMember().getUser().getIdLong(), gc.getUserCredits(e.getMember().getUser().getIdLong()) - this.getCreditCost());
 	}
 	
 	protected abstract void exec(CommandEvent e);
 	
 	public boolean costsCredits() {
 		return creditsCost != 0;
+	}
+	
+	public String[] getArgs() {
+		return argsArray;
 	}
 	
 	public long getCreditCost() {
