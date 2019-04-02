@@ -3,10 +3,16 @@ package de.pheromir.trustedbot.commands;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
+
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.Main;
-import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
@@ -52,12 +58,35 @@ public class RedditCommand extends TrustedCommand {
 				GuildConfig.removeSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong());
 				e.reply("Subreddit " + e.getArgs().toLowerCase() + " is now disabled for this channel.");
 			} else {
-				if (!Methods.doesSubredditExist(e.getArgs())) {
-					e.reply("The specified subreddit does not exist. (Or an error occurred)");
-					return;
-				}
-				GuildConfig.addSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
-				e.reply("Subreddit " + e.getArgs().toLowerCase() + " is now enabled for this channel.");
+				Unirest.get("https://www.reddit.com/r/" + e.getArgs() + "/hot/.json").asJsonAsync(new Callback<JsonNode>() {
+
+					@Override
+					public void completed(HttpResponse<JsonNode> response) {
+						if(response.getStatus() != 200) {
+							Main.LOG.error("Received HTTP Code " + response.getStatus() + " while checking if subreddit exists");
+							return;
+						}
+						JSONObject jo = response.getBody().getObject();
+						if (jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children")
+								&& jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
+							e.reply("The specified subreddit does not exist. (Or an error occurred)");
+							return;
+						}
+						GuildConfig.addSubreddit(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
+						e.reply("Subreddit " + e.getArgs().toLowerCase() + " is now enabled for this channel.");
+					}
+
+					@Override
+					public void failed(UnirestException e1) {
+						Main.LOG.error("Reddit-Existance-Checker for Subreddit " + e.getArgs() + " failed: ", e);
+					}
+
+					@Override
+					public void cancelled() {
+						Main.LOG.error("Reddit-Existance-Checker for Subreddit " + e.getArgs() + " cancelled.");
+					}
+					
+				});
 			}
 			return;
 		}
