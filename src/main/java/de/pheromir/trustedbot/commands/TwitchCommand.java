@@ -29,7 +29,7 @@ public class TwitchCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
@@ -38,7 +38,7 @@ public class TwitchCommand extends TrustedCommand {
 			ArrayList<String> streams = (ArrayList<String>) GuildConfig.getTwitchList().keySet().stream().filter(k -> GuildConfig.getTwitchList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
 			if (streams.isEmpty()) {
 				e.reply("There are currently no twitch notifications active for this channel.");
-				return;
+				return false;
 			} else {
 				StringBuilder sb = new StringBuilder();
 				for (String str : streams) {
@@ -46,13 +46,13 @@ public class TwitchCommand extends TrustedCommand {
 				}
 				String msg = sb.substring(0, sb.length() - 2);
 				e.reply("There are currently the following twitch notifications active: " + msg);
-				return;
+				return false;
 			}
 		}
 		if (args.length != 1) {
 			e.reply("Syntaxerror. Usage: `" + Main.getGuildConfig(e.getGuild()).getPrefix() + this.name
 					+ " <username>`");
-			return;
+			return false;
 		} else {
 			if (GuildConfig.getTwitchList().containsKey(e.getArgs().toLowerCase())
 					&& GuildConfig.getTwitchList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
@@ -96,7 +96,7 @@ public class TwitchCommand extends TrustedCommand {
 
 						});
 			}
-			return;
+			return true;
 		}
 	}
 

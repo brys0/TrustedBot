@@ -23,14 +23,16 @@ public class GoogleCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String url;
 		try {
 			url = String.format(BASE_URL, URLEncoder.encode(e.getArgs(), "UTF-8"));
 			e.reply(url);
+			return true;
 		} catch (UnsupportedEncodingException e1) {
 			Main.LOG.error("", e1);
 			e.reply("Oops, looks like something went wrong.");
+			return false;
 		}
 	}
 

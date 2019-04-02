@@ -26,7 +26,7 @@ public class ColorChooserCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		ButtonMenu menu = new ButtonMenu.Builder().setChoices("\u2764", "\ud83d\udd36", "\ud83d\udc9b", "\ud83d\udc9a", "\ud83d\udc99", "\ud83d\udc9c", "\ud83d\udda4", "\u274C").setUsers(e.getAuthor()).setText("Choose a color for your name, "+e.getMember().getAsMention()).setEventWaiter(this.waiter).setTimeout(5, TimeUnit.MINUTES).setAction(action -> {
 			int roles = action.getGuild().getRoles().size();
 			String roleName = "";
@@ -90,6 +90,7 @@ public class ColorChooserCommand extends TrustedCommand {
 		}).build();
 		
 		menu.display(e.getChannel());
+		return true;
 	}
 
 }

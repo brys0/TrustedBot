@@ -22,7 +22,7 @@ public class R6Command extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		try {
 			e.getChannel().sendTyping().complete();
 			RainbowSixStats stats = new RainbowSixStats(e.getArgs().replaceAll("[^\\w\\d_\\.-]", ""));
@@ -66,14 +66,15 @@ public class R6Command extends TrustedCommand {
 					+ stats.getLastThreeSeasonRanks()[2][1], true);
 
 			e.reply(eb.build());
-
+			return true;
 		} catch (Exception e1) {
 			if (e1 instanceof NameNotFoundException) {
 				e.reply("I'm sorry, but I couldn't find the requested user.");
-				return;
+				return false;
 			} else {
 				e.reply("An error occurred. Sorry.");
 				Main.LOG.error("", e1);
+				return false;
 			}
 		}
 

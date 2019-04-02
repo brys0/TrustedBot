@@ -15,10 +15,10 @@ public class AliasCmdsCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if(Main.getGuildConfig(e.getGuild()).getAliasCommands().size() < 1) {
 			e.reply("There are currently no aliases.");
-			return;
+			return false;
 		}
 
 		String cmds = "There are currently the following aliases: ";
@@ -27,5 +27,6 @@ public class AliasCmdsCommand extends TrustedCommand {
 			sb.append("`" + str + "`, ");
 		}
 		e.reply(cmds + sb.toString().substring(0, sb.length() - 2));
+		return true;
 	}
 }

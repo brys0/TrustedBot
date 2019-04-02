@@ -18,15 +18,15 @@ public class PrefixCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if (e.getArgs().isEmpty()) {
 			e.reply("Current prefix: " + Main.getGuildConfig(e.getGuild()).getPrefix());
-			return;
+			return false;
 		}
 
 		Main.getGuildConfig(e.getGuild()).setPrefix(e.getArgs());
 		e.reply("The prefix has been set to `" + e.getArgs() + "`.");
-
+		return true;
 	}
 
 }

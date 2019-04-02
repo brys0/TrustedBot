@@ -32,7 +32,7 @@ public class UrbanDictionaryCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		Unirest.get(BASE_URL).routeParam("sw", e.getArgs()).asJsonAsync(new Callback<JsonNode>() {
 
 			@Override
@@ -70,5 +70,6 @@ public class UrbanDictionaryCommand extends TrustedCommand {
 						+ arg0.getLocalizedMessage());
 			}
 		});
+		return true;
 	}
 }

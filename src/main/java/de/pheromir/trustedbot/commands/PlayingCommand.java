@@ -43,19 +43,21 @@ public class PlayingCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		GuildConfig m = Main.getGuildConfig(e.getGuild());
 		AudioTrack track = m.player.getPlayingTrack();
 		if (track == null) {
 			e.reply("Nothing is playing at the moment.");
-			return;
+			return false;
 		}
 		EmbedBuilder b = new EmbedBuilder();
-		b.setFooter("Requested by " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
-				? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
-						? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
-						: m.scheduler.getCurrentRequester().getName())
-				: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
+		b.setFooter(
+				"Requested by " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
+						? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
+								? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
+								: m.scheduler.getCurrentRequester().getName())
+						: m.scheduler.getCurrentRequester().getName()),
+				m.scheduler.getCurrentRequester().getAvatarUrl());
 		b.setColor(e.getSelfMember().getColor());
 		if (!track.getInfo().uri.contains("youtube") || Main.youtubeKey.equals("none") || Main.youtubeKey.isEmpty()) {
 			boolean skip = false;
@@ -79,15 +81,16 @@ public class PlayingCommand extends TrustedCommand {
 
 			b.setTitle(m.player.isPaused() ? "Paused:" : "Currently playing:");
 			b.getFields().addAll(fields);
-			b.setFooter("Requested by " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
-					? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
-							? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
-							: m.scheduler.getCurrentRequester().getName())
-					: m.scheduler.getCurrentRequester().getName()), m.scheduler.getCurrentRequester().getAvatarUrl());
+			b.setFooter(
+					"Requested by " + (e.getGuild().getMember(m.scheduler.getCurrentRequester()) != null
+							? (e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname() != null
+									? e.getGuild().getMember(m.scheduler.getCurrentRequester()).getNickname()
+									: m.scheduler.getCurrentRequester().getName())
+							: m.scheduler.getCurrentRequester().getName()),
+					m.scheduler.getCurrentRequester().getAvatarUrl());
 			e.reply(b.build());
-			return;
+			return true;
 		} else {
-
 			String videoId1 = "Hl-zzrqQoSE";
 			Matcher matcher = compiledPattern.matcher(m.player.getPlayingTrack().getInfo().uri);
 			if (matcher.find()) {
@@ -105,15 +108,17 @@ public class PlayingCommand extends TrustedCommand {
 					fields.add(new Field("Description:", c.getDescription(), false));
 
 					b.setThumbnail(c.getThumbnailURL());
-					b.setTitle(m.player.isPaused() ? "Paused: "
-							: "Currently playing: " + c.getTitle(), m.player.getPlayingTrack().getInfo().uri);
+					b.setTitle(m.player.isPaused() ? "Paused: " : "Currently playing: " + c.getTitle(),
+							m.player.getPlayingTrack().getInfo().uri);
 					b.getFields().addAll(fields);
 					e.reply(b.build());
 					return true;
 				}
 				return false;
-			}))
-				return;
+			})) {
+				return true;
+			}
+				
 
 			YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
 					new HttpRequestInitializer() {
@@ -145,12 +150,14 @@ public class PlayingCommand extends TrustedCommand {
 						+ (dur == 0 ? "Stream" : Methods.getTimeString(dur)) + "]", false));
 				fields.add(new Field("Description:", desc, false));
 				b.setThumbnail(thumbnail);
-				b.setTitle(m.player.isPaused() ? "Paused: "
-						: "Currently playing: " + title, m.player.getPlayingTrack().getInfo().uri);
+				b.setTitle(m.player.isPaused() ? "Paused: " : "Currently playing: " + title,
+						m.player.getPlayingTrack().getInfo().uri);
 				b.getFields().addAll(fields);
 				e.reply(b.build());
+				return true;
 			} catch (IOException e1) {
 				Main.LOG.error("", e1);
+				return false;
 			}
 		}
 	}

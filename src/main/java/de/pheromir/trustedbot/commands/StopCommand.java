@@ -16,16 +16,17 @@ public class StopCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("You need DJ privileges to stop the playback.");
-			return;
+			return false;
 		}
 		e.getGuild().getAudioManager().closeAudioConnection();
 		Main.getGuildConfig(e.getGuild()).player.setPaused(false);
 		Main.getGuildConfig(e.getGuild()).player.stopTrack();
 		e.reactSuccess();
+		return true;
 	}
 
 }

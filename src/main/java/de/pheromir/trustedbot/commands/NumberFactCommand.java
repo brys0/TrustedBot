@@ -25,13 +25,13 @@ public class NumberFactCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		int n;
 		try {
 			n = Integer.parseInt(e.getArgs());
 		} catch  (NumberFormatException e1) {
 			e.reply("Invalid number.");
-			return;
+			return false;
 		}
 		Unirest.get(BASE_URL).routeParam("n", n+"").asStringAsync(new Callback<String>() {
 
@@ -55,6 +55,7 @@ public class NumberFactCommand extends TrustedCommand {
 			}
 			
 		});
+		return true;
 	}
 
 }

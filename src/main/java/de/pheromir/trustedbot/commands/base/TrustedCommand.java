@@ -34,19 +34,17 @@ public abstract class TrustedCommand extends Command {
 			e.reply("This command can be used in NSFW-channels only.");
 			return;
 		}
-		if (this.costsCredits() && gc.getUserCredits(e.getMember().getUser().getIdLong()) < this.getCreditCost()) {
+		if (costsCredits() && gc.getUserCredits(e.getMember().getUser().getIdLong()) < this.getCreditCost()) {
 			e.reply("You need at least " + creditsCost + (getCreditCost() == 1 ? " credit" : " credits") + " to use this command.");
 			return;
 		}
-		if(costsCredits()) {
+		if(exec(e) && costsCredits()) {
 			e.reply("- " + getCreditCost() + (getCreditCost() == 1 ? " credit" : " credits"));
-		}
-		exec(e);
-		if(costsCredits())
 			gc.setUserCredits(e.getMember().getUser().getIdLong(), gc.getUserCredits(e.getMember().getUser().getIdLong()) - this.getCreditCost());
+		}
 	}
 	
-	protected abstract void exec(CommandEvent e);
+	protected abstract boolean exec(CommandEvent e);
 	
 	public boolean costsCredits() {
 		return creditsCost != 0;

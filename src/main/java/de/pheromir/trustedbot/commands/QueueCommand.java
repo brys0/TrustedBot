@@ -25,7 +25,7 @@ public class QueueCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 		ArrayList<QueueTrack> titles = musicManager.scheduler.getRequestedTitles();
 
@@ -34,7 +34,7 @@ public class QueueCommand extends TrustedCommand {
 					|| e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				musicManager.scheduler.clearQueue();
 				e.reactSuccess();
-				return;
+				return true;
 			}
 		}
 
@@ -44,7 +44,7 @@ public class QueueCommand extends TrustedCommand {
 				musicManager.scheduler.setRepeat(!musicManager.scheduler.getRepeat());
 				e.reply(musicManager.scheduler.getRepeat() ? "The queue is now repeating."
 						: "The queue is no longer repeating.");
-				return;
+				return true;
 			}
 		}
 
@@ -83,5 +83,6 @@ public class QueueCommand extends TrustedCommand {
 		m.setFooter("Skip specified track: !skip [id]", e.getJDA().getSelfUser().getAvatarUrl());
 		mes.setEmbed(m.build());
 		e.reply(mes.build());
+		return true;
 	}
 }

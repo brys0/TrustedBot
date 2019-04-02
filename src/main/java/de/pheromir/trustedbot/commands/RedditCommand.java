@@ -29,7 +29,7 @@ public class RedditCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
@@ -38,7 +38,7 @@ public class RedditCommand extends TrustedCommand {
 			ArrayList<String> subreddits = (ArrayList<String>) GuildConfig.getRedditList().keySet().stream().filter(k -> GuildConfig.getRedditList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
 			if (subreddits.isEmpty()) {
 				e.reply("There are currently no active Reddit subscriptions in this channel.");
-				return;
+				return false;
 			} else {
 				StringBuilder sb = new StringBuilder();
 				for (String str : subreddits) {
@@ -46,12 +46,12 @@ public class RedditCommand extends TrustedCommand {
 				}
 				String msg = sb.substring(0, sb.length() - 2);
 				e.reply("Currently active Reddit subscriptions in this channel: " + msg);
-				return;
+				return false;
 			}
 		}
 		if (args.length != 1) {
 			e.reply("Syntaxerror. Usage: `"+Main.getGuildConfig(e.getGuild()).getPrefix()+this.name+" <subreddit>`");
-			return;
+			return false;
 		} else {
 			if (GuildConfig.getRedditList().containsKey(e.getArgs().toLowerCase())
 					&& GuildConfig.getRedditList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
@@ -63,7 +63,7 @@ public class RedditCommand extends TrustedCommand {
 					@Override
 					public void completed(HttpResponse<JsonNode> response) {
 						if(response.getStatus() != 200) {
-							Main.LOG.error("Received HTTP Code " + response.getStatus() + " while checking if subreddit exists");
+							Main.LOG.error("Reddit-Existance-Checker received HTTP Code " + response.getStatus() + " for Subreddit " + e.getArgs());
 							return;
 						}
 						JSONObject jo = response.getBody().getObject();
@@ -88,7 +88,7 @@ public class RedditCommand extends TrustedCommand {
 					
 				});
 			}
-			return;
+			return true;
 		}
 	}
 

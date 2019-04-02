@@ -17,7 +17,7 @@ public class StatusCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		JDA api = e.getJDA();
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
@@ -25,7 +25,7 @@ public class StatusCommand extends TrustedCommand {
 
 		if (args.length < 2) {
 			e.reply("Syntaxfehler. Verwendung: `!status <play|watch|listen|[stream]> [stream-url] <Text>`");
-			return;
+			return false;
 		} else {
 			StringBuilder sb = new StringBuilder();
 			for (int i = args[0].equalsIgnoreCase("stream") ? 2 : 1; i < args.length; i++) {
@@ -47,10 +47,10 @@ public class StatusCommand extends TrustedCommand {
 					break;
 				default:
 					e.reply("Syntaxfehler. Verwendung: `!status <play|watch|listen|[stream]> [stream-url] <Text>`");
-					return;
+					return false;
 			}
 			e.reactSuccess();
-			return;
+			return true;
 		}
 	}
 

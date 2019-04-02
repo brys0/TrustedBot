@@ -19,28 +19,28 @@ public class SeekCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("You need DJ privileges to seek the track.");
-			return;
+			return false;
 		}
 		long time;
 		try {
 			time = Methods.parseTimeString(e.getArgs());
 		} catch (NumberFormatException ex) {
 			e.reply("Syntaxerror. Usage: `HH:mm:ss` or `mm:ss`.");
-			return;
+			return false;
 		}
 		if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() == null) {
 			e.reactError();
-			return;
+			return false;
 		}
 		Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().setPosition(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration() < time
 				? Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getDuration()
 				: (time < 0) ? 0 : time);
 		e.reactSuccess();
-
+		return true;
 	}
 
 }

@@ -20,11 +20,11 @@ public class ResumeCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("You need DJ privileges to resume the playback.");
-			return;
+			return false;
 		}
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 
@@ -42,5 +42,6 @@ public class ResumeCommand extends TrustedCommand {
 			}
 		}
 		e.reactSuccess();
+		return true;
 	}
 }

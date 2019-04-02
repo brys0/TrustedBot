@@ -18,22 +18,23 @@ public class AliasRemoveCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 		
 		if (args.length == 0) {
 			e.reply("Syntaxerror. Usage: !" + name + " <alias>");
-			return;
+			return false;
 		}
 
 		String name = args[0].toLowerCase();
 		if (!Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
 			e.reply("There is no alias with the specified name.");
-			return;
+			return false;
 		}
 		Main.getGuildConfig(e.getGuild()).removeAliasCommand(name);
 		e.reply("The alias `" + name + "` has been removed.");
+		return true;
 	}
 }

@@ -19,7 +19,7 @@ public class ToggleCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String[] args2 = e.getArgs().split(" ");
 		final String[] args;
 		if ((args2[0].equals("") || args2[0].isEmpty()) && args2.length == 1)
@@ -31,7 +31,7 @@ public class ToggleCommand extends TrustedCommand {
 
 			if (Main.getGuildConfig(e.getGuild()).getDisabledCommands().isEmpty()) {
 				e.reply("There is currently no command disabled.");
-				return;
+				return false;
 			} else {
 				StringBuilder sb = new StringBuilder();
 				for (String str : Main.getGuildConfig(e.getGuild()).getDisabledCommands()) {
@@ -39,32 +39,32 @@ public class ToggleCommand extends TrustedCommand {
 				}
 				String msg = sb.substring(0, sb.length() - 2);
 				e.reply("These commands are currently disabled: " + msg);
-				return;
+				return false;
 			}
 		}
 		if (args.length != 1) {
 			e.reply("Syntaxerror. Usage: `!" + this.name + " [command]`");
-			return;
+			return false;
 		} else {
 			Command c = Main.commandClient.getCommands().stream().filter(cmd -> cmd.isCommandFor(args[0])).findAny().orElse(null);
 			if (c == null
 					&& !Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(args[0].toLowerCase())
 					&& !Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(args[0].toLowerCase())) {
 				e.reply("You can't disable a non-existant command.");
-				return;
+				return false;
 			}
-			if(((c == null) ? args[0] : c.getName()).equalsIgnoreCase("toggle")) {
+			if(((c == null) ? args[0] : c.getName()).equalsIgnoreCase("toggle") || (c != null && c.isOwnerCommand())) {
 				e.reply("You can't disable this command.");
-				return;
+				return false;
 			}
 			if (Main.getGuildConfig(e.getGuild()).getDisabledCommands().contains(((c == null) ? args[0] : c.getName()))) {
 				Main.getGuildConfig(e.getGuild()).enableCommand(((c == null) ? args[0] : c.getName()));
 				e.reply("The command `" + ((c == null) ? args[0] : c.getName()) + "` is now enabled.");
-				return;
+				return true;
 			} else {
 				Main.getGuildConfig(e.getGuild()).disableCommand((c == null) ? args[0] : c.getName());
 				e.reply("The command `" + ((c == null) ? args[0] : c.getName()) + "` is now disabled.");
-				return;
+				return true;
 			}
 		}
 	}

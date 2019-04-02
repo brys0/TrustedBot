@@ -20,22 +20,25 @@ public class CreditsCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if(!e.getArgs().isEmpty() && e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			Pattern p = Pattern.compile("(\\d+)");
 			Matcher m = p.matcher(e.getArgs());
 			if (!m.find()) {
 				e.reply("The specified user couldn't be found.");
+				return false;
 			}
 			String id = m.group(1);
 			Member mem = e.getGuild().getMemberById(id);
 			if (mem == null) {
 				e.reply("The specified user couldn't be found.");
-				return;
+				return false;
 			}
 			e.reply(mem.getEffectiveName()+" has **" + Main.getGuildConfig(e.getGuild()).getUserCredits(mem.getUser().getIdLong()) + "** credits.");
+			return true;
 		} else {
 			e.reply(e.getMember().getEffectiveName()+", you have **" + Main.getGuildConfig(e.getGuild()).getUserCredits(e.getMember().getUser().getIdLong()) + "** credits.");
+			return true;
 		}
 	}
 

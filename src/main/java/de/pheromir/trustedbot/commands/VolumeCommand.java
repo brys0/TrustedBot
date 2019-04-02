@@ -17,19 +17,19 @@ public class VolumeCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if (e.getArgs().isEmpty()) {
 			e.reply("Current volume: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
-			return;
+			return false;
 		}
 		if (!Main.getExtraUsers().contains(e.getAuthor().getIdLong())) {
 			e.reply("For performance reasons, this command is only available for selected users. Sorry.\n"
 					+ "You can control the volume in your discord-client by rightclicking me.");
-			return;
+			return false;
 		}
 		if(!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())) {
 			e.reply("You need DJ permissions to use this command.");
-			return;
+			return false;
 		}
 
 		int vol = 100;
@@ -40,11 +40,11 @@ public class VolumeCommand extends TrustedCommand {
 			}
 		} catch (NumberFormatException ex) {
 			e.reply("Invalid value. Please specify a value between 1-100.");
-			return;
+			return false;
 		}
 		Main.getGuildConfig(e.getGuild()).setVolume(vol);
 		e.reactSuccess();
-
+		return true;
 	}
 
 }

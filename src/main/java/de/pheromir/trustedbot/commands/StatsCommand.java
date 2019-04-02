@@ -16,7 +16,7 @@ public class StatsCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String ans = "Uptime: "
 				+ Methods.getTimeString(System.currentTimeMillis() - Main.startMillis) + "\n"
 				+ "Exceptions (WARN or higher): " + Main.exceptionAmount + "\n" 
@@ -24,8 +24,8 @@ public class StatsCommand extends TrustedCommand {
 				+ Runtime.getRuntime().maxMemory() / 1024L / 1024L + " MiB\n" + "Reserved Memory: "
 				+ Runtime.getRuntime().totalMemory() / 1024L / 1024L + " MiB\n" + "Free Memory: "
 				+ Runtime.getRuntime().freeMemory() / 1024L / 1024L + " MiB";
-
 		e.reply(ans);
+		return true;
 	}
 
 }

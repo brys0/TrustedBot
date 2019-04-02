@@ -26,7 +26,7 @@ public abstract class RandomImageCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String imgUrl;
 		try {
 			imgUrl = Methods.httpRequestJSON(BASE_URL).getString(jsonKey);

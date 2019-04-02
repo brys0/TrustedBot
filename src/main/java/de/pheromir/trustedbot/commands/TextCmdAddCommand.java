@@ -18,21 +18,21 @@ public class TextCmdAddCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
 		
 		if (args.length < 2) {
 			e.reply("Syntaxerror. Usage: !" + name + " <command> <response>");
-			return;
+			return false;
 		}
 
 		String name = args[0].toLowerCase();
 		if (Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name))
 				|| Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
 			e.reply("There is already a command with that name.");
-			return;
+			return false;
 		}
 		String arguments = "";
 		if (args.length >= 2) {
@@ -48,5 +48,6 @@ public class TextCmdAddCommand extends TrustedCommand {
 			e.reply("The text-command `" + name + "` has been created.");
 		}
 		Main.getGuildConfig(e.getGuild()).addCustomCommand(name, arguments);
+		return true;
 	}
 }

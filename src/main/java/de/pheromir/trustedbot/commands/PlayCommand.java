@@ -54,7 +54,7 @@ public class PlayCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
 		AudioManager audioManager = e.getGuild().getAudioManager();
 		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
@@ -65,16 +65,17 @@ public class PlayCommand extends TrustedCommand {
 			if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null) {
 				e.getGuild().getAudioManager().openAudioConnection(vc);
 			}
-			return;
+			return true;
 		} else if (e.getArgs().isEmpty()) {
 			if (Main.getGuildConfig(e.getGuild()).scheduler.getRequestedTitles().isEmpty()) {
 				e.reply("Please specify a track. (URL / YouTube keywords)");
+				return false;
 			} else {
 				e.reply("Continue playing the current queue.");
 				audioManager.openAudioConnection(vc);
 				musicManager.scheduler.nextTrack();
+				return true;
 			}
-			return;
 		}
 
 		String toLoad = "";
@@ -121,13 +122,13 @@ public class PlayCommand extends TrustedCommand {
 							}
 							
 						});
-						return;
+						return true;
 					}
 				}
 			
 			} else if(e.getArgs().toLowerCase().contains("spotify.com")) {
 				e.reply("Currently only tracks (not playlists) from spotify are supported.\n(spotify.com/track/TRACKID)");
-				return;
+				return false;
 			}
 		}
 
@@ -136,11 +137,11 @@ public class PlayCommand extends TrustedCommand {
 			if (!matcher.find()) {
 				try {
 					printAndAddSuggestions(getVideoSuggestions(e.getArgs()), e);
-					return;
+					return true;
 				} catch (IOException e1) {
 					Main.LOG.error("", e1);
 					e.reply("An error occurred.");
-					return;
+					return true;
 				}
 
 			} else {
@@ -206,6 +207,7 @@ public class PlayCommand extends TrustedCommand {
 			}
 
 		});
+		return true;
 	}
 
 	public static List<SearchResult> getVideoSuggestions(String search) throws IOException {

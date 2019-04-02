@@ -15,10 +15,10 @@ public class TextCmdsCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if(Main.getGuildConfig(e.getGuild()).getCustomCommands().size() < 1) {
 			e.reply("There are currently no custom commands.");
-			return;
+			return false;
 		}
 		String cmds = "There are currently the following text-commands: ";
 		StringBuilder sb = new StringBuilder();
@@ -26,5 +26,6 @@ public class TextCmdsCommand extends TrustedCommand {
 			sb.append("`" + str + "`, ");
 		}
 		e.reply(cmds + sb.toString().substring(0, sb.length() - 2));
+		return true;
 	}
 }

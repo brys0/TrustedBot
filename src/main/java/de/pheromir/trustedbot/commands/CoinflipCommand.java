@@ -16,12 +16,13 @@ public class CoinflipCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if(getArgs().length != 2 || (!getArgs()[0].equalsIgnoreCase("heads") && !getArgs()[0].equalsIgnoreCase("tails"))) {
 			e.reply("Invalid syntax. Use "+Main.getGuildConfig(e.getGuild()).getPrefix()+"cf <heads|tails> <stake>");
-			return;
+			return false;
 		}
 		
+		return true;
 	}
 
 	

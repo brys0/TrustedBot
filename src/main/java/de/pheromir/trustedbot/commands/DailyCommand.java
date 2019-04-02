@@ -21,11 +21,11 @@ public class DailyCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		GuildConfig gc = Main.getGuildConfig(e.getGuild());
 		if (gc.getRewardClaimed(e.getMember().getUser().getIdLong())) {
 			e.reply("You already claimed your daily reward. Check back tomorrow!");
-			return;
+			return false;
 		}
 		e.reply("You claimed your daily reward and got " + reward + " credits.");
 		gc.addRewardClaimed(e.getMember().getUser().getIdLong());
@@ -35,6 +35,7 @@ public class DailyCommand extends TrustedCommand {
 			e.reply("BONUS: You're lucky and got a bonus of "+bonus+" credits. (5% chance)");
 		}
 		gc.setUserCredits(e.getMember().getUser().getIdLong(), gc.getUserCredits(e.getMember().getUser().getIdLong()) + reward + bonus);
+		return true;
 	}
 
 }

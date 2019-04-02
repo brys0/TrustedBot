@@ -20,7 +20,7 @@ public class ExtraRemoveCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		String[] args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];
@@ -48,5 +48,6 @@ public class ExtraRemoveCommand extends TrustedCommand {
 				continue;
 			}
 		}
+		return true;
 	}
 }

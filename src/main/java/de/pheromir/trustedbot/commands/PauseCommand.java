@@ -16,14 +16,15 @@ public class PauseCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected void exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e) {
 		if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong()) && !e.isOwner()
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("You need DJ privileges to pause the playback.");
-			return;
+			return false;
 		}
 
 		Main.getGuildConfig(e.getGuild()).player.setPaused(true);
 		e.reactSuccess();
+		return true;
 	}
 }
