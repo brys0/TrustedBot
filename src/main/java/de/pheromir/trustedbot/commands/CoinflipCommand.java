@@ -45,11 +45,11 @@ public class CoinflipCommand extends TrustedCommand {
 		boolean random = new Random().nextBoolean();
 		if (random == chosenSide) {
 			long wonCredits = (long) (stake * 1.2);
-			e.reply(random ? "Heads!" : "Tails!" + " You've won! Your prize: " + wonCredits + " Credits.");
+			e.reply((random ? "Heads!" : "Tails!") + " You've won! Your prize: " + wonCredits + " Credits.");
 			Main.getGuildConfig(e.getGuild()).setUserCredits(e.getAuthor().getIdLong(),
 					Main.getGuildConfig(e.getGuild()).getUserCredits(e.getAuthor().getIdLong()) + wonCredits);
 		} else {
-			e.reply(random ? "Heads!" : "Tails!" + " You've lost your stake.");
+			e.reply((random ? "Heads!" : "Tails!") + " You've lost your stake.");
 			Main.getGuildConfig(e.getGuild()).setUserCredits(e.getAuthor().getIdLong(),
 					Main.getGuildConfig(e.getGuild()).getUserCredits(e.getAuthor().getIdLong()) - stake);
 		}
