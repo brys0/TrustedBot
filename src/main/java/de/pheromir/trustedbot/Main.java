@@ -211,23 +211,23 @@ public class Main {
 				try {
 					jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).queue();
 					
-//						try {
-//							BufferedImage bg = ImageIO.read(Unirest.get(Methods.getRandomLizardURL()).asBinary().getBody());
-//							//BufferedImage bgBlur = Images.blur(Images.blur(Images.blur(Images.blur(Images.blur(Images.blur(bg))))));
-//							BufferedImage servericon = Images.overlay(bg, Images.resize(overlay, Math.min(bg.getHeight(), bg.getWidth()), Math.min(bg.getHeight(), bg.getWidth())));
-//							ByteArrayOutputStream os = new ByteArrayOutputStream();
-//							ImageIO.write(servericon, "png", os);
-//							InputStream is = new ByteArrayInputStream(os.toByteArray());
-//							jda.getGuildById(392063800393728021L).getManager().setIcon(Icon.from(is)).queue();
-//							
-//						} catch (JSONException | IOException | HttpErrorException | InterruptedException
-//								| ExecutionException | TimeoutException e) {
-//							LOG.error("", e);
-//						}
-						
+					/*	try {
+							BufferedImage bg = ImageIO.read(Unirest.get(Methods.getRandomLizardURL()).asBinary().getBody());
+							//BufferedImage bgBlur = Images.blur(Images.blur(Images.blur(Images.blur(Images.blur(Images.blur(bg))))));
+							BufferedImage servericon = Images.overlay(bg, Images.resize(overlay, Math.min(bg.getHeight(), bg.getWidth()), Math.min(bg.getHeight(), bg.getWidth())));
+							ByteArrayOutputStream os = new ByteArrayOutputStream();
+							ImageIO.write(servericon, "png", os);
+							InputStream is = new ByteArrayInputStream(os.toByteArray());
+							jda.getGuildById(392063800393728021L).getManager().setIcon(Icon.from(is)).queue();
+							
+						} catch (JSONException | IOException | HttpErrorException | InterruptedException
+								| ExecutionException | TimeoutException e) {
+							LOG.error("", e);
+						}
+					*/
 					
 				} catch (Exception e) {
-					LOG.error("", e);
+					LOG.error("Error updating RandomAvatar: ", e);
 				}
 			}, 0, 1, TimeUnit.HOURS);
 			

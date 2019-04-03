@@ -3,17 +3,13 @@ package de.pheromir.trustedbot;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -22,39 +18,12 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
-import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
-
-import de.pheromir.trustedbot.misc.HttpErrorException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class Methods {
 
-	static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^(\\d?\\d)(?::([0-5]?\\d))?(?::([0-5]?\\d))?$");
-
-	/*
-	 * GENERAL HTTP CONNECTIONS
-	 */
-
-	public static JSONObject httpRequestJSON(String url) throws HttpErrorException, InterruptedException, ExecutionException, TimeoutException {
-		String resp = httpRequest(url);
-		if (resp.isEmpty()) {
-			throw new HttpErrorException("An error occurred during the request: empty response");
-		} else {
-			JSONObject myResponse = new JSONObject(resp);
-			return myResponse;
-		}
-
-	}
-
-	public static String httpRequest(String url) throws InterruptedException, ExecutionException, TimeoutException, HttpErrorException {
-		Future<HttpResponse<String>> future = Unirest.get(url).asStringAsync();
-
-			HttpResponse<String> r = future.get(30, TimeUnit.SECONDS);
-			if (r.getStatus() == 404) {
-				throw new HttpErrorException();
-			}
-			return r.getBody();
-	}
+	
 
 	/*
 	 * CONVERT TIMEMILLIS INTO A HH:mm:ss STRING
@@ -103,6 +72,8 @@ public class Methods {
 	 * fredboat/util/TextUtils.java
 	 */
 
+	static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^(\\d?\\d)(?::([0-5]?\\d))?(?::([0-5]?\\d))?$");
+	
 	public static long parseTimeString(String str) throws NumberFormatException {
 		long millis = 0;
 		long seconds = 0;
@@ -173,32 +144,16 @@ public class Methods {
 		}
 		return 0;
 	}
-
-	public static boolean doesSubredditExist(String subreddit) {
-		Callable<Boolean> task = () -> {
-			JSONObject jo = httpRequestJSON("https://www.reddit.com/r/" + subreddit + "/hot/.json");
-			if (jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children")
-					&& jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
-				return false;
-			}
-			return true;
-		};
-		Future<Boolean> future = Executors.newCachedThreadPool().submit(task);
+	
+	@Nullable
+	public static String getRandomAvatarURL() {
 		try {
-			return future.get(5, TimeUnit.SECONDS);
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			return false;
+			return Unirest.get("https://nekos.life/api/v2/img/avatar").asJson().getBody().getObject().getString("url");
+		} catch (JSONException | UnirestException e) {
+			Main.LOG.error("Error getting random Avatar-Image");
+			return null;
 		}
 	}
-	
-	public static String getRandomAvatarURL() throws JSONException, HttpErrorException, InterruptedException, ExecutionException, TimeoutException {
-		return Methods.httpRequestJSON("https://nekos.life/api/v2/img/avatar").getString("url");
-	}
-	
-	public static String getRandomLizardURL() throws JSONException, HttpErrorException, InterruptedException, ExecutionException, TimeoutException {
-		return Methods.httpRequestJSON("https://nekos.life/api/v2/img/lizard").getString("url");
-	}
-	
 
 	public static void mySQLQuery(String query) {
 		MySQL sql = Main.getMySQL();
