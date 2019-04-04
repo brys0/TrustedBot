@@ -53,7 +53,7 @@ public class RedditSubscription {
 	}
 	
 	public enum SortType {
-		NEW, HOT;
+		NEW, HOT, BEST;
 	}
 }
 

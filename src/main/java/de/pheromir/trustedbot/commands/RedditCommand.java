@@ -52,12 +52,12 @@ public class RedditCommand extends TrustedCommand {
 			}
 		}
 		if (args.length != 1 && args.length != 2) {
-			e.reply("Syntaxerror. Usage: `" + Main.getGuildConfig(e.getGuild()).getPrefix() + this.name + " "
+			e.reply("Syntax error. Usage: `" + Main.getGuildConfig(e.getGuild()).getPrefix() + this.name + " "
 					+ this.arguments + "`");
 			return false;
 		} else {
-			if (args.length == 2 && !args[1].equalsIgnoreCase("hot") && !args[1].equalsIgnoreCase("new")) {
-				e.reply("Syntaxerror. Usage: `" + Main.getGuildConfig(e.getGuild()).getPrefix() + this.name + " "
+			if (args.length == 2 && !args[1].equalsIgnoreCase("hot") && !args[1].equalsIgnoreCase("new") && !args[1].equalsIgnoreCase("best")) {
+				e.reply("Syntax error. Usage: `" + Main.getGuildConfig(e.getGuild()).getPrefix() + this.name + " "
 						+ this.arguments + "`");
 				return false;
 			}
