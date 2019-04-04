@@ -1,8 +1,5 @@
 package de.pheromir.trustedbot.events;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.config.SettingsManager;
@@ -29,10 +26,9 @@ public class GuildEvents extends ListenerAdapter {
 
 	@Override
 	public void onTextChannelDelete(TextChannelDeleteEvent e) {
-		ArrayList<String> twstreams = (ArrayList<String>) GuildConfig.getTwitchList().keySet().stream().filter(k -> GuildConfig.getTwitchList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
-		ArrayList<String> reddits = (ArrayList<String>) GuildConfig.getRedditList().keySet().stream().filter(k -> GuildConfig.getRedditList().get(k).containsChannel(e.getChannel().getIdLong())).collect(Collectors.toList());
-		twstreams.forEach(s -> GuildConfig.removeTwitchStream(s, e.getChannel().getIdLong()));
-		reddits.forEach(s -> GuildConfig.removeSubreddit(s, e.getChannel().getIdLong()));
+		long channelId = e.getChannel().getIdLong();
+		GuildConfig.getTwitchList().entrySet().stream().filter(ent -> ent.getValue().contains(channelId)).forEach(ent -> GuildConfig.removeTwitchStream(ent.getKey(), channelId));
+		GuildConfig.getRedditList().entrySet().stream().filter(ent -> ent.getValue().containsChannel(channelId)).forEach(ent -> GuildConfig.removeSubreddit(ent.getKey(), channelId));
 	}
 	
 	@Override
