@@ -6,6 +6,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import net.dv8tion.jda.core.Permission;
 
@@ -20,7 +21,7 @@ public class NumberFactCommand extends TrustedCommand {
 		this.help = "Shows a fact about the given number.";
 		this.guildOnly = false;
 		this.category = new Category("Miscellaneous");
-		this.cooldown = 30;
+		this.cooldown = 10;
 		this.cooldownScope = CooldownScope.USER_GUILD;
 	}
 
@@ -29,11 +30,14 @@ public class NumberFactCommand extends TrustedCommand {
 		int n;
 		try {
 			n = Integer.parseInt(e.getArgs());
-		} catch  (NumberFormatException e1) {
+			if (n < 0) {
+				throw new NumberFormatException();
+			}
+		} catch (NumberFormatException e1) {
 			e.reply("Invalid number.");
 			return false;
 		}
-		Unirest.get(BASE_URL).routeParam("n", n+"").asStringAsync(new Callback<String>() {
+		Unirest.get(BASE_URL).routeParam("n", n + "").asStringAsync(new Callback<String>() {
 
 			@Override
 			public void cancelled() {
@@ -41,19 +45,20 @@ public class NumberFactCommand extends TrustedCommand {
 			}
 
 			@Override
-			public void completed(HttpResponse<String> arg0) {
-				if(arg0.getBody().contains("is a number for which we're missing a fact")) {
-					e.reply("There is currently no fact for the number "+n+". We're sorry to disappoint you.");
-				} else {
-					e.reply(arg0.getBody());
+			public void completed(HttpResponse<String> response) {
+				if (response.getStatus() != 200) {
+					e.reply("An error occurred while getting your fact.");
+					Main.LOG.error("NumberFact received a HTTP Code " + response.getStatus());
+					return;
 				}
+				e.reply(response.getBody());
 			}
 
 			@Override
 			public void failed(UnirestException arg0) {
 				e.reply("An error occured while getting your fact.");
 			}
-			
+
 		});
 		return true;
 	}

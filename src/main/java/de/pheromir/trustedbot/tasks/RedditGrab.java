@@ -95,7 +95,7 @@ public class RedditGrab implements Runnable {
 							Thread.sleep(500L);
 						} catch (InterruptedException e) {
 							Thread.currentThread().interrupt();
-							e.printStackTrace();
+							Main.LOG.error("", e);
 						}
 					}
 					res = null;

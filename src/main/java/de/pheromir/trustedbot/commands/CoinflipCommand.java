@@ -16,6 +16,8 @@ public class CoinflipCommand extends TrustedCommand {
 		this.help = "Flip a coin to win credits.";
 		this.guildOnly = true;
 		this.category = new Category("Minigames and Gambling");
+		this.cooldown = 5;
+		this.cooldownScope = CooldownScope.USER_GUILD;
 	}
 
 	@Override
@@ -34,8 +36,8 @@ public class CoinflipCommand extends TrustedCommand {
 			e.reply("Please enter a valid number.");
 			return false;
 		}
-		
-		if(stake > Main.getGuildConfig(e.getGuild()).getUserCredits(e.getAuthor().getIdLong())) {
+
+		if (stake > Main.getGuildConfig(e.getGuild()).getUserCredits(e.getAuthor().getIdLong())) {
 			e.reply("You don't have enough credits.");
 			return false;
 		}
@@ -44,14 +46,15 @@ public class CoinflipCommand extends TrustedCommand {
 		boolean chosenSide = getArgs()[0].equalsIgnoreCase("heads") ? true : false;
 		boolean random = new Random().nextBoolean();
 		if (random == chosenSide) {
-			long wonCredits = (long) (stake * 1.2);
-			e.reply((random ? "Heads!" : "Tails!") + " You've won! Your prize: " + wonCredits + " Credits.");
-			Main.getGuildConfig(e.getGuild()).setUserCredits(e.getAuthor().getIdLong(),
-					Main.getGuildConfig(e.getGuild()).getUserCredits(e.getAuthor().getIdLong()) + wonCredits);
+			long wonCredits = (long) Math.ceil((stake * 0.5));
+			e.reply((random ? "Heads!" : "Tails!") + " You've won, " + e.getAuthor().getAsMention() + "! Your prize: "
+					+ wonCredits + " Credits.");
+			Main.getGuildConfig(e.getGuild()).setUserCredits(e.getAuthor().getIdLong(), Main.getGuildConfig(e.getGuild()).getUserCredits(e.getAuthor().getIdLong())
+					+ wonCredits);
 		} else {
-			e.reply((random ? "Heads!" : "Tails!") + " You've lost your stake.");
-			Main.getGuildConfig(e.getGuild()).setUserCredits(e.getAuthor().getIdLong(),
-					Main.getGuildConfig(e.getGuild()).getUserCredits(e.getAuthor().getIdLong()) - stake);
+			e.reply((random ? "Heads!" : "Tails!") + " You've lost your stake, " + e.getAuthor().getAsMention() + ".");
+			Main.getGuildConfig(e.getGuild()).setUserCredits(e.getAuthor().getIdLong(), Main.getGuildConfig(e.getGuild()).getUserCredits(e.getAuthor().getIdLong())
+					- stake);
 		}
 
 		return true;
