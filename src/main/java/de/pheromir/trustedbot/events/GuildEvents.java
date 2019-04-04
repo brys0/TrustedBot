@@ -30,7 +30,7 @@ public class GuildEvents extends ListenerAdapter {
 	@Override
 	public void onTextChannelDelete(TextChannelDeleteEvent e) {
 		ArrayList<String> twstreams = (ArrayList<String>) GuildConfig.getTwitchList().keySet().stream().filter(k -> GuildConfig.getTwitchList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
-		ArrayList<String> reddits = (ArrayList<String>) GuildConfig.getRedditList().keySet().stream().filter(k -> GuildConfig.getRedditList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
+		ArrayList<String> reddits = (ArrayList<String>) GuildConfig.getRedditList().keySet().stream().filter(k -> GuildConfig.getRedditList().get(k).containsChannel(e.getChannel().getIdLong())).collect(Collectors.toList());
 		twstreams.forEach(s -> GuildConfig.removeTwitchStream(s, e.getChannel().getIdLong()));
 		reddits.forEach(s -> GuildConfig.removeSubreddit(s, e.getChannel().getIdLong()));
 	}

@@ -15,6 +15,7 @@ import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.MySQL;
 import de.pheromir.trustedbot.commands.base.AliasCommand;
 import de.pheromir.trustedbot.commands.base.CustomCommand;
+import de.pheromir.trustedbot.misc.RedditSubscription;
 import de.pheromir.trustedbot.music.AudioPlayerSendHandler;
 import de.pheromir.trustedbot.music.Suggestion;
 import de.pheromir.trustedbot.music.TrackScheduler;
@@ -38,7 +39,7 @@ public class GuildConfig implements GuildSettingsProvider {
 	private String cmdPrefix;
 
 	private static HashMap<String, List<Long>> twitch = new HashMap<>();
-	private static HashMap<String, List<Long>> reddit = new HashMap<>();
+	private static HashMap<String, RedditSubscription> reddit = new HashMap<>();
 
 	static {
 		downloadTwitchUsers();
@@ -69,17 +70,17 @@ public class GuildConfig implements GuildSettingsProvider {
 		downloadCustomCommands();
 		g.getAudioManager().setSendingHandler(getSendHandler());
 	}
-	
+
 	public void addRewardClaimed(long userId) {
-		if(!rewardClaimed.contains(userId)) {
+		if (!rewardClaimed.contains(userId)) {
 			rewardClaimed.add(userId);
 		}
 	}
-	
+
 	public boolean getRewardClaimed(long userId) {
 		return rewardClaimed.contains(userId);
 	}
-	
+
 	public void resetDailyRewards() {
 		rewardClaimed.clear();
 	}
@@ -270,13 +271,13 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 		}
 	}
-	
+
 	public void setUserCredits(Long userId, Long amount) {
 		MySQL sq = Main.getMySQL();
 		sq.openConnection();
 		try {
 			PreparedStatement prep;
-			if(userCreditsExist(userId)) {
+			if (userCreditsExist(userId)) {
 				prep = sq.getConnection().prepareStatement("UPDATE Credits SET Amount = ? WHERE GuildId = ? AND UserId = ?");
 			} else {
 				prep = sq.getConnection().prepareStatement("INSERT INTO Credits (Amount, GuildId, UserId) VALUES (?, ?, ?)");
@@ -292,7 +293,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			Main.LOG.error("Set UserCredits failed: ", e);
 		}
 	}
-	
+
 	public void deleteUserCredits(Long userId) {
 		MySQL sq = Main.getMySQL();
 		sq.openConnection();
@@ -565,26 +566,23 @@ public class GuildConfig implements GuildSettingsProvider {
 		return twitch;
 	}
 
-	public static void addSubreddit(String subreddit, Long channelID, Long guildId) {
+	public static void addSubreddit(String subreddit, Long channelID, Long guildId, RedditSubscription.SortType sortType) {
 		subreddit = subreddit.toLowerCase();
 		MySQL sq = Main.getMySQL();
 		sq.openConnection();
 		try {
-			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Reddit (ChannelId, Subreddit, GuildId) VALUES (?, ?, ?)");
+			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Reddit (ChannelId, Subreddit, GuildId, SortType) VALUES (?, ?, ?, ?)");
 			prep.setString(1, channelID.toString());
 			prep.setString(2, subreddit);
 			prep.setString(3, guildId.toString());
-			List<Long> list = new ArrayList<>();
+			prep.setString(4, sortType.name());
 			if (reddit.containsKey(subreddit)) {
-				list = reddit.get(subreddit);
-				if (!list.contains(channelID)) {
-					list.add(channelID);
-					reddit.put(subreddit, list);
-					prep.execute();
-				}
+				reddit.get(subreddit).addChannel(channelID, sortType);
+				prep.execute();
 			} else {
-				list.add(channelID);
-				reddit.put(subreddit, list);
+				RedditSubscription rs = new RedditSubscription(subreddit);
+				rs.addChannel(channelID, sortType);
+				reddit.put(subreddit, rs);
 				prep.execute();
 			}
 			sq.closeConnection();
@@ -602,16 +600,8 @@ public class GuildConfig implements GuildSettingsProvider {
 			PreparedStatement prep = sq.getConnection().prepareStatement("DELETE IGNORE FROM Reddit WHERE ChannelId = ? AND Subreddit = ?");
 			prep.setString(1, channelID.toString());
 			prep.setString(2, subreddit);
-			List<Long> list = new ArrayList<>();
 			if (reddit.containsKey(subreddit)) {
-				list = reddit.get(subreddit);
-				if (list.contains(channelID))
-					list.remove(channelID);
-				reddit.put(subreddit, list);
-				prep.execute();
-			} else {
-				list.add(channelID);
-				reddit.put(subreddit, list);
+				reddit.get(subreddit).removeChannel(channelID);
 				prep.execute();
 			}
 			sq.closeConnection();
@@ -621,7 +611,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		}
 	}
 
-	public static HashMap<String, List<Long>> getRedditList() {
+	public static HashMap<String, RedditSubscription> getRedditList() {
 		return reddit;
 	}
 
@@ -669,22 +659,19 @@ public class GuildConfig implements GuildSettingsProvider {
 		PreparedStatement state;
 		ResultSet res = null;
 		try {
-			state = sql.getConnection().prepareStatement("SELECT ChannelId, Subreddit FROM Reddit");
+			state = sql.getConnection().prepareStatement("SELECT ChannelId, Subreddit, SortType FROM Reddit");
 			res = state.executeQuery();
 			while (res.next()) {
 				String subreddit = res.getString("Subreddit");
 				Long channelId = Long.parseLong(res.getString("ChannelId"));
+				RedditSubscription.SortType sortType = RedditSubscription.SortType.valueOf(res.getString("SortType"));
 				subreddit = subreddit.toLowerCase();
-				List<Long> list = new ArrayList<>();
 				if (reddit.containsKey(subreddit)) {
-					list = reddit.get(subreddit);
-					if (!list.contains(channelId)) {
-						list.add(channelId);
-						reddit.put(subreddit, list);
-					}
+					reddit.get(subreddit).addChannel(channelId, sortType);
 				} else {
-					list.add(channelId);
-					reddit.put(subreddit, list);
+					RedditSubscription rs = new RedditSubscription(subreddit);
+					rs.addChannel(channelId, sortType);
+					reddit.put(subreddit, rs);
 				}
 			}
 			sql.closeConnection();
