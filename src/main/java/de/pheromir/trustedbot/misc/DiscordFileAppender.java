@@ -15,7 +15,7 @@ public class DiscordFileAppender extends RollingFileAppender<ILoggingEvent> {
 	protected void append(ILoggingEvent event) {
 		super.append(event);
 		if (event.getLevel().isGreaterOrEqual(Level.WARN)) {
-			if (!ThrowableProxyUtil.asString(event.getThrowableProxy()).contains("Got disconnected from WebSocket. Attempting to resume session")) {
+			if (!event.getMessage().contains("disconnected from WebSocket. Attempting to resume")) {
 				Main.exceptionAmount++;
 				Main.jda.getUserById(Main.adminId).openPrivateChannel().queue(priv -> priv.sendMessage(String.format("**An error occurred:**\n"
 						+ "%s [%s] %s %s %s", 
