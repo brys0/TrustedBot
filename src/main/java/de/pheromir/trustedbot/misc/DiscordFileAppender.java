@@ -17,13 +17,14 @@ public class DiscordFileAppender extends RollingFileAppender<ILoggingEvent> {
 		if (event.getLevel().isGreaterOrEqual(Level.WARN)) {
 			if (!event.getMessage().contains("disconnected from WebSocket. Attempting to resume")) {
 				Main.exceptionAmount++;
+				String throwable = event.getThrowableProxy() == null ? null : ThrowableProxyUtil.asString(event.getThrowableProxy());
 				Main.jda.getUserById(Main.adminId).openPrivateChannel().queue(priv -> priv.sendMessage(String.format("**An error occurred:**\n"
 						+ "%s [%s] %s %s %s", 
 						DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss").format(LocalDateTime.now()), 
 						event.getThreadName(), 
 						event.getLevel().levelStr, 
 						event.getMessage(), 
-						event.getThrowableProxy() == null ? "" : "\n" + ThrowableProxyUtil.asString(event.getThrowableProxy())
+						throwable == null ? "" : "\n" + (throwable.length() > 1800 ? throwable.substring(0, 1797) + "..." : throwable)
 						)).queue());
 			}
 			
