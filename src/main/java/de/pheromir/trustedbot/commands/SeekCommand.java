@@ -28,7 +28,7 @@ public class SeekCommand extends TrustedCommand {
 		long time;
 		try {
 			time = Methods.parseTimeString(e.getArgs());
-		} catch (NumberFormatException ex) {
+		} catch (Exception ex) {
 			e.reply("Syntaxerror. Usage: `HH:mm:ss` or `mm:ss`.");
 			return false;
 		}

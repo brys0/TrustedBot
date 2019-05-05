@@ -183,11 +183,13 @@ public class PlayCommand extends TrustedCommand {
 				}
 				audioManager.openAudioConnection(vc);
 				if(loadPlaylist) {
+					StringBuilder sb = new StringBuilder();
 					playlist.getTracks().forEach(track -> {
 						musicManager.scheduler.queue(track, e.getAuthor());
-						e.reply("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration())
-						+ "] has been added to the queue.");
+						sb.append("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration())
+						+ "] has been added to the queue.\n");
 					});
+					e.reply(sb.toString());
 				} else {
 					musicManager.scheduler.queue(firstTrack, e.getAuthor());
 					e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration())

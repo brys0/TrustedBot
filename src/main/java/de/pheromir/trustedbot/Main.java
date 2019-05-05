@@ -46,10 +46,12 @@ import de.pheromir.trustedbot.commands.CreditsCommand;
 import de.pheromir.trustedbot.commands.DJAddCommand;
 import de.pheromir.trustedbot.commands.DJRemoveCommand;
 import de.pheromir.trustedbot.commands.DailyCommand;
+import de.pheromir.trustedbot.commands.ExportCommand;
 import de.pheromir.trustedbot.commands.ExtraAddCommand;
 import de.pheromir.trustedbot.commands.ExtraRemoveCommand;
 import de.pheromir.trustedbot.commands.ForwardCommand;
 import de.pheromir.trustedbot.commands.GoogleCommand;
+import de.pheromir.trustedbot.commands.ImportCommand;
 import de.pheromir.trustedbot.commands.NumberFactCommand;
 import de.pheromir.trustedbot.commands.PauseCommand;
 import de.pheromir.trustedbot.commands.PlayCommand;
@@ -124,6 +126,7 @@ public class Main {
 	private static String spotifySecret = "none";
 	private static String spotifyClient = "none";
 	public static String spotifyToken = "none";
+	public static String pastebinKey = "none";
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
 	public static ArrayList<String> onlineCBList = new ArrayList<>();
 	public static List<Long> extraPermissions = new ArrayList<>();
@@ -153,6 +156,7 @@ public class Main {
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
 		Unirest.setDefaultHeader("User-Agent", "Mozilla/5.0");
+		Unirest.setTimeouts(10000, 30000);
 		EventWaiter waiter = new EventWaiter();
 
 		/* COMMANDS KONFIGURIEREN */
@@ -162,7 +166,7 @@ public class Main {
 		// Owner Commands + Settings
 		cbuilder.addCommands(new StatusCommand(), new StatsCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand(), new ToggleCommand());
 		// Music
-		cbuilder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new QueueCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand());
+		cbuilder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new QueueCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand(), new ExportCommand(), new ImportCommand());
 		// Alias + Custom Commands
 		cbuilder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand());
 		// Subscription Commands
@@ -300,6 +304,7 @@ public class Main {
 			twitchKey = cfg.getString("API-Keys.Twitch");
 			spotifyClient = cfg.getString("API-Keys.Spotify.Client");
 			spotifySecret = cfg.getString("API-Keys.Spotify.Secret");
+			pastebinKey = cfg.getString("API-Keys.Pastebin");
 			extraPermissions = cfg.getLongList("ExtraPermissions");
 
 			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Guilds" + " (GuildId VARCHAR(64) PRIMARY KEY,"

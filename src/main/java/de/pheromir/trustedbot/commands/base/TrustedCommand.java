@@ -12,7 +12,7 @@ public abstract class TrustedCommand extends Command {
 
 	protected long creditsCost;
 	protected boolean nsfw;
-	protected String[] argsArray;
+	protected String[] args;
 	
 	public TrustedCommand() {
 		this.creditsCost = 0;
@@ -21,9 +21,9 @@ public abstract class TrustedCommand extends Command {
 	
 	@Override
 	protected void execute(CommandEvent e) {
-		argsArray = e.getArgs().split(" ");
-		if ((argsArray[0].equals("") || argsArray[0].isEmpty()) && argsArray.length == 1)
-			argsArray = new String[0];
+		args = e.getArgs().split(" ");
+		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
+			args = new String[0];
 		
 		GuildConfig gc = Main.getGuildConfig(e.getGuild());
 		if (e.getChannelType() == ChannelType.TEXT && gc.isCommandDisabled(this.name) && !this.isOwnerCommand()) {
@@ -51,7 +51,7 @@ public abstract class TrustedCommand extends Command {
 	}
 	
 	public String[] getArgs() {
-		return argsArray;
+		return args;
 	}
 	
 	public long getCreditCost() {

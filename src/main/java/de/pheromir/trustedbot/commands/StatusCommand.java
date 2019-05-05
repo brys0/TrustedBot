@@ -24,7 +24,7 @@ public class StatusCommand extends TrustedCommand {
 			args = new String[0];
 
 		if (args.length < 2) {
-			e.reply("Syntaxfehler. Verwendung: `!status <play|watch|listen|[stream]> [stream-url] <Text>`");
+			e.reply("Syntaxerror. Usage: `!status <play|watch|listen|[stream]> [stream-url] <Text>`");
 			return false;
 		} else {
 			StringBuilder sb = new StringBuilder();
@@ -46,7 +46,7 @@ public class StatusCommand extends TrustedCommand {
 					api.getPresence().setGame(Game.streaming(msg, args[1]));
 					break;
 				default:
-					e.reply("Syntaxfehler. Verwendung: `!status <play|watch|listen|[stream]> [stream-url] <Text>`");
+					e.reply("Syntaxerror. Usage: `!status <play|watch|listen|[stream]> [stream-url] <Text>`");
 					return false;
 			}
 			e.reactSuccess();

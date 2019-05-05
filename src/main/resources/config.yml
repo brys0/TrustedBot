@@ -6,14 +6,16 @@ AdminID: 'YourClientID'
 
 API-Keys:
   # Needed for the YT-Search of the !play-Command. You can request a YouTube-API Key by creating a project here: https://console.developers.google.com/
-  YouTube: "YourYouTubeKey"
+  YouTube: "none"
   # Needed for Twitch notifications. You can request a Twitch-API key by creating an app here: https://dev.twitch.tv/dashboard (URL for the app can be http://localhost)
-  Twitch: "YourTwitchKey"
+  Twitch: "none"
+  # Needed to export Playlists to Pastebin
+  Pastebin: "none";
   
   # Needed for accessing information of spotify-tracks so they can be played from youtube
   Spotify:
-    Client: "YourClientId"
-    Secret: "YourClientSecret"
+    Client: "none"
+    Secret: "none"
   
 # Users with Extra-Permissions can play titles longer than 2 hours and have access to !volume
 # you can assign Extra-Permissions with the !extraadd @UserTag and remove them with !extraremove @UserTag

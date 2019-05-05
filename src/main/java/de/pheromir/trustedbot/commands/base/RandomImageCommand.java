@@ -49,7 +49,7 @@ public abstract class RandomImageCommand extends TrustedCommand {
 
 				@Override
 				public void failed(UnirestException e1) {
-					Main.LOG.error("Getting RandomImage " + RandomImageCommand.this.name + " cancelled.");
+					Main.LOG.error("Getting RandomImage " + RandomImageCommand.this.name + " failed: ", e1);
 					e.reply("An error occurred while getting a random Image");
 				}
 
