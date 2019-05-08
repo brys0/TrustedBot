@@ -29,7 +29,7 @@ public class ExportCommand extends TrustedCommand {
 		}
 		Main.getGuildConfig(e.getGuild()).scheduler.getRequestedTitles().stream().map(QueueTrack::getTrack).map(AudioTrack::getInfo).map(track -> track.uri).forEachOrdered(track -> sb.append(track
 				+ "\n"));
-		String tracks = sb.toString().substring(0, sb.length() - 2);
+		String tracks = sb.toString().substring(0, sb.length() - 1);
 		e.reply("Exporting playlist..");
 		Unirest.post("https://hastebin.com/documents").body(tracks).asJsonAsync(new Callback<JsonNode>() {
 
