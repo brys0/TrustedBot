@@ -16,16 +16,17 @@ public class SetCreditsCommand extends TrustedCommand {
 		this.name = "setcredits";
 		this.help = "Set the credits of the specified user";
 		this.guildOnly = true;
+		this.arguments = "<UserID> <Credits>";
 		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.category = new Category("Money");
 	}
 
 	@Override
 	protected boolean exec(CommandEvent e) {
-		String[] args = e.getArgs().split(" ");
-		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
-			args = new String[0];
-
+		if(args.length != 2) {
+			e.reply("Invalid Syntax. Usage: " + Main.getGuildConfig(e.getGuild()).getPrefix() + " " + this.name + " " + this.arguments);
+			return false;
+		}
 		Pattern p = Pattern.compile("(\\d+)");
 		Matcher m = p.matcher(args[0]);
 		if (m.find()) {

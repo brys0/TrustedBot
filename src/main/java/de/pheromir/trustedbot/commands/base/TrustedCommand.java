@@ -20,7 +20,7 @@ public abstract class TrustedCommand extends Command {
 	
 	
 	@Override
-	protected void execute(CommandEvent e) {
+	protected final void execute(CommandEvent e) {
 		args = e.getArgs().split(" ");
 		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
 			args = new String[0];

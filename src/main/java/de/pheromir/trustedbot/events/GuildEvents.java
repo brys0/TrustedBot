@@ -8,7 +8,6 @@ import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class GuildEvents extends ListenerAdapter {
@@ -36,16 +35,17 @@ public class GuildEvents extends ListenerAdapter {
 		Main.getGuildConfig(e.getGuild()).setUserCredits(e.getMember().getUser().getIdLong(), 0L);
 	}
 
-	@Override
-	public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
-		if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getUser().getIdLong())) {
-			Main.getGuildConfig(e.getGuild()).removeDJ(e.getUser().getIdLong());
-		}
-		if (Main.getExtraUsers().contains(e.getUser().getIdLong())) {
-			Main.removeExtraUser(e.getUser().getIdLong());
-		}
-		Main.getGuildConfig(e.getGuild()).deleteUserCredits(e.getMember().getUser().getIdLong());
-	}
+//	@Override
+//	public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
+//		GuildConfig gc = Main.getGuildConfig(e.getGuild());
+//		if (gc.getDJs().contains(e.getUser().getIdLong())) {
+//			gc.removeDJ(e.getUser().getIdLong());
+//		}
+//		if (Main.getExtraUsers().contains(e.getUser().getIdLong())) {
+//			Main.removeExtraUser(e.getUser().getIdLong());
+//		}
+//		gc.deleteUserCredits(e.getMember().getUser().getIdLong());
+//	}
 	
 	@Override
 	public void onGuildReady(GuildReadyEvent e) {
