@@ -25,6 +25,7 @@ public class StopCommand extends TrustedCommand {
 		e.getGuild().getAudioManager().closeAudioConnection();
 		Main.getGuildConfig(e.getGuild()).player.setPaused(false);
 		Main.getGuildConfig(e.getGuild()).player.stopTrack();
+		Main.getGuildConfig(e.getGuild()).scheduler.clearQueue();
 		e.reactSuccess();
 		return true;
 	}

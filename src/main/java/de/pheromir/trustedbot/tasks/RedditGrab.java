@@ -72,7 +72,7 @@ public class RedditGrab implements Runnable {
 								emb.addField(new Field("Score", score + "", false));
 								emb.setFooter("/r/" + sub + " ("+sortType.name().toLowerCase()+")", Main.jda.getSelfUser().getAvatarUrl());
 								emb.setTitle(title.length() > 256 ? title.substring(0, 256) : title, link);
-								String thumbUrl = contentUrl.contains("v.redd.it") ? "" : "";
+								String thumbUrl = contentUrl.contains("v.redd.it") ? post.getString("thumbnail") : "";
 
 								for (Long chId : GuildConfig.getRedditList().get(subreddit).getChannels(sortType)) {
 									if (Thread.interrupted()) {
