@@ -67,9 +67,11 @@ public class PlayCommand extends TrustedCommand {
 		}
 
 		// Load a suggestion
-		if (gc.getSuggestions().containsKey(user) && args.length == 1 && args[0].matches("^([1-5]{1})$")) {
+		if (gc.getSuggestions().containsKey(user) && args.length == 1
+				&& args[0].matches(String.format("^([1-%s]{1})$", gc.getSuggestions().get(user).size()))) {
 			try {
 				int selSuggest = Integer.parseInt(args[0]);
+
 				PlayCommand.loadTrack(e, String.format("https://youtube.com/watch?v=%s", gc.getSuggestions().get(user).get(selSuggest
 						- 1).getId()), false);
 				return true;
@@ -224,7 +226,7 @@ public class PlayCommand extends TrustedCommand {
 		MessageBuilder mes = new MessageBuilder();
 		mes.append("**Titelauswahl:**");
 		EmbedBuilder m = new EmbedBuilder();
-		m.setTitle("Suggestions for " + e.getMember().getEffectiveName());
+		m.setTitle("Suggestions for " + e.getMember().getEffectiveName() + ":");
 		m.setColor(e.getGuild().getSelfMember().getColor());
 		ArrayList<Suggestion> suggests = new ArrayList<>();
 		for (int i = 0; i < (videoList.size() >= 5 ? 5 : videoList.size()); i++) {
@@ -234,10 +236,15 @@ public class PlayCommand extends TrustedCommand {
 					+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId()))
 					+ "]*\n\n");
 		}
-		Main.getGuildConfig(e.getGuild()).getSuggestions().put(e.getAuthor(), suggests);
+		if (suggests.size() > 0) {
+			Main.getGuildConfig(e.getGuild()).getSuggestions().put(e.getAuthor(), suggests);
+			m.setFooter("Select track: !play [Nr] (Suggestions are valid for 5 min)", e.getJDA().getSelfUser().getAvatarUrl());
+		} else {
+			Main.getGuildConfig(e.getGuild()).getSuggestions().remove(e.getAuthor());
+			m.appendDescription("No matching videos found");
+		}
 		Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(),
 				e.getAuthor()), 5, TimeUnit.MINUTES);
-		m.setFooter("Select track: !play [Nr] (Suggestions are valid for 5 min)", e.getJDA().getSelfUser().getAvatarUrl());
 		mes.setEmbed(m.build());
 		e.reply(mes.build());
 	}
