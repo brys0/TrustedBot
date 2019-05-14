@@ -50,6 +50,7 @@ public class PlayCommand extends TrustedCommand {
 		this.name = "play";
 		this.botPermissions = new Permission[] { Permission.VOICE_CONNECT, Permission.VOICE_SPEAK };
 		this.guildOnly = true;
+		this.arguments = "<Keywords/URL> [--playlist]";
 		this.help = "Add a track to the playlist.";
 		this.category = new Category("Music");
 	}
@@ -66,11 +67,15 @@ public class PlayCommand extends TrustedCommand {
 		}
 
 		// Load a suggestion
-		if (gc.getSuggestions().containsKey(user) && args.length == 1 && args[0].matches("^([1-5])$")) {
+		System.out.println(args.length);
+		System.out.println(gc.getSuggestions().containsKey(user));
+		System.out.println(args[0]);
+		System.out.println(args[0].matches("^([1-5]{1})$"));
+		if (gc.getSuggestions().containsKey(user) && args.length == 1 && args[0].matches("^([1-5]{1})$")) {
 			try {
 				int selSuggest = Integer.parseInt(args[0]);
 				PlayCommand.loadTrack(e,
-						String.format("https://youtube.com/watch?v=%s", gc.getSuggestions().get(user).get(selSuggest)),
+						String.format("https://youtube.com/watch?v=%s", gc.getSuggestions().get(user).get(selSuggest - 1).getId()),
 						false);
 				return true;
 			} catch (NumberFormatException ex) {
@@ -230,6 +235,7 @@ public class PlayCommand extends TrustedCommand {
 		MessageBuilder mes = new MessageBuilder();
 		mes.append("**Titelauswahl:**");
 		EmbedBuilder m = new EmbedBuilder();
+		m.setTitle("Suggestions for " + e.getMember().getEffectiveName());
 		m.setColor(e.getGuild().getSelfMember().getColor());
 		ArrayList<Suggestion> suggests = new ArrayList<>();
 		for (int i = 0; i < (videoList.size() >= 5 ? 5 : videoList.size()); i++) {
