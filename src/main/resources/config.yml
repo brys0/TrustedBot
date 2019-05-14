@@ -10,7 +10,7 @@ API-Keys:
   # Needed for Twitch notifications. You can request a Twitch-API key by creating an app here: https://dev.twitch.tv/dashboard (URL for the app can be http://localhost)
   Twitch: "none"
   # Needed to export Playlists to Pastebin
-  Pastebin: "none";
+  Pastebin: "none"
   
   # Needed for accessing information of spotify-tracks so they can be played from youtube
   Spotify:

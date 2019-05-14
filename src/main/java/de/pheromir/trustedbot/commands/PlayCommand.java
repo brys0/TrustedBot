@@ -67,16 +67,11 @@ public class PlayCommand extends TrustedCommand {
 		}
 
 		// Load a suggestion
-		System.out.println(args.length);
-		System.out.println(gc.getSuggestions().containsKey(user));
-		System.out.println(args[0]);
-		System.out.println(args[0].matches("^([1-5]{1})$"));
 		if (gc.getSuggestions().containsKey(user) && args.length == 1 && args[0].matches("^([1-5]{1})$")) {
 			try {
 				int selSuggest = Integer.parseInt(args[0]);
-				PlayCommand.loadTrack(e,
-						String.format("https://youtube.com/watch?v=%s", gc.getSuggestions().get(user).get(selSuggest - 1).getId()),
-						false);
+				PlayCommand.loadTrack(e, String.format("https://youtube.com/watch?v=%s", gc.getSuggestions().get(user).get(selSuggest
+						- 1).getId()), false);
 				return true;
 			} catch (NumberFormatException ex) {
 				e.reply("An error occurred while parsing your input.");
@@ -86,15 +81,14 @@ public class PlayCommand extends TrustedCommand {
 
 		// Check if argument is spotify url
 		if (!Main.spotifyToken.equals("none")) {
-			if(e.getArgs().toLowerCase().contains("spotify.com/track/")) {
+			if (e.getArgs().toLowerCase().contains("spotify.com/track/")) {
 				Pattern p = Pattern.compile("track\\/(?<trackid>[0-9A-z]+)");
 				Matcher m = p.matcher(e.getArgs());
 				if (m.find()) {
 					String id = m.group("trackid");
 					if (id != null && !id.isEmpty()) {
-						Unirest.get("https://api.spotify.com/v1/tracks/{id}").routeParam("id", id)
-								.header("Authorization", "Bearer " + Main.spotifyToken)
-								.asJsonAsync(new Callback<JsonNode>() {
+						Unirest.get("https://api.spotify.com/v1/tracks/{id}").routeParam("id", id).header("Authorization", "Bearer "
+								+ Main.spotifyToken).asJsonAsync(new Callback<JsonNode>() {
 
 									@Override
 									public void cancelled() {
@@ -104,8 +98,7 @@ public class PlayCommand extends TrustedCommand {
 									@Override
 									public void completed(HttpResponse<JsonNode> arg0) {
 										String title = arg0.getBody().getObject().getString("name");
-										String artist = ((JSONObject) arg0.getBody().getObject().getJSONArray("artists")
-												.get(0)).getString("name");
+										String artist = ((JSONObject) arg0.getBody().getObject().getJSONArray("artists").get(0)).getString("name");
 
 										try {
 											printAndAddSuggestions(getVideoSuggestions(artist + " " + title), e);
@@ -130,11 +123,11 @@ public class PlayCommand extends TrustedCommand {
 				e.reply("Currently only tracks (not playlists) from spotify are supported.\n(spotify.com/track/TRACKID)");
 				return false;
 			}
-			
+
 		}
-		
+
 		Matcher urlMatcher = compiledPattern.matcher(e.getArgs());
-		if(!urlMatcher.find()) {
+		if (!urlMatcher.find()) {
 			try {
 				printAndAddSuggestions(getVideoSuggestions(e.getArgs()), e);
 				return true;
@@ -144,13 +137,10 @@ public class PlayCommand extends TrustedCommand {
 				return false;
 			}
 		}
-		
+
 		loadTrack(e, e.getArgs().replaceAll("--playlist", ""), e.getArgs().contains("--playlist"));
 		return true;
 	}
-	
-	
-	
 
 	public static void loadTrack(CommandEvent e, String toLoad, boolean loadPlaylist) {
 		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
@@ -216,7 +206,6 @@ public class PlayCommand extends TrustedCommand {
 				new HttpRequestInitializer() {
 
 					public void initialize(HttpRequest request) throws IOException {
-
 					}
 				}).setApplicationName("TrustedBot").build();
 
@@ -239,17 +228,16 @@ public class PlayCommand extends TrustedCommand {
 		m.setColor(e.getGuild().getSelfMember().getColor());
 		ArrayList<Suggestion> suggests = new ArrayList<>();
 		for (int i = 0; i < (videoList.size() >= 5 ? 5 : videoList.size()); i++) {
-			suggests.add(
-					new Suggestion(videoList.get(i).getSnippet().getTitle(), videoList.get(i).getId().getVideoId()));
+			suggests.add(new Suggestion(videoList.get(i).getSnippet().getTitle(),
+					videoList.get(i).getId().getVideoId()));
 			m.appendDescription("**[" + (i + 1) + "]** " + videoList.get(i).getSnippet().getTitle() + " *["
 					+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId()))
 					+ "]*\n\n");
 		}
 		Main.getGuildConfig(e.getGuild()).getSuggestions().put(e.getAuthor(), suggests);
-		Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(), e.getAuthor()), 5,
-				TimeUnit.MINUTES);
-		m.setFooter("Select track: !play [Nr] (Suggestions are valid for 5 min)",
-				e.getJDA().getSelfUser().getAvatarUrl());
+		Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(),
+				e.getAuthor()), 5, TimeUnit.MINUTES);
+		m.setFooter("Select track: !play [Nr] (Suggestions are valid for 5 min)", e.getJDA().getSelfUser().getAvatarUrl());
 		mes.setEmbed(m.build());
 		e.reply(mes.build());
 	}
