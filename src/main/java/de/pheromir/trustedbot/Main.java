@@ -53,14 +53,12 @@ import de.pheromir.trustedbot.commands.ForwardCommand;
 import de.pheromir.trustedbot.commands.GoogleCommand;
 import de.pheromir.trustedbot.commands.ImportCommand;
 import de.pheromir.trustedbot.commands.NumberFactCommand;
-import de.pheromir.trustedbot.commands.PauseCommand;
 import de.pheromir.trustedbot.commands.PlayCommand;
 import de.pheromir.trustedbot.commands.PlayingCommand;
 import de.pheromir.trustedbot.commands.PrefixCommand;
 import de.pheromir.trustedbot.commands.QueueCommand;
 import de.pheromir.trustedbot.commands.R6Command;
 import de.pheromir.trustedbot.commands.RedditCommand;
-import de.pheromir.trustedbot.commands.ResumeCommand;
 import de.pheromir.trustedbot.commands.RewindCommand;
 import de.pheromir.trustedbot.commands.SeekCommand;
 import de.pheromir.trustedbot.commands.SetCreditsCommand;
@@ -166,7 +164,7 @@ public class Main {
 		// Owner Commands + Settings
 		cbuilder.addCommands(new StatusCommand(), new StatsCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand(), new ToggleCommand());
 		// Music
-		cbuilder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PauseCommand(), new ResumeCommand(), new PlayingCommand(), new QueueCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand(), new ExportCommand(), new ImportCommand());
+		cbuilder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PlayingCommand(), new QueueCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand(), new ExportCommand(), new ImportCommand());
 		// Alias + Custom Commands
 		cbuilder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand());
 		// Subscription Commands

@@ -37,6 +37,7 @@ import de.pheromir.trustedbot.tasks.RemoveUserSuggestion;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
@@ -55,107 +56,101 @@ public class PlayCommand extends TrustedCommand {
 
 	@Override
 	protected boolean exec(CommandEvent e) {
-		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
-		AudioManager audioManager = e.getGuild().getAudioManager();
-		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
+		GuildConfig gc = Main.getGuildConfig(e.getGuild());
+		User user = e.getAuthor();
 
-		if (e.getArgs().isEmpty() && musicManager.player.isPaused()) {
-			musicManager.player.setPaused(false);
-			e.reply("Playback resumed.");
-			if (Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null) {
-				e.getGuild().getAudioManager().openAudioConnection(vc);
-			}
-			return true;
-		} else if (e.getArgs().isEmpty()) {
-			if (Main.getGuildConfig(e.getGuild()).scheduler.getRequestedTitles().isEmpty()) {
-				e.reply("Please specify a track. (URL / YouTube keywords)");
-				return false;
-			} else {
-				e.reply("Continue playing the current queue.");
-				audioManager.openAudioConnection(vc);
-				musicManager.scheduler.nextTrack();
+		// No arguments
+		if (args.length == 0) {
+			e.reply(String.format("Invalid Syntax. Usage: %s%s %s", gc.getPrefix(), this.name, this.arguments));
+			return false;
+		}
+
+		// Load a suggestion
+		if (gc.getSuggestions().containsKey(user) && args.length == 1 && args[0].matches("^([1-5])$")) {
+			try {
+				int selSuggest = Integer.parseInt(args[0]);
+				PlayCommand.loadTrack(e,
+						String.format("https://youtube.com/watch?v=%s", gc.getSuggestions().get(user).get(selSuggest)),
+						false);
 				return true;
+			} catch (NumberFormatException ex) {
+				e.reply("An error occurred while parsing your input.");
+				return false;
 			}
 		}
 
-		String toLoad = "";
-
-		if (musicManager.getSuggestions().containsKey(e.getAuthor()) && (e.getArgs().equalsIgnoreCase("1")
-				|| e.getArgs().equalsIgnoreCase("2") || e.getArgs().equalsIgnoreCase("3")
-				|| e.getArgs().equalsIgnoreCase("4") || e.getArgs().equalsIgnoreCase("5"))) {
-			int nr = Integer.parseInt(e.getArgs());
-			if (nr <= musicManager.getSuggestions().get(e.getAuthor()).size()) {
-				toLoad = "http://youtube.com/watch?v="
-						+ musicManager.getSuggestions().get(e.getAuthor()).get(nr - 1).getId();
-			}
-		}
-
-		if(!Main.spotifyToken.equals("none")) {
+		// Check if argument is spotify url
+		if (!Main.spotifyToken.equals("none")) {
 			if(e.getArgs().toLowerCase().contains("spotify.com/track/")) {
 				Pattern p = Pattern.compile("track\\/(?<trackid>[0-9A-z]+)");
 				Matcher m = p.matcher(e.getArgs());
-				if(m.find()) {
+				if (m.find()) {
 					String id = m.group("trackid");
-					if(id != null && !id.isEmpty()) {
-						Unirest.get("https://api.spotify.com/v1/tracks/{id}").routeParam("id", id).header("Authorization", "Bearer "+Main.spotifyToken).asJsonAsync(new Callback<JsonNode>() {
+					if (id != null && !id.isEmpty()) {
+						Unirest.get("https://api.spotify.com/v1/tracks/{id}").routeParam("id", id)
+								.header("Authorization", "Bearer " + Main.spotifyToken)
+								.asJsonAsync(new Callback<JsonNode>() {
 
-							@Override
-							public void cancelled() {
-							}
+									@Override
+									public void cancelled() {
+										e.reply("Getting track information from spotify has been cancelled.");
+									}
 
-							@Override
-							public void completed(HttpResponse<JsonNode> arg0) {
-								String title = arg0.getBody().getObject().getString("name");
-								String artist = ((JSONObject)arg0.getBody().getObject().getJSONArray("artists").get(0)).getString("name");
-								
-								try {
-									printAndAddSuggestions(getVideoSuggestions(artist+" "+title), e);
-								} catch (IOException e1) {
-									Main.LOG.error("", e1);
-									
-								}
-								return;
-							}
+									@Override
+									public void completed(HttpResponse<JsonNode> arg0) {
+										String title = arg0.getBody().getObject().getString("name");
+										String artist = ((JSONObject) arg0.getBody().getObject().getJSONArray("artists")
+												.get(0)).getString("name");
 
-							@Override
-							public void failed(UnirestException arg0) {
-							}
-							
-						});
+										try {
+											printAndAddSuggestions(getVideoSuggestions(artist + " " + title), e);
+										} catch (IOException e1) {
+											Main.LOG.error("", e1);
+											e.reply("An error occurred while getting track information from spotify.");
+										}
+										return;
+									}
+
+									@Override
+									public void failed(UnirestException ex) {
+										Main.LOG.error("Spotify Track fetch failed: ", ex);
+										e.reply("An error occurred while getting track information from spotify.");
+									}
+
+								});
 						return true;
 					}
 				}
-			
-			} else if(e.getArgs().toLowerCase().contains("spotify.com")) {
+			} else if (e.getArgs().toLowerCase().contains("spotify.com")) {
 				e.reply("Currently only tracks (not playlists) from spotify are supported.\n(spotify.com/track/TRACKID)");
 				return false;
 			}
-		}
-
-		if (toLoad.equals("")) {
-			Matcher matcher = compiledPattern.matcher(e.getArgs());
-			if (!matcher.find()) {
-				try {
-					printAndAddSuggestions(getVideoSuggestions(e.getArgs()), e);
-					return true;
-				} catch (IOException e1) {
-					Main.LOG.error("", e1);
-					e.reply("An error occurred.");
-					return true;
-				}
-
-			} else {
-				toLoad = matcher.group();
-			}
-		}
-		musicManager.player.setPaused(false);
-		final boolean loadPlaylist;
-		if(e.getArgs().contains("--playlist")) {
-			loadPlaylist = true;
-		}  else {
-			loadPlaylist = false;
+			
 		}
 		
+		Matcher urlMatcher = compiledPattern.matcher(e.getArgs());
+		if(!urlMatcher.find()) {
+			try {
+				printAndAddSuggestions(getVideoSuggestions(e.getArgs()), e);
+				return true;
+			} catch (IOException ex) {
+				Main.LOG.error("Error printing music suggestions: ", ex);
+				e.reply("An error occurred while getting suggestions.");
+				return false;
+			}
+		}
+		
+		loadTrack(e, e.getArgs().replaceAll("--playlist", ""), e.getArgs().contains("--playlist"));
+		return true;
+	}
+	
+	
+	
+
+	public static void loadTrack(CommandEvent e, String toLoad, boolean loadPlaylist) {
+		VoiceChannel vc = e.getMember().getVoiceState().getChannel();
+		AudioManager audioManager = e.getGuild().getAudioManager();
+		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
 		Main.playerManager.loadItemOrdered(musicManager, toLoad, new AudioLoadResultHandler() {
 
 			@Override
@@ -182,12 +177,12 @@ public class PlayCommand extends TrustedCommand {
 					firstTrack = playlist.getTracks().get(0);
 				}
 				audioManager.openAudioConnection(vc);
-				if(loadPlaylist) {
+				if (loadPlaylist) {
 					StringBuilder sb = new StringBuilder();
 					playlist.getTracks().forEach(track -> {
 						musicManager.scheduler.queue(track, e.getAuthor());
 						sb.append("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration())
-						+ "] has been added to the queue.\n");
+								+ "] has been added to the queue.\n");
 					});
 					e.reply(sb.toString());
 				} else {
@@ -195,7 +190,7 @@ public class PlayCommand extends TrustedCommand {
 					e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration())
 							+ "] has been added to the queue.");
 				}
-				
+
 			}
 
 			@Override
@@ -209,7 +204,6 @@ public class PlayCommand extends TrustedCommand {
 			}
 
 		});
-		return true;
 	}
 
 	public static List<SearchResult> getVideoSuggestions(String search) throws IOException {
@@ -239,16 +233,17 @@ public class PlayCommand extends TrustedCommand {
 		m.setColor(e.getGuild().getSelfMember().getColor());
 		ArrayList<Suggestion> suggests = new ArrayList<>();
 		for (int i = 0; i < (videoList.size() >= 5 ? 5 : videoList.size()); i++) {
-			suggests.add(new Suggestion(videoList.get(i).getSnippet().getTitle(),
-					videoList.get(i).getId().getVideoId()));
+			suggests.add(
+					new Suggestion(videoList.get(i).getSnippet().getTitle(), videoList.get(i).getId().getVideoId()));
 			m.appendDescription("**[" + (i + 1) + "]** " + videoList.get(i).getSnippet().getTitle() + " *["
 					+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId()))
 					+ "]*\n\n");
 		}
 		Main.getGuildConfig(e.getGuild()).getSuggestions().put(e.getAuthor(), suggests);
-		Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(),
-				e.getAuthor()), 5, TimeUnit.MINUTES);
-		m.setFooter("Select track: !play [Nr] (Suggestions are valid for 5 min)", e.getJDA().getSelfUser().getAvatarUrl());
+		Executors.newScheduledThreadPool(1).schedule(new RemoveUserSuggestion(e.getGuild(), e.getAuthor()), 5,
+				TimeUnit.MINUTES);
+		m.setFooter("Select track: !play [Nr] (Suggestions are valid for 5 min)",
+				e.getJDA().getSelfUser().getAvatarUrl());
 		mes.setEmbed(m.build());
 		e.reply(mes.build());
 	}

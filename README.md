@@ -39,14 +39,12 @@ The default prefix for commands is `!`.
 | Google          | g                    | Everyone      | Send a google search URL                                             | !g Discord
 | Import          | -                    | Everyone      | Import a playlist from haste-/pastebin                               | !import https://hastebin.com/pasteId
 | NumberFact      | nf                   | Everyone      | Show a random fact about the given number (integers only)            | !nf 666
-| Pause           | -                    | DJ            | Pause the current track                                              | !pause
 | Play            | -                    | Everyone      | Add a track to the playlist                                          | !play never gonna give you up / !play https://www.youtube.com/watch?v=dQw4w9WgXcQ
 | Playing         | np                   | Everyone      | Shows the currently playing track                                    | !np
 | Prefix          | präfix               | Administrator | Change the command-prefix                                            | !prefix ~
 | Queue           | q, playlist          | Everyone      | Shows the playlist (max 10 tracks), !q clear to clear the Queue, !q repeat to repeat it | !q
 | R6              | -                    | Everyone      | Show the Rainbow Six Siege statistics of the specified user on uplay | !r6 TRST.Pheromir
 | Reddit          | -                    | Administrator | List/Enable/Disable the receiving of Reddit posts for the current channel | !reddit animemes new
-| Resume          | -                    | DJ            | Resume the current track                                             | !resume
 | Rewind          | -                    | DJ            | Rewind the current track                                             | !rewind 1:34
 | Seek            | -                    | DJ            | Set the playback time of the current track                           | !seek 4:04
 | SetCredits      | -                    | Administrator | Set the credits of a user                                            | !setcredits @Pheromir#1337 666
