@@ -72,7 +72,7 @@ public class MySQL {
 			st.executeUpdate();
 		} catch (SQLException e) {
 			Main.LOG.error("", e);
-			Main.LOG.error("Failed to send update "+query+".");
+			Main.LOG.error("Failed to send update " + query + ".");
 		} finally {
 			this.closeRessources(null, st);
 		}

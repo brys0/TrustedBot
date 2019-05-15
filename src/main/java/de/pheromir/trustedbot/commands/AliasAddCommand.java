@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 
 public class AliasAddCommand extends TrustedCommand {
@@ -12,25 +13,21 @@ public class AliasAddCommand extends TrustedCommand {
 		this.name = "aliasadd";
 		this.help = "Create an alias for a command";
 		this.arguments = "<alias> <command> <arguments>";
-		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
+		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.guildOnly = true;
 		this.category = new Category("Command Aliases");
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		String[] args = e.getArgs().split(" ");
-		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
-			args = new String[0];
-
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		if (args.length < 2) {
-			e.reply("Syntaxerror. Usage: !" + name + " <alias> <command> [arguments]");
+			e.reply(usage);
 			return false;
 		}
 
 		String name = args[0].toLowerCase();
 		if (Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name))
-				|| Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
+				|| gc.getCustomCommands().containsKey(name)) {
 			e.reply("There is already a command with that name.");
 			return false;
 		}
@@ -43,12 +40,12 @@ public class AliasAddCommand extends TrustedCommand {
 			}
 			arguments = sb.toString().trim();
 		}
-		if (Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
+		if (gc.getAliasCommands().containsKey(name)) {
 			e.reply("The alias `" + name + "` has been replaced.");
 		} else {
 			e.reply("The alias `" + name + "` has been created.");
 		}
-		Main.getGuildConfig(e.getGuild()).addAliasCommand(name, cmd, arguments);
+		gc.addAliasCommand(name, cmd, arguments);
 		return true;
 	}
 }

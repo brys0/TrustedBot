@@ -15,7 +15,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
 
 import org.json.JSONObject;
@@ -212,22 +211,6 @@ public class Main {
 			avatarTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				try {
 					jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).queue();
-					
-					/*	try {
-							BufferedImage bg = ImageIO.read(Unirest.get(Methods.getRandomLizardURL()).asBinary().getBody());
-							//BufferedImage bgBlur = Images.blur(Images.blur(Images.blur(Images.blur(Images.blur(Images.blur(bg))))));
-							BufferedImage servericon = Images.overlay(bg, Images.resize(overlay, Math.min(bg.getHeight(), bg.getWidth()), Math.min(bg.getHeight(), bg.getWidth())));
-							ByteArrayOutputStream os = new ByteArrayOutputStream();
-							ImageIO.write(servericon, "png", os);
-							InputStream is = new ByteArrayInputStream(os.toByteArray());
-							jda.getGuildById(392063800393728021L).getManager().setIcon(Icon.from(is)).queue();
-							
-						} catch (JSONException | IOException | HttpErrorException | InterruptedException
-								| ExecutionException | TimeoutException e) {
-							LOG.error("", e);
-						}
-					*/
-					
 				} catch (Exception e) {
 					LOG.error("Error updating RandomAvatar: ", e);
 				}
@@ -292,9 +275,6 @@ public class Main {
 		}
 
 		try {
-			
-			overlay = ImageIO.read(new File("discord-overlay.png"));
-			
 			cfg = yaml.load(configFile);
 			token = cfg.getString("Token");
 			adminId = cfg.getString("AdminID").replaceAll("[A-Za-z]+", "");

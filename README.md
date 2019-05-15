@@ -46,7 +46,7 @@ The default prefix for commands is `!`.
 | R6              | -                    | Everyone      | Show the Rainbow Six Siege statistics of the specified user on uplay | !r6 TRST.Pheromir
 | Reddit          | -                    | Administrator | List/Enable/Disable the receiving of Reddit posts for the current channel | !reddit animemes new
 | Rewind          | -                    | DJ            | Rewind the current track                                             | !rewind 1:34
-| Seek            | -                    | DJ            | Set the playback time of the current track                           | !seek 4:04
+| Seek            | goto                 | DJ            | Set the playback time of the current track                           | !seek 4:04
 | SetCredits      | -                    | Administrator | Set the credits of a user                                            | !setcredits @Pheromir#1337 666
 | Skip            | -                    | DJ            | Skip the current track or specify a track of the queue               | !skip / !skip 4
 | Stats           | -                    | Bot-Admin     | Show statistics of the Bot (Uptime, RAM-Usage)                       | !stats

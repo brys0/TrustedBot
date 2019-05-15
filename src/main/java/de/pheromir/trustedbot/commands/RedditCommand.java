@@ -31,9 +31,7 @@ public class RedditCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		final String[] args = getArgs();
-
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		if (args.length == 0) {
 			ArrayList<String> subreddits = (ArrayList<String>) GuildConfig.getRedditList().keySet().stream().filter(k -> GuildConfig.getRedditList().get(k).containsChannel(e.getChannel().getIdLong())).collect(Collectors.toList());
 			if (subreddits.isEmpty()) {
@@ -52,13 +50,12 @@ public class RedditCommand extends TrustedCommand {
 			}
 		}
 		if (args.length != 1 && args.length != 2) {
-			e.reply("Syntax error. Usage: `" + Main.getGuildConfig(e.getGuild()).getPrefix() + this.name + " "
-					+ this.arguments + "`");
+			e.reply("Syntax error. Usage: `" + gc.getPrefix() + this.name + " " + this.arguments + "`");
 			return false;
 		} else {
-			if (args.length == 2 && !args[1].equalsIgnoreCase("hot") && !args[1].equalsIgnoreCase("new") && !args[1].equalsIgnoreCase("best")) {
-				e.reply("Syntax error. Usage: `" + Main.getGuildConfig(e.getGuild()).getPrefix() + this.name + " "
-						+ this.arguments + "`");
+			if (args.length == 2 && !args[1].equalsIgnoreCase("hot") && !args[1].equalsIgnoreCase("new")
+					&& !args[1].equalsIgnoreCase("best")) {
+				e.reply("Syntax error. Usage: `" + gc.getPrefix() + this.name + " " + this.arguments + "`");
 				return false;
 			}
 			if (GuildConfig.getRedditList().containsKey(args[0].toLowerCase())
@@ -66,40 +63,38 @@ public class RedditCommand extends TrustedCommand {
 				GuildConfig.removeSubreddit(args[0].toLowerCase(), e.getChannel().getIdLong());
 				e.reply("Subreddit " + args[0].toLowerCase() + " is now disabled for this channel.");
 			} else {
-				Unirest.get("https://www.reddit.com/r/" + args[0]
-						+ "/hot/.json").asJsonAsync(new Callback<JsonNode>() {
+				Unirest.get("https://www.reddit.com/r/" + args[0] + "/hot/.json").asJsonAsync(new Callback<JsonNode>() {
 
-							@Override
-							public void completed(HttpResponse<JsonNode> response) {
-								if (response.getStatus() != 200) {
-									Main.LOG.error("Reddit-Existance-Checker received HTTP Code " + response.getStatus()
-											+ " for Subreddit " + args[0]);
-									return;
-								}
-								JSONObject jo = response.getBody().getObject();
-								if (jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children")
-										&& jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
-									e.reply("The specified subreddit does not exist. (Or an error occurred)");
-									return;
-								}
-								GuildConfig.addSubreddit(args[0].toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong(), args.length == 2
-										? RedditSubscription.SortType.valueOf(args[1].toUpperCase())
-										: SortType.HOT);
-								e.reply("Subreddit " + args[0].toLowerCase() + " is now enabled for this channel.");
-							}
+					@Override
+					public void completed(HttpResponse<JsonNode> response) {
+						if (response.getStatus() != 200) {
+							Main.LOG.error("Reddit-Existance-Checker received HTTP Code " + response.getStatus()
+									+ " for Subreddit " + args[0]);
+							return;
+						}
+						JSONObject jo = response.getBody().getObject();
+						if (jo.has("error") || (jo.has("data") && jo.getJSONObject("data").has("children")
+								&& jo.getJSONObject("data").getJSONArray("children").length() == 0)) {
+							e.reply("The specified subreddit does not exist. (Or an error occurred)");
+							return;
+						}
+						GuildConfig.addSubreddit(args[0].toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong(), args.length == 2
+								? RedditSubscription.SortType.valueOf(args[1].toUpperCase())
+								: SortType.HOT);
+						e.reply("Subreddit " + args[0].toLowerCase() + " is now enabled for this channel.");
+					}
 
-							@Override
-							public void failed(UnirestException e1) {
-								Main.LOG.error("Reddit-Existance-Checker for Subreddit " + args[0]
-										+ " failed: ", e);
-							}
+					@Override
+					public void failed(UnirestException e1) {
+						Main.LOG.error("Reddit-Existance-Checker for Subreddit " + args[0] + " failed: ", e);
+					}
 
-							@Override
-							public void cancelled() {
-								Main.LOG.error("Reddit-Existance-Checker for Subreddit " + args[0] + " cancelled.");
-							}
+					@Override
+					public void cancelled() {
+						Main.LOG.error("Reddit-Existance-Checker for Subreddit " + args[0] + " cancelled.");
+					}
 
-						});
+				});
 			}
 			return true;
 		}

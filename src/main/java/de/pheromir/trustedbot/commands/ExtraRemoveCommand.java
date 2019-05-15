@@ -7,6 +7,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.entities.User;
 
 public class ExtraRemoveCommand extends TrustedCommand {
@@ -20,11 +21,7 @@ public class ExtraRemoveCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		String[] args = e.getArgs().split(" ");
-		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
-			args = new String[0];
-
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		for (String arg : args) {
 			Pattern p = Pattern.compile("(\\d+)");
 			Matcher m = p.matcher(arg);

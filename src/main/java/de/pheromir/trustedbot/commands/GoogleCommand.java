@@ -7,6 +7,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 
 public class GoogleCommand extends TrustedCommand {
@@ -23,7 +24,7 @@ public class GoogleCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		String url;
 		try {
 			url = String.format(BASE_URL, URLEncoder.encode(e.getArgs(), "UTF-8"));

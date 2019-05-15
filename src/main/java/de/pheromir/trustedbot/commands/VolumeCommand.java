@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 
 public class VolumeCommand extends TrustedCommand {
 
@@ -17,9 +18,9 @@ public class VolumeCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		if (e.getArgs().isEmpty()) {
-			e.reply("Current volume: " + Main.getGuildConfig(e.getGuild()).player.getVolume());
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		if (args.length == 0) {
+			e.reply("Current volume: " + gc.player.getVolume());
 			return false;
 		}
 		if (!Main.getExtraUsers().contains(e.getAuthor().getIdLong())) {
@@ -27,22 +28,22 @@ public class VolumeCommand extends TrustedCommand {
 					+ "You can control the volume in your discord-client by rightclicking me.");
 			return false;
 		}
-		if(!Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())) {
+		if (!gc.getDJs().contains(e.getAuthor().getIdLong())) {
 			e.reply("You need DJ permissions to use this command.");
 			return false;
 		}
 
 		int vol = 100;
 		try {
-			vol = Integer.parseInt(e.getArgs());
+			vol = Integer.parseInt(args[0]);
 			if (vol < 1 || vol > 100) {
-				throw new NumberFormatException("Volume out of range. (1-100)");
+				throw new NumberFormatException();
 			}
 		} catch (NumberFormatException ex) {
 			e.reply("Invalid value. Please specify a value between 1-100.");
 			return false;
 		}
-		Main.getGuildConfig(e.getGuild()).setVolume(vol);
+		gc.setVolume(vol);
 		e.reactSuccess();
 		return true;
 	}

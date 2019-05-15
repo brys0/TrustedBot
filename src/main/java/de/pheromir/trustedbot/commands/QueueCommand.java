@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
@@ -25,12 +24,12 @@ public class QueueCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		GuildConfig musicManager = Main.getGuildConfig(e.getGuild());
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		GuildConfig musicManager = gc;
 		ArrayList<QueueTrack> titles = musicManager.scheduler.getRequestedTitles();
 
 		if (e.getArgs().equalsIgnoreCase("clear")) {
-			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
+			if (gc.getDJs().contains(e.getAuthor().getIdLong())
 					|| e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				musicManager.scheduler.clearQueue();
 				e.reactSuccess();
@@ -39,7 +38,7 @@ public class QueueCommand extends TrustedCommand {
 		}
 
 		if (e.getArgs().equalsIgnoreCase("repeat")) {
-			if (Main.getGuildConfig(e.getGuild()).getDJs().contains(e.getAuthor().getIdLong())
+			if (gc.getDJs().contains(e.getAuthor().getIdLong())
 					|| e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				musicManager.scheduler.setRepeat(!musicManager.scheduler.getRepeat());
 				e.reply(musicManager.scheduler.getRepeat() ? "The queue is now repeating."

@@ -12,6 +12,7 @@ import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -32,7 +33,11 @@ public class UrbanDictionaryCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		if (args.length == 0) {
+			e.reply(usage);
+			return false;
+		}
 		Unirest.get(BASE_URL).routeParam("sw", e.getArgs()).asJsonAsync(new Callback<JsonNode>() {
 
 			@Override
@@ -55,8 +60,10 @@ public class UrbanDictionaryCommand extends TrustedCommand {
 						String def = ja.getJSONObject(i).getString("definition");
 						String ex = ja.getJSONObject(i).getString("example");
 						eb.appendDescription("**[" + (i + 1) + "]**\n**Definition:** "
-								+ def.substring(0, def.length()>200?197:def.length()) + (def.length()>200?"...":"") + "\n**Example:** "
-								+ ex.substring(0, ex.length()>200?197:ex.length()) + (ex.length()>200?"...":"") +"\n\n");
+								+ def.substring(0, def.length() > 200 ? 197 : def.length())
+								+ (def.length() > 200 ? "..." : "") + "\n**Example:** "
+								+ ex.substring(0, ex.length() > 200 ? 197 : ex.length())
+								+ (ex.length() > 200 ? "..." : "") + "\n\n");
 					}
 					e.reply(eb.build());
 					return;

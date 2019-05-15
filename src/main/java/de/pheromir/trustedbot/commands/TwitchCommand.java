@@ -29,11 +29,7 @@ public class TwitchCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		String[] args = e.getArgs().split(" ");
-		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
-			args = new String[0];
-
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		if (args.length == 0) {
 			ArrayList<String> streams = (ArrayList<String>) GuildConfig.getTwitchList().keySet().stream().filter(k -> GuildConfig.getTwitchList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
 			if (streams.isEmpty()) {
@@ -50,8 +46,7 @@ public class TwitchCommand extends TrustedCommand {
 			}
 		}
 		if (args.length != 1) {
-			e.reply("Syntaxerror. Usage: `" + Main.getGuildConfig(e.getGuild()).getPrefix() + this.name
-					+ " <username>`");
+			e.reply(usage);
 			return false;
 		} else {
 			if (GuildConfig.getTwitchList().containsKey(e.getArgs().toLowerCase())

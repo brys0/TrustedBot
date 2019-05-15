@@ -10,6 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.music.QueueTrack;
 
 public class ExportCommand extends TrustedCommand {
@@ -22,12 +23,12 @@ public class ExportCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		StringBuilder sb = new StringBuilder();
-		if(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null) {
-			sb.append(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack().getInfo().uri + "\n");
+		if (gc.player.getPlayingTrack() != null) {
+			sb.append(gc.player.getPlayingTrack().getInfo().uri + "\n");
 		}
-		Main.getGuildConfig(e.getGuild()).scheduler.getRequestedTitles().stream().map(QueueTrack::getTrack).map(AudioTrack::getInfo).map(track -> track.uri).forEachOrdered(track -> sb.append(track
+		gc.scheduler.getRequestedTitles().stream().map(QueueTrack::getTrack).map(AudioTrack::getInfo).map(track -> track.uri).forEachOrdered(track -> sb.append(track
 				+ "\n"));
 		String tracks = sb.toString().substring(0, sb.length() - 1);
 		e.reply("Exporting playlist..");
@@ -39,13 +40,14 @@ public class ExportCommand extends TrustedCommand {
 					Main.LOG.warn("Received HTTP-Code " + response.getStatus() + " while exporting Playlist");
 					e.reply("Exporting playlist failed.");
 				} else {
-					e.reply("Exported Playlist: https://hastebin.com/" + response.getBody().getObject().getString("key") + ".trustedbot");
+					e.reply("Exported Playlist: https://hastebin.com/" + response.getBody().getObject().getString("key")
+							+ ".trustedbot");
 				}
 			}
 
 			@Override
 			public void failed(UnirestException ex) {
-				if(Main.pastebinKey.equalsIgnoreCase("none")) {
+				if (Main.pastebinKey.equalsIgnoreCase("none")) {
 					e.reply("Exporting playlist failed: " + ex.getLocalizedMessage());
 				} else {
 					e.reply("Export to Hastebin failed, trying Pastebin..");
@@ -54,7 +56,8 @@ public class ExportCommand extends TrustedCommand {
 						@Override
 						public void completed(HttpResponse<String> response) {
 							if (response.getStatus() != 200) {
-								Main.LOG.warn("Received HTTP-Code " + response.getStatus() + " while exporting Playlist to pastebin");
+								Main.LOG.warn("Received HTTP-Code " + response.getStatus()
+										+ " while exporting Playlist to pastebin");
 								e.reply("Exporting playlist failed: " + response.getStatusText());
 							} else {
 								e.reply("Exported Playlist: " + response.getBody());
@@ -70,7 +73,7 @@ public class ExportCommand extends TrustedCommand {
 						public void cancelled() {
 							e.reply("Exporting playlist cancelled.");
 						}
-						
+
 					});
 				}
 			}

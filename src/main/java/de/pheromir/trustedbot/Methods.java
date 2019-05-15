@@ -23,8 +23,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class Methods {
 
-	
-
 	/*
 	 * CONVERT TIMEMILLIS INTO A HH:mm:ss STRING
 	 */
@@ -33,32 +31,32 @@ public class Methods {
 		if (millis == Long.MAX_VALUE || millis == 0L)
 			return "Stream";
 		long days = TimeUnit.MILLISECONDS.toDays(millis);
-        millis -= TimeUnit.DAYS.toMillis(days);
-        long hours = TimeUnit.MILLISECONDS.toHours(millis);
-        millis -= TimeUnit.HOURS.toMillis(hours);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-        millis -= TimeUnit.MINUTES.toMillis(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-        if(days > 0)
-        	return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
+		millis -= TimeUnit.DAYS.toMillis(days);
+		long hours = TimeUnit.MILLISECONDS.toHours(millis);
+		millis -= TimeUnit.HOURS.toMillis(hours);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+		millis -= TimeUnit.MINUTES.toMillis(minutes);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+		if (days > 0)
+			return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
 		if (hours > 0)
 			return String.format("%02d:%02d:%02d", hours, minutes, seconds);
 		else
 			return String.format("%02d:%02d", minutes, seconds);
 	}
-	
+
 	public static String getTimeString2(long millis) {
 		if (millis == Long.MAX_VALUE || millis == 0L)
 			return "Stream";
 		long days = TimeUnit.MILLISECONDS.toDays(millis);
-        millis -= TimeUnit.DAYS.toMillis(days);
-        long hours = TimeUnit.MILLISECONDS.toHours(millis);
-        millis -= TimeUnit.HOURS.toMillis(hours);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-        millis -= TimeUnit.MINUTES.toMillis(minutes);
-        minutes++;
-        if(days > 0)
-        	return String.format("%02d:%02d:%02d", days, hours, minutes);
+		millis -= TimeUnit.DAYS.toMillis(days);
+		long hours = TimeUnit.MILLISECONDS.toHours(millis);
+		millis -= TimeUnit.HOURS.toMillis(hours);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+		millis -= TimeUnit.MINUTES.toMillis(minutes);
+		minutes++;
+		if (days > 0)
+			return String.format("%02d:%02d:%02d", days, hours, minutes);
 		if (hours > 0)
 			return String.format("%02d:%02d", hours, minutes);
 		else
@@ -73,7 +71,7 @@ public class Methods {
 	 */
 
 	static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^(\\d?\\d)(?::([0-5]?\\d))?(?::([0-5]?\\d))?$");
-	
+
 	public static long parseTimeString(String str) throws NumberFormatException {
 		long millis = 0;
 		long seconds = 0;
@@ -144,7 +142,7 @@ public class Methods {
 		}
 		return 0;
 	}
-	
+
 	@Nullable
 	public static String getRandomAvatarURL() {
 		try {

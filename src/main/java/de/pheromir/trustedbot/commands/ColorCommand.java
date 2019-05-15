@@ -10,6 +10,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import de.pheromir.trustedbot.ButtonMenu;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 
 public class ColorCommand extends TrustedCommand {
@@ -26,7 +27,7 @@ public class ColorCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		ButtonMenu menu = new ButtonMenu.Builder().setChoices("\u2764", "\ud83d\udd36", "\ud83d\udc9b", "\ud83d\udc9a", "\ud83d\udc99", "\ud83d\udc9c", "\ud83d\udda4", "\u274C").setUsers(e.getAuthor()).setText("Choose a color for your name, "
 				+ e.getMember().getAsMention()).setEventWaiter(this.waiter).setTimeout(5, TimeUnit.MINUTES).setAction(action -> {
 					String roleName = "";

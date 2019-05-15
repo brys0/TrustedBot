@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 
 public class TextCmdAddCommand extends TrustedCommand {
@@ -13,24 +14,20 @@ public class TextCmdAddCommand extends TrustedCommand {
 		this.help = "Create a custom text-command.";
 		this.arguments = "<command> <response>";
 		this.guildOnly = true;
-		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
+		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.category = new Category("Custom Commands");
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		String[] args = e.getArgs().split(" ");
-		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
-			args = new String[0];
-		
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		if (args.length < 2) {
-			e.reply("Syntaxerror. Usage: !" + name + " <command> <response>");
+			e.reply(usage);
 			return false;
 		}
 
 		String name = args[0].toLowerCase();
 		if (Main.commandClient.getCommands().stream().anyMatch(c -> c.isCommandFor(name))
-				|| Main.getGuildConfig(e.getGuild()).getAliasCommands().containsKey(name)) {
+				|| gc.getAliasCommands().containsKey(name)) {
 			e.reply("There is already a command with that name.");
 			return false;
 		}
@@ -42,12 +39,12 @@ public class TextCmdAddCommand extends TrustedCommand {
 			}
 			arguments = sb.toString().trim();
 		}
-		if (Main.getGuildConfig(e.getGuild()).getCustomCommands().containsKey(name)) {
+		if (gc.getCustomCommands().containsKey(name)) {
 			e.reply("The text-command `" + name + "` has been replaced.");
 		} else {
 			e.reply("The text-command `" + name + "` has been created.");
 		}
-		Main.getGuildConfig(e.getGuild()).addCustomCommand(name, arguments);
+		gc.addCustomCommand(name, arguments);
 		return true;
 	}
 }

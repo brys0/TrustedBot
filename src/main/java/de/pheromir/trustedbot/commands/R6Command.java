@@ -8,6 +8,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.r6stats.RainbowSixStats;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -22,7 +23,11 @@ public class R6Command extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		if (args.length == 0) {
+			e.reply(usage);
+			return false;
+		}
 		try {
 			e.getChannel().sendTyping().complete();
 			RainbowSixStats stats = new RainbowSixStats(e.getArgs().replaceAll("[^\\w\\d_\\.-]", ""));

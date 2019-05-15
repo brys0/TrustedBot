@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 
@@ -22,9 +22,9 @@ public class SetCreditsCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		if(args.length != 2) {
-			e.reply("Invalid Syntax. Usage: " + Main.getGuildConfig(e.getGuild()).getPrefix() + " " + this.name + " " + this.arguments);
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		if (args.length != 2) {
+			e.reply(usage);
 			return false;
 		}
 		Pattern p = Pattern.compile("(\\d+)");
@@ -46,7 +46,7 @@ public class SetCreditsCommand extends TrustedCommand {
 				e.reply("Invalid amount.");
 				return false;
 			}
-			Main.getGuildConfig(e.getGuild()).setUserCredits(mem.getUser().getIdLong(), amount);
+			gc.setUserCredits(mem.getUser().getIdLong(), amount);
 			e.reply(mem.getEffectiveName() + "'s credits have been set to " + amount + ".");
 			return true;
 		} else {

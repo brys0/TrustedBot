@@ -56,13 +56,12 @@ public class PlayCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		GuildConfig gc = Main.getGuildConfig(e.getGuild());
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		User user = e.getAuthor();
 
 		// No arguments
 		if (args.length == 0) {
-			e.reply(String.format("Invalid Syntax. Usage: %s%s %s", gc.getPrefix(), this.name, this.arguments));
+			e.reply(usage);
 			return false;
 		}
 

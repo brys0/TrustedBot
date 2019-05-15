@@ -2,8 +2,8 @@ package de.pheromir.trustedbot.commands;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 
 public class AliasCmdsCommand extends TrustedCommand {
 
@@ -15,15 +15,15 @@ public class AliasCmdsCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		if(Main.getGuildConfig(e.getGuild()).getAliasCommands().size() < 1) {
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		if (gc.getAliasCommands().size() < 1) {
 			e.reply("There are currently no aliases.");
 			return false;
 		}
 
 		String cmds = "There are currently the following aliases: ";
 		StringBuilder sb = new StringBuilder();
-		for (String str : Main.getGuildConfig(e.getGuild()).getAliasCommands().keySet()) {
+		for (String str : gc.getAliasCommands().keySet()) {
 			sb.append("`" + str + "`, ");
 		}
 		e.reply(cmds + sb.toString().substring(0, sb.length() - 2));

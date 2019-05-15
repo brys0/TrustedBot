@@ -8,6 +8,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 
 public class NumberFactCommand extends TrustedCommand {
@@ -17,6 +18,7 @@ public class NumberFactCommand extends TrustedCommand {
 	public NumberFactCommand() {
 		this.name = "numberfact";
 		this.aliases = new String[] { "nf" };
+		this.arguments = "<Integer>";
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
 		this.help = "Shows a fact about the given number.";
 		this.guildOnly = false;
@@ -26,7 +28,11 @@ public class NumberFactCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		if (args.length == 0) {
+			e.reply(usage);
+			return false;
+		}
 		int n;
 		try {
 			n = Integer.parseInt(e.getArgs());
@@ -34,7 +40,7 @@ public class NumberFactCommand extends TrustedCommand {
 				throw new NumberFormatException();
 			}
 		} catch (NumberFormatException e1) {
-			e.reply("Invalid number.");
+			e.reply(usage);
 			return false;
 		}
 		Unirest.get(BASE_URL).routeParam("n", n + "").asStringAsync(new Callback<String>() {

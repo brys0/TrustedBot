@@ -5,13 +5,13 @@ import java.util.regex.Pattern;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 
 public class CreditsCommand extends TrustedCommand {
-	
+
 	public CreditsCommand() {
 		this.name = "credits";
 		this.help = "Show your Credits";
@@ -20,8 +20,8 @@ public class CreditsCommand extends TrustedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		if(!e.getArgs().isEmpty() && e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		if (!e.getArgs().isEmpty() && e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			Pattern p = Pattern.compile("(\\d+)");
 			Matcher m = p.matcher(e.getArgs());
 			if (!m.find()) {
@@ -34,10 +34,11 @@ public class CreditsCommand extends TrustedCommand {
 				e.reply("The specified user couldn't be found.");
 				return false;
 			}
-			e.reply(mem.getEffectiveName()+" has **" + Main.getGuildConfig(e.getGuild()).getUserCredits(mem.getUser().getIdLong()) + "** credits.");
+			e.reply(mem.getEffectiveName() + " has **" + gc.getUserCredits(mem.getUser().getIdLong()) + "** credits.");
 			return true;
 		} else {
-			e.reply(e.getMember().getEffectiveName()+", you have **" + Main.getGuildConfig(e.getGuild()).getUserCredits(e.getMember().getUser().getIdLong()) + "** credits.");
+			e.reply(e.getMember().getEffectiveName() + ", you have **"
+					+ gc.getUserCredits(e.getMember().getUser().getIdLong()) + "** credits.");
 			return true;
 		}
 	}

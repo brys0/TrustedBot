@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 
@@ -16,17 +16,13 @@ public class DJRemoveCommand extends TrustedCommand {
 		this.name = "djremove";
 		this.help = "Remove DJ permissions of the specified user.";
 		this.arguments = "<User-Mention>";
-		this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};
+		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.guildOnly = true;
 		this.category = new Category("Music");
 	}
 
 	@Override
-	protected boolean exec(CommandEvent e) {
-		String[] args = e.getArgs().split(" ");
-		if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
-			args = new String[0];
-
+	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
 		Pattern p = Pattern.compile("(\\d+)");
 		for (String arg : args) {
 			Matcher m = p.matcher(arg);
@@ -37,12 +33,12 @@ public class DJRemoveCommand extends TrustedCommand {
 					e.reply("The specified user couldn't be found.");
 					continue;
 				}
-				if (!Main.getGuildConfig(e.getGuild()).getDJs().contains(Long.parseLong(id))) {
+				if (!gc.getDJs().contains(Long.parseLong(id))) {
 					e.reply(mem.getAsMention() + " is not a DJ.");
 					continue;
 				} else {
 					e.reply(mem.getAsMention() + " is no longer a DJ.");
-					Main.getGuildConfig(e.getGuild()).removeDJ(Long.parseLong(id));
+					gc.removeDJ(Long.parseLong(id));
 					continue;
 				}
 			} else {
