@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (C) 2019 Pheromir
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
 package de.pheromir.trustedbot.config;
 
 import java.sql.PreparedStatement;
@@ -93,9 +114,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(1, g.getId());
 			prep.setString(2, "!");
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
 			Main.LOG.error("Initialization failed: ", e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -110,9 +132,10 @@ public class GuildConfig implements GuildSettingsProvider {
 				djs.add(longID);
 				prep.execute();
 			}
-			sq.closeConnection();
 		} catch (SQLException e) {
 			Main.LOG.error("DJ add failed: ", e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -129,6 +152,8 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 		} catch (SQLException e) {
 			Main.LOG.error("DJ remove failed: ", e);
+		}  finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -146,9 +171,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setInt(1, volume);
 			prep.setString(2, g.getId());
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
 			Main.LOG.error("Volume set failed: ", e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -165,9 +191,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(1, prefix);
 			prep.setString(2, g.getId());
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
 			Main.LOG.error("Prefix set failed: ", e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -206,9 +233,7 @@ public class GuildConfig implements GuildSettingsProvider {
 				player.setVolume(volume);
 				cmdPrefix = res.getString("Prefix");
 			}
-			sql.closeConnection();
 		} catch (SQLException e) {
-			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -217,6 +242,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			} catch (SQLException e) {
 				Main.LOG.error("", e);
 			}
+			sql.closeConnection();
 		}
 	}
 
@@ -232,9 +258,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			while (res.next()) {
 				djs.add(Long.parseLong(res.getString("UserId")));
 			}
-			sql.closeConnection();
 		} catch (SQLException e) {
-			sql.closeConnection();
 			Main.LOG.error("Error downloading DJs: ", e);
 		} finally {
 			try {
@@ -243,6 +267,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			} catch (SQLException e) {
 				Main.LOG.error("Error downloading DJs: ", e);
 			}
+			sql.closeConnection();
 		}
 	}
 
@@ -258,9 +283,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			while (res.next()) {
 				credits.put(Long.parseLong(res.getString("UserId")), res.getLong("Amount"));
 			}
-			sql.closeConnection();
 		} catch (SQLException e) {
-			sql.closeConnection();
 			Main.LOG.error("Error downloading DJs: ", e);
 		} finally {
 			try {
@@ -269,6 +292,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			} catch (SQLException e) {
 				Main.LOG.error("Error downloading DJs: ", e);
 			}
+			sql.closeConnection();
 		}
 	}
 
@@ -287,10 +311,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(3, userId.toString());
 			prep.execute();
 			credits.put(userId, amount);
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("Set UserCredits failed: ", e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -302,10 +326,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(1, g.getId());
 			prep.setString(2, userId.toString());
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("Delete UserCredits failed: ", e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -318,12 +342,12 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(2, guildId.toString());
 			ResultSet res = prep.executeQuery();
 			boolean exists = res.next();
-			sq.closeConnection();
 			return exists;
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("Credit existance check failed: " + e);
 			return false;
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -349,10 +373,8 @@ public class GuildConfig implements GuildSettingsProvider {
 						credits.put(userId, res.getLong("Amount"));
 						break;
 					}
-					sql.closeConnection();
 					return credits.get(userId);
 				} catch (SQLException e) {
-					sql.closeConnection();
 					Main.LOG.error("", e);
 				} finally {
 					try {
@@ -361,6 +383,7 @@ public class GuildConfig implements GuildSettingsProvider {
 					} catch (SQLException e) {
 						Main.LOG.error("", e);
 					}
+					sql.closeConnection();
 				}
 			}
 		}
@@ -380,9 +403,7 @@ public class GuildConfig implements GuildSettingsProvider {
 				customCommands.put(res.getString("Name"), new CustomCommand(res.getString("Name"),
 						res.getString("Text"), g.getId()));
 			}
-			sql.closeConnection();
 		} catch (SQLException e) {
-			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -391,6 +412,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			} catch (SQLException e) {
 				Main.LOG.error("", e);
 			}
+			sql.closeConnection();
 		}
 	}
 
@@ -405,10 +427,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(3, guildId.toString());
 			customCommands.put(cc.getName(), cc);
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("CustomCommand add failed: ", e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -424,10 +446,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(2, guildId.toString());
 			customCommands.remove(name);
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("CustomCommand remove failed: ", e);
+		} finally {
+			sq.closeConnection();
 		}
 
 	}
@@ -449,9 +471,7 @@ public class GuildConfig implements GuildSettingsProvider {
 				aliasCommands.put(res.getString("Name"), new AliasCommand(res.getString("Name"),
 						res.getString("Command"), res.getString("Arguments"), g.getId()));
 			}
-			sql.closeConnection();
 		} catch (SQLException e) {
-			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -460,6 +480,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			} catch (SQLException e) {
 				Main.LOG.error("", e);
 			}
+			sql.closeConnection();
 		}
 	}
 
@@ -475,10 +496,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(4, guildId.toString());
 			aliasCommands.put(cc.getName(), cc);
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("AliasCommand add failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -494,10 +515,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(2, guildId.toString());
 			aliasCommands.remove(name);
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("AliasCommand remove failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 
 	}
@@ -528,10 +549,10 @@ public class GuildConfig implements GuildSettingsProvider {
 				twitch.put(twitchname, list);
 				prep.execute();
 			}
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("Twitch add failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -555,10 +576,10 @@ public class GuildConfig implements GuildSettingsProvider {
 				twitch.put(twitchname, list);
 				prep.execute();
 			}
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("Twitch remove failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -585,10 +606,10 @@ public class GuildConfig implements GuildSettingsProvider {
 				reddit.put(subreddit, rs);
 				prep.execute();
 			}
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("Reddit add failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -604,10 +625,10 @@ public class GuildConfig implements GuildSettingsProvider {
 				reddit.get(subreddit).removeChannel(channelID);
 				prep.execute();
 			}
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("Reddit remove failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -639,9 +660,7 @@ public class GuildConfig implements GuildSettingsProvider {
 					twitch.put(twitchname, list);
 				}
 			}
-			sql.closeConnection();
 		} catch (SQLException e) {
-			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -650,6 +669,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			} catch (SQLException e) {
 				Main.LOG.error("", e);
 			}
+			sql.closeConnection();
 		}
 	}
 
@@ -674,9 +694,7 @@ public class GuildConfig implements GuildSettingsProvider {
 					reddit.put(subreddit, rs);
 				}
 			}
-			sql.closeConnection();
 		} catch (SQLException e) {
-			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -685,6 +703,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			} catch (SQLException e) {
 				Main.LOG.error("", e);
 			}
+			sql.closeConnection();
 		}
 	}
 
@@ -714,12 +733,12 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(1, post.length() > 190 ? post.substring(0, 190) : post);
 			ResultSet res = prep.executeQuery();
 			boolean exists = res.next();
-			sq.closeConnection();
 			return exists;
 		} catch (SQLException e) {
 			Main.LOG.error("Checking Reddit history failed: " + e);
-			sq.closeConnection();
 			return false;
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
@@ -739,10 +758,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(1, guildId.toString());
 			prep.setString(2, cmd);
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("DisabledCommand add failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 
 	}
@@ -759,10 +778,10 @@ public class GuildConfig implements GuildSettingsProvider {
 			prep.setString(1, guildId.toString());
 			prep.setString(2, cmd);
 			prep.execute();
-			sq.closeConnection();
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("DisabledCommand remove failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 
 	}
@@ -787,9 +806,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			while (res.next()) {
 				disabledCommands.add(res.getString("Command"));
 			}
-			sql.closeConnection();
 		} catch (SQLException e) {
-			sql.closeConnection();
 			Main.LOG.error("", e);
 		} finally {
 			try {
@@ -798,6 +815,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			} catch (SQLException e) {
 				Main.LOG.error("", e);
 			}
+			sql.closeConnection();
 		}
 	}
 
@@ -808,11 +826,11 @@ public class GuildConfig implements GuildSettingsProvider {
 			PreparedStatement cb = sq.getConnection().prepareStatement("DELETE IGNORE FROM Guilds WHERE GuildId = ?");
 			cb.setString(1, guildId.toString());
 			cb.execute();
-			sq.closeConnection();
 			SettingsManager.guildConfigs.remove(this.guildId);
 		} catch (SQLException e) {
-			sq.closeConnection();
 			Main.LOG.error("General delete failed: " + e);
+		} finally {
+			sq.closeConnection();
 		}
 	}
 
