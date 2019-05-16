@@ -21,7 +21,6 @@
  ******************************************************************************/
 package de.pheromir.trustedbot;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -160,7 +159,6 @@ public class Main {
 	public static ScheduledFuture<?> rewardTask;
 	public static ScheduledFuture<?> avatarTask;
 	public static long exceptionAmount = 0;
-	public static BufferedImage overlay;
 
 	public static final String COMMAND_DISABLED = "This command is disabled in this guild.";
 
