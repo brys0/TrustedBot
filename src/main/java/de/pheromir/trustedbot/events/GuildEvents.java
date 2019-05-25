@@ -40,10 +40,9 @@ public class GuildEvents extends ListenerAdapter {
 
 	@Override
 	public void onGuildLeave(GuildLeaveEvent e) {
-		Main.getGuildConfig(e.getGuild()).delete();
 		SettingsManager.guildConfigs.remove(e.getGuild().getIdLong());
 	}
-
+	
 	@Override
 	public void onTextChannelDelete(TextChannelDeleteEvent e) {
 		long channelId = e.getChannel().getIdLong();
