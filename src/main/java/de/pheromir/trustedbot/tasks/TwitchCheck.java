@@ -83,6 +83,9 @@ public class TwitchCheck implements Runnable {
 									eb.addField("Viewers", Integer.toString(viewers), true);
 
 									for (Long chId : GuildConfig.getTwitchList().get(twitchname)) {
+										if(Main.jda.getTextChannelById(chId) == null) {
+											continue;
+										}
 										Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname
 												+ " is now live at " + url + " !").embed(eb.build()).complete();
 									}

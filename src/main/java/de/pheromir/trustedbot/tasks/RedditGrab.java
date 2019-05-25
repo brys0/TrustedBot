@@ -100,6 +100,9 @@ public class RedditGrab implements Runnable {
 										break;
 									}
 									TextChannel c = Main.jda.getTextChannelById(chId);
+									if(c == null) {
+										continue;
+									}
 
 									if (!GuildConfig.RedditPosthistoryContains(contentUrl)) {
 										if (contentUrl.contains(".jpg") || contentUrl.contains(".png")
