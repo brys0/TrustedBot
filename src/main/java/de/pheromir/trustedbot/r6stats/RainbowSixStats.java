@@ -101,7 +101,7 @@ public class RainbowSixStats {
 
 		c_kills = p_data.getInt(6);
 		c_deaths = p_data.getInt(7);
-		c_kd = Math.round(((double)c_kills / (c_deaths == 0.0 ? 1 : (double)c_deaths)) * 100.0)/100.0;
+		c_kd = Math.round(((double) c_kills / (c_deaths == 0.0 ? 1 : (double) c_deaths)) * 100.0) / 100.0;
 
 		int ranked_playtime = p_data.getInt(0);
 		int casual_playtime = p_data.getInt(5);
@@ -172,7 +172,7 @@ public class RainbowSixStats {
 	public double getRankedKDR() {
 		return r_kd;
 	}
-	
+
 	public int getCasualWins() {
 		return c_wins;
 	}

@@ -42,31 +42,31 @@ public class GuildEvents extends ListenerAdapter {
 	public void onGuildLeave(GuildLeaveEvent e) {
 		SettingsManager.guildConfigs.remove(e.getGuild().getIdLong());
 	}
-	
+
 	@Override
 	public void onTextChannelDelete(TextChannelDeleteEvent e) {
 		long channelId = e.getChannel().getIdLong();
 		GuildConfig.getTwitchList().entrySet().stream().filter(ent -> ent.getValue().contains(channelId)).forEach(ent -> GuildConfig.removeTwitchStream(ent.getKey(), channelId));
 		GuildConfig.getRedditList().entrySet().stream().filter(ent -> ent.getValue().containsChannel(channelId)).forEach(ent -> GuildConfig.removeSubreddit(ent.getKey(), channelId));
 	}
-	
+
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent e) {
 		Main.getGuildConfig(e.getGuild()).setUserCredits(e.getMember().getUser().getIdLong(), 0L);
 	}
 
-//	@Override
-//	public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
-//		GuildConfig gc = Main.getGuildConfig(e.getGuild());
-//		if (gc.getDJs().contains(e.getUser().getIdLong())) {
-//			gc.removeDJ(e.getUser().getIdLong());
-//		}
-//		if (Main.getExtraUsers().contains(e.getUser().getIdLong())) {
-//			Main.removeExtraUser(e.getUser().getIdLong());
-//		}
-//		gc.deleteUserCredits(e.getMember().getUser().getIdLong());
-//	}
-	
+	// @Override
+	// public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
+	// GuildConfig gc = Main.getGuildConfig(e.getGuild());
+	// if (gc.getDJs().contains(e.getUser().getIdLong())) {
+	// gc.removeDJ(e.getUser().getIdLong());
+	// }
+	// if (Main.getExtraUsers().contains(e.getUser().getIdLong())) {
+	// Main.removeExtraUser(e.getUser().getIdLong());
+	// }
+	// gc.deleteUserCredits(e.getMember().getUser().getIdLong());
+	// }
+
 	@Override
 	public void onGuildReady(GuildReadyEvent e) {
 		Main.getGuildConfig(e.getGuild());

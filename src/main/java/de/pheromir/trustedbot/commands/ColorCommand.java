@@ -45,6 +45,7 @@ public class ColorCommand extends TrustedCommand {
 		this.guildOnly = true;
 		this.botPermissions = new Permission[] { Permission.MANAGE_ROLES };
 		this.waiter = waiter;
+		this.category = new Category("Miscellaneous");
 	}
 
 	@Override

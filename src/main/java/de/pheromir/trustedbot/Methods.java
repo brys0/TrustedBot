@@ -125,14 +125,15 @@ public class Methods {
 		sql.queryUpdate(query);
 		sql.closeConnection();
 	}
-	
+
 	/*
-	 * CONVERT TIMESTRING INTO TIMEMILLIS 
-	 * Method Copyright (c) 2017 Frederik Ar. Mikkelsen
+	 * CONVERT TIMESTRING INTO TIMEMILLIS Method Copyright (c) 2017 Frederik Ar.
+	 * Mikkelsen
 	 * https://github.com/Frederikam/FredBoat/blob/dev/FredBoat/src/main/java/
 	 * fredboat/util/TextUtils.java
 	 */
 	static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^(\\d?\\d)(?::([0-5]?\\d))?(?::([0-5]?\\d))?$");
+
 	public static long parseTimeString(String str) throws NumberFormatException {
 		long millis = 0;
 		long seconds = 0;

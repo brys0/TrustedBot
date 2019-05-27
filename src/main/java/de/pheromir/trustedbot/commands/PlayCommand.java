@@ -147,8 +147,7 @@ public class PlayCommand extends TrustedCommand {
 			}
 
 		}
-		
-		
+
 		Matcher urlMatcher = compiledPattern.matcher(e.getArgs());
 		// Arguments not matching an URL -> Search on youtube
 		if (!urlMatcher.find()) {
@@ -161,7 +160,7 @@ public class PlayCommand extends TrustedCommand {
 				return false;
 			}
 		}
-		
+
 		// Load track(s) from given URL
 		loadTrack(e, e.getArgs().replaceAll("--playlist", ""), e.getArgs().contains("--playlist"));
 		return true;

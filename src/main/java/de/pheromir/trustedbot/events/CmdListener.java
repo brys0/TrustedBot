@@ -52,7 +52,7 @@ public class CmdListener implements CommandListener {
 				cmd = contentRaw.substring(Main.getGuildConfig(e.getGuild()).getPrefix().length(), contentRaw.length()).split(" ")[0];
 			}
 			if (gc.getAliasCommands().containsKey(cmd)) {
-				if(Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
+				if (Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
 					e.getChannel().sendMessage(Main.COMMAND_DISABLED).complete();
 					return;
 				}
@@ -68,7 +68,7 @@ public class CmdListener implements CommandListener {
 				}
 
 			} else if (gc.getCustomCommands().containsKey(cmd)) {
-				if(Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
+				if (Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
 					e.getChannel().sendMessage(Main.COMMAND_DISABLED).complete();;
 					return;
 				}

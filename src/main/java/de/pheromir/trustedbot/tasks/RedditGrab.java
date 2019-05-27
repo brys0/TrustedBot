@@ -91,7 +91,8 @@ public class RedditGrab implements Runnable {
 								EmbedBuilder emb = new EmbedBuilder();
 								emb.setAuthor(author);
 								emb.addField(new Field("Score", score + "", false));
-								emb.setFooter("/r/" + sub + " ("+sortType.name().toLowerCase()+")", Main.jda.getSelfUser().getAvatarUrl());
+								emb.setFooter("/r/" + sub + " (" + sortType.name().toLowerCase()
+										+ ")", Main.jda.getSelfUser().getAvatarUrl());
 								emb.setTitle(title.length() > 256 ? title.substring(0, 256) : title, link);
 								String thumbUrl = contentUrl.contains("v.redd.it") ? post.getString("thumbnail") : "";
 
@@ -100,7 +101,7 @@ public class RedditGrab implements Runnable {
 										break;
 									}
 									TextChannel c = Main.jda.getTextChannelById(chId);
-									if(c == null) {
+									if (c == null) {
 										continue;
 									}
 

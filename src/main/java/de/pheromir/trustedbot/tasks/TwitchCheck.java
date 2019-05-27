@@ -42,7 +42,7 @@ public class TwitchCheck implements Runnable {
 			if (Thread.interrupted()) {
 				break;
 			}
-			
+
 			Unirest.get("https://api.twitch.tv/kraken/streams/" + twitchname
 					+ "?stream_type=live").header("client-id", Main.twitchKey).asJsonAsync(new Callback<JsonNode>() {
 
@@ -83,7 +83,7 @@ public class TwitchCheck implements Runnable {
 									eb.addField("Viewers", Integer.toString(viewers), true);
 
 									for (Long chId : GuildConfig.getTwitchList().get(twitchname)) {
-										if(Main.jda.getTextChannelById(chId) == null) {
+										if (Main.jda.getTextChannelById(chId) == null) {
 											continue;
 										}
 										Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname

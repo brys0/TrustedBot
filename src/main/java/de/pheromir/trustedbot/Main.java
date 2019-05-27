@@ -77,6 +77,7 @@ import de.pheromir.trustedbot.commands.PlayingCommand;
 import de.pheromir.trustedbot.commands.PrefixCommand;
 import de.pheromir.trustedbot.commands.QueueCommand;
 import de.pheromir.trustedbot.commands.R6Command;
+import de.pheromir.trustedbot.commands.RandomServerIconCommand;
 import de.pheromir.trustedbot.commands.RedditCommand;
 import de.pheromir.trustedbot.commands.RewindCommand;
 import de.pheromir.trustedbot.commands.SeekCommand;
@@ -158,13 +159,14 @@ public class Main {
 	public static ScheduledFuture<?> twitchTask;
 	public static ScheduledFuture<?> rewardTask;
 	public static ScheduledFuture<?> avatarTask;
+	public static ScheduledFuture<?> serverIconTask;
 	public static long exceptionAmount = 0;
 
 	public static final String COMMAND_DISABLED = "This command is disabled in this guild.";
 
 	public static void main(String[] args) {
 		LOG.debug("Starting DiscordBot...");
-		
+
 		loadConfig();
 
 		Main.LOG.debug("AdminID: " + adminId);
@@ -198,7 +200,7 @@ public class Main {
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
 		// Misc
-		cbuilder.addCommands(new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new ColorCommand(waiter));
+		cbuilder.addCommands(new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new ColorCommand(waiter));
 
 		cbuilder.setLinkedCacheSize(0);
 		cbuilder.setListener(new CmdListener());
@@ -210,7 +212,7 @@ public class Main {
 
 		commandClient = cbuilder.build();
 		try {
-			/* - - - - - - - - - - -  BOT STARTEN  - - - - - - - - - - - - - - */
+			/* - - - - - - - - - - - BOT STARTEN - - - - - - - - - - - - - - */
 			jda = new JDABuilder(
 					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown(), waiter).setAutoReconnect(true).build();
 			jda.awaitReady();
@@ -226,7 +228,7 @@ public class Main {
 					jda.getGuilds().forEach(gld -> Main.getGuildConfig(gld).resetDailyRewards());
 				}
 			}, 1, 1, TimeUnit.MINUTES);
-			
+
 			avatarTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				try {
 					jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).queue();
@@ -234,7 +236,23 @@ public class Main {
 					LOG.error("Error updating RandomAvatar: ", e);
 				}
 			}, 0, 1, TimeUnit.HOURS);
-			
+
+			serverIconTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+				try {
+					jda.getGuilds().forEach(g -> {
+						if (getGuildConfig(g).getRandomServerIcon()) {
+							try {
+								g.getManager().setIcon(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).queue();
+							} catch (IOException | UnirestException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				} catch (Exception e) {
+					LOG.error("Error updating random ServerIcon: ", e);
+				}
+			}, 0, 1, TimeUnit.HOURS);
+
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
 				spotifyTask = Executors.newScheduledThreadPool(1);
 				spotifyTask.scheduleAtFixedRate(() -> {
@@ -268,13 +286,13 @@ public class Main {
 					});
 				}, 0, 3600, TimeUnit.SECONDS);
 			}
-			// - - - - - - - 
+			// - - - - - - -
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
 			if (e instanceof InterruptedException) {
-				LOG.error("Fehler beim Start des Bots:", e);
+				LOG.error("Error while starting the bot:", e);
 			} else {
-				LOG.error("Fehler beim Start des Bots: Bot-Token ungültig");
+				LOG.error("Error while starting the bot: Bot-Token invalid");
 			}
 			return;
 		}
@@ -305,7 +323,8 @@ public class Main {
 			extraPermissions = cfg.getLongList("ExtraPermissions");
 
 			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Guilds" + " (GuildId VARCHAR(64) PRIMARY KEY,"
-					+ " Volume INT NOT NULL DEFAULT 100," + " Prefix VARCHAR(16) NOT NULL DEFAULT \"!\");");
+					+ " Volume INT NOT NULL DEFAULT 100," + " Prefix VARCHAR(16) NOT NULL DEFAULT \"!\","
+					+ " RandomServerIcon BOOLEAN NOT NULL DEFAULT FALSE);");
 
 			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS DJs" + " (GuildId VARCHAR(64) NOT NULL,"
 					+ " UserId VARCHAR(64) NOT NULL,"
@@ -395,9 +414,10 @@ public class Main {
 		Category category = null;
 		for (Command command1 : commandClient.getCommands()) {
 			TrustedCommand command = (TrustedCommand) command1;
-			if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner()) &&
-					(!command.isGuildOnly() && event.getChannelType() == ChannelType.PRIVATE
-							|| (event.isFromType(ChannelType.TEXT) && event.getMember().hasPermission(command.getUserPermissions())
+			if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner())
+					&& (!command.isGuildOnly() && event.getChannelType() == ChannelType.PRIVATE
+							|| (event.isFromType(ChannelType.TEXT)
+									&& event.getMember().hasPermission(command.getUserPermissions())
 									&& !Main.getGuildConfig(event.getGuild()).isCommandDisabled(command.getName())))) {
 				if (!Objects.equals(category, command.getCategory())) {
 					category = command.getCategory();

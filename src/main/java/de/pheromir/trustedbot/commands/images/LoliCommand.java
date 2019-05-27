@@ -27,7 +27,7 @@ public class LoliCommand extends RandomImageCommand {
 
 	public LoliCommand() {
 		this.name = "loli";
-		this.help = "Shows a random loli picture. At least most of the time..";
+		this.help = "Shows a random loli picture. At least most of the time. (plz no ban discord)";
 		this.BASE_URL = "https://nekos.life/api/v2/img/ero";
 		this.jsonKey = "url";
 		this.nsfw = true;

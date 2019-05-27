@@ -39,5 +39,5 @@ public class RemoveUserSuggestion implements Runnable {
 	public void run() {
 		Main.getGuildConfig(g).getSuggestions().remove(user);
 	}
- 
+
 }

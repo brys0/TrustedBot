@@ -58,6 +58,7 @@ public class GuildConfig implements GuildSettingsProvider {
 	private HashMap<String, CustomCommand> customCommands;
 	private HashMap<String, AliasCommand> aliasCommands;
 	private String cmdPrefix;
+	private boolean randomServerIcon;
 
 	private static HashMap<String, List<Long>> twitch = new HashMap<>();
 	private static HashMap<String, RedditSubscription> reddit = new HashMap<>();
@@ -71,6 +72,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		this.g = g;
 		cmdPrefix = "!";
 		guildId = g.getIdLong();
+		randomServerIcon = false;
 		djs = new ArrayList<>();
 		volume = 100;
 		credits = new HashMap<>();
@@ -152,7 +154,7 @@ public class GuildConfig implements GuildSettingsProvider {
 			}
 		} catch (SQLException e) {
 			Main.LOG.error("DJ remove failed: ", e);
-		}  finally {
+		} finally {
 			sq.closeConnection();
 		}
 	}
@@ -208,7 +210,26 @@ public class GuildConfig implements GuildSettingsProvider {
 
 	public String getPrefix() {
 		return cmdPrefix;
+	}
 
+	public void setRandomServerIcon(boolean enabled) {
+		randomServerIcon = enabled;
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep = sq.getConnection().prepareStatement("UPDATE Guilds SET RandomServerIcon = ? WHERE GuildId = ?");
+			prep.setBoolean(1, enabled);
+			prep.setString(2, g.getId());
+			prep.execute();
+		} catch (SQLException e) {
+			Main.LOG.error("RandomServerIcon set failed: ", e);
+		} finally {
+			sq.closeConnection();
+		}
+	}
+
+	public boolean getRandomServerIcon() {
+		return randomServerIcon;
 	}
 
 	public HashMap<User, ArrayList<Suggestion>> getSuggestions() {
@@ -225,13 +246,14 @@ public class GuildConfig implements GuildSettingsProvider {
 		PreparedStatement state;
 		ResultSet res = null;
 		try {
-			state = sql.getConnection().prepareStatement("SELECT Volume, Prefix FROM Guilds WHERE GuildId = ?");
+			state = sql.getConnection().prepareStatement("SELECT Volume, Prefix, RandomServerIcon FROM Guilds WHERE GuildId = ?");
 			state.setString(1, g.getId());
 			res = state.executeQuery();
 			while (res.next()) {
 				volume = res.getInt("Volume");
 				player.setVolume(volume);
 				cmdPrefix = res.getString("Prefix");
+				randomServerIcon = res.getBoolean("RandomServerIcon");
 			}
 		} catch (SQLException e) {
 			Main.LOG.error("", e);
