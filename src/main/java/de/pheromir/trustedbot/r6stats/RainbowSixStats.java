@@ -21,6 +21,9 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.r6stats;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.naming.NameNotFoundException;
 
 import org.json.JSONArray;
@@ -35,6 +38,7 @@ public class RainbowSixStats {
 
 	private String apiUrl;
 	private String updatedAgo;
+	private Long updatedMillis;
 	private String uuid;
 	private String username;
 	private String p_user;
@@ -48,19 +52,39 @@ public class RainbowSixStats {
 	private String favAttacker;
 	private String favDefender;
 
+	// Ranked Stats
+	// Total
 	private int r_wins;
 	private int r_losses;
 	private double r_wlr;
 	private int r_kills;
 	private int r_deaths;
 	private double r_kd;
+	// Seasonal
+	private int rs_wins;
+	private int rs_losses;
+	private double rs_wlr;
+	private int rs_kills;
+	private int rs_deaths;
+	private double rs_kd;
 
+	// Casual Stats
+	// Total
 	private int c_wins;
 	private int c_losses;
 	private double c_wlr;
 	private int c_kills;
 	private int c_deaths;
 	private double c_kd;
+	// Seasonal
+	private int cs_wins;
+	private int cs_losses;
+	private double cs_wlr;
+	private int cs_kills;
+	private int cs_deaths;
+	private double cs_kd;
+	
+	private List<String> aliases;
 
 	// int[rank][mmr]
 	private int[][] seasons;
@@ -74,7 +98,7 @@ public class RainbowSixStats {
 		}
 		apiUrl = String.format("https://r6tab.com/api/player.php?p_id=%s", uuid);
 		seasons = new int[3][2];
-
+		aliases = new ArrayList<>();
 		JSONObject jo;
 		jo = Unirest.get(apiUrl).asJson().getBody().getObject();
 
@@ -85,15 +109,29 @@ public class RainbowSixStats {
 		currentMMR = jo.getInt("p_currentmmr");
 
 		JSONArray p_data = jo.getJSONArray("data");
+		JSONObject seasonal = jo.getJSONObject("seasonal");
+		if(jo.has("aliases")) {
+			JSONObject aliasesObj = jo.getJSONObject("aliases");
+			aliasesObj.keys().forEachRemaining(str -> aliases.add(aliasesObj.getString(str)));
+		}
 
-		r_wins = p_data.getInt(26);
-		r_losses = p_data.getInt(27);
+		r_wins = p_data.getInt(3);
+		r_losses = p_data.getInt(4);
 		r_wlr = Math.floor(((double) r_wins / (double) (r_wins + r_losses)) * 10000.0) / 100.0;
 		r_wlr = Double.isNaN(r_wlr) ? 0d : r_wlr;
 
 		r_kills = p_data.getInt(1);
 		r_deaths = p_data.getInt(2);
 		r_kd = (jo.getInt("kd") / 100.0);
+
+		rs_wins = seasonal.isNull("total_rankedwins") ? 0 : seasonal.getInt("total_rankedwins");
+		rs_losses = seasonal.isNull("total_rankedlosses") ? 0 : seasonal.getInt("total_rankedlosses");
+		rs_wlr = Math.floor(((double) rs_wins / (double) (rs_wins + rs_losses)) * 10000.0) / 100.0;
+		rs_wlr = Double.isNaN(rs_wlr) ? 0d : rs_wlr;
+
+		rs_kills = seasonal.isNull("total_rankedkills") ? 0 : seasonal.getInt("total_rankedkills");
+		rs_deaths = seasonal.isNull("total_rankeddeaths") ? 0 : seasonal.getInt("total_rankeddeaths");
+		rs_kd = Math.floor(((double) rs_kills / (double) (rs_deaths)) * 100.0) / 100.0;
 
 		c_wins = p_data.getInt(8);
 		c_losses = p_data.getInt(9);
@@ -103,6 +141,15 @@ public class RainbowSixStats {
 		c_kills = p_data.getInt(6);
 		c_deaths = p_data.getInt(7);
 		c_kd = Math.round(((double) c_kills / (c_deaths == 0.0 ? 1 : (double) c_deaths)) * 100.0) / 100.0;
+
+		cs_wins = seasonal.isNull("total_casualwins") ? 0 : seasonal.getInt("total_casualwins");
+		cs_losses = seasonal.isNull("total_casuallosses") ? 0 : seasonal.getInt("total_casuallosses");
+		cs_wlr = Math.floor(((double) cs_wins / (double) (cs_wins + cs_losses)) * 10000.0) / 100.0;
+		cs_wlr = Double.isNaN(cs_wlr) ? 0d : cs_wlr;
+
+		cs_kills = seasonal.isNull("total_casualkills") ? 0 : seasonal.getInt("total_casualkills");
+		cs_deaths = seasonal.isNull("total_casualdeaths") ? 0 : seasonal.getInt("total_casualdeaths");
+		cs_kd = Math.floor(((double) cs_kills / (double) (cs_deaths)) * 100.0) / 100.0;
 
 		int ranked_playtime = p_data.getInt(0);
 		int casual_playtime = p_data.getInt(5);
@@ -138,6 +185,7 @@ public class RainbowSixStats {
 		}
 
 		updatedAgo = jo.getString("updatedon").replaceAll("(<u>|</u>)", "");
+		updatedMillis = jo.getLong("utime") * 1000;
 
 		if (currentMMR == jo.getInt("p_EU_currentmmr")) {
 			mainRegion = "Europe";
@@ -206,6 +254,54 @@ public class RainbowSixStats {
 		return c_kd;
 	}
 
+	public int getRankedWinsSeasonal() {
+		return rs_wins;
+	}
+
+	public int getRankedLossesSeasonal() {
+		return rs_losses;
+	}
+
+	public double getRankedWinLoseRateSeasonal() {
+		return rs_wlr;
+	}
+
+	public int getRankedKillsSeasonal() {
+		return rs_kills;
+	}
+
+	public int getRankedDeathsSeasonal() {
+		return rs_deaths;
+	}
+
+	public double getRankedKDRSeasonal() {
+		return rs_kd;
+	}
+
+	public int getCasualWinsSeasonal() {
+		return cs_wins;
+	}
+
+	public int getCasualLossesSeasonal() {
+		return cs_losses;
+	}
+
+	public double getCasualWinLoseRateSeasonal() {
+		return cs_wlr;
+	}
+
+	public int getCasualKillsSeasonal() {
+		return cs_kills;
+	}
+
+	public int getCasualDeathsSeasonal() {
+		return cs_deaths;
+	}
+
+	public double getCasualKDRSeasonal() {
+		return cs_kd;
+	}
+
 	public int getCurrentRank() {
 		return currentRank;
 	}
@@ -256,6 +352,14 @@ public class RainbowSixStats {
 
 	public String getUpdatedAgo() {
 		return updatedAgo;
+	}
+
+	public Long getUpdatedMillis() {
+		return updatedMillis;
+	}
+	
+	public List<String> getAliases() {
+		return aliases;
 	}
 
 	public static String translateRank(int rankId) {
@@ -444,7 +548,7 @@ public class RainbowSixStats {
 				return "Tachanka";
 			case "5:5":
 				return "Bandit";
-			
+
 			default:
 				return "Unknown";
 		}
