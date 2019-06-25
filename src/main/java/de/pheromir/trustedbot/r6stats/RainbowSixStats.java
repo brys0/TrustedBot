@@ -24,13 +24,14 @@ package de.pheromir.trustedbot.r6stats;
 import javax.naming.NameNotFoundException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.Unirest;
 
 public class RainbowSixStats {
 
-	public static int currentSeason = 13;
+	public static int currentSeason = 14;
 
 	private String apiUrl;
 	private String updatedAgo;
@@ -115,17 +116,25 @@ public class RainbowSixStats {
 		seasons[0][1] = jo.getInt("p_maxmmr");
 
 		// 1 season before
-		if (jo.getString("season" + (currentSeason - 1)).split(":").length == 2) {
-			String[] tempSeason = jo.getString("season" + (currentSeason - 1)).split(":");
-			seasons[1][0] = Integer.parseInt(tempSeason[0]);
-			seasons[1][1] = Integer.parseInt(tempSeason[1]);
+		try {
+			if (jo.getString("season" + (currentSeason - 1)).split(":").length == 2) {
+				String[] tempSeason = jo.getString("season" + (currentSeason - 1)).split(":");
+				seasons[1][0] = Integer.parseInt(tempSeason[0]);
+				seasons[1][1] = Integer.parseInt(tempSeason[1]);
+			}
+		} catch (JSONException ex) {
+			seasons[1][0] = seasons[1][1] = -1;
 		}
 
 		// 2 seasons before
-		if (jo.getString("season" + (currentSeason - 2)).split(":").length == 2) {
-			String[] tempSeason = jo.getString("season" + (currentSeason - 2)).split(":");
-			seasons[2][0] = Integer.parseInt(tempSeason[0]);
-			seasons[2][1] = Integer.parseInt(tempSeason[1]);
+		try {
+			if (jo.getString("season" + (currentSeason - 2)).split(":").length == 2) {
+				String[] tempSeason = jo.getString("season" + (currentSeason - 2)).split(":");
+				seasons[2][0] = Integer.parseInt(tempSeason[0]);
+				seasons[2][1] = Integer.parseInt(tempSeason[1]);
+			}
+		} catch (JSONException ex) {
+			seasons[2][0] = seasons[2][1] = -1;
 		}
 
 		updatedAgo = jo.getString("updatedon").replaceAll("(<u>|</u>)", "");
@@ -324,6 +333,8 @@ public class RainbowSixStats {
 				return "Wind Bastion";
 			case 13:
 				return "Burnt Horizon";
+			case 14:
+				return "Phantom Sight";
 			default:
 				return "Unknown";
 		}
@@ -331,6 +342,16 @@ public class RainbowSixStats {
 
 	public static String translateOperators(String op) {
 		switch (op) {
+			case "1:1":
+				return "Recruit (SAS)";
+			case "1:2":
+				return "Recruit (FBI)";
+			case "1:3":
+				return "Recruit (GIGN)";
+			case "1:4":
+				return "Recruit (Spetsnaz)";
+			case "1:5":
+				return "Recruit (GSG9)";
 			case "2:1":
 				return "Smoke";
 			case "2:2":
@@ -353,6 +374,8 @@ public class RainbowSixStats {
 				return "Maverick";
 			case "2:11":
 				return "Nomad";
+			case "2:12":
+				return "Gridlock";
 			case "2:A":
 				return "Jackal";
 			case "2:B":
@@ -385,6 +408,8 @@ public class RainbowSixStats {
 				return "Clash";
 			case "3:11":
 				return "Kaid";
+			case "3:12":
+				return "Mozzie";
 			case "3:A":
 				return "Mira";
 			case "3:B":
@@ -419,6 +444,7 @@ public class RainbowSixStats {
 				return "Tachanka";
 			case "5:5":
 				return "Bandit";
+			
 			default:
 				return "Unknown";
 		}

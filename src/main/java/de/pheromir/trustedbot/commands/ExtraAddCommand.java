@@ -54,10 +54,10 @@ public class ExtraAddCommand extends TrustedCommand {
 					continue;
 				}
 				if (Main.getExtraUsers().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention() + " already has extra permissions.");
+					e.reply(mem.getAsTag() + " already has extra permissions.");
 					continue;
 				} else {
-					e.reply(mem.getAsMention() + " has been granted extra permissions.");
+					e.reply(mem.getAsTag() + " has been granted extra permissions.");
 					Main.addExtraUser(Long.parseLong(id));
 				}
 				continue;

@@ -63,7 +63,7 @@ public class R6Command extends TrustedCommand {
 			eb.setThumbnail(String.format("https://r6tab.com/images/discordranks/%d.png?width=80&height=80", stats.getCurrentRank()));
 
 			eb.addField("Rank", "**Now:** " + RainbowSixStats.translateRank(stats.getCurrentRank()) + "\n**Max:** "
-					+ RainbowSixStats.translateRank(stats.getCurrentRank()) + "\n~~-----~~", true);
+					+ RainbowSixStats.translateRank(stats.getMaxRank()) + "\n~~-----~~", true);
 			eb.addField("MMR", "**Now:** " + stats.getCurrentMMR() + "\n**Max:** " + stats.getMaxMMR()
 					+ "\n~~-----~~", true);
 

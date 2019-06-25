@@ -54,10 +54,10 @@ public class ExtraRemoveCommand extends TrustedCommand {
 					continue;
 				}
 				if (!Main.getExtraUsers().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention() + " doesn't have extra permissions.");
+					e.reply(mem.getAsTag() + " doesn't have extra permissions.");
 					continue;
 				} else {
-					e.reply(mem.getAsMention() + " no longer has extra permissions.");
+					e.reply(mem.getAsTag() + " no longer has extra permissions.");
 					Main.removeExtraUser(Long.parseLong(id));
 					continue;
 				}

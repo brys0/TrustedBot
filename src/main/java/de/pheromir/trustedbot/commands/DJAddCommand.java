@@ -55,10 +55,10 @@ public class DJAddCommand extends TrustedCommand {
 					continue;
 				}
 				if (gc.getDJs().contains(Long.parseLong(id))) {
-					e.reply(mem.getAsMention() + " is already a DJ.");
+					e.reply(mem.getUser().getAsTag()+ " is already a DJ.");
 					continue;
 				} else {
-					e.reply(mem.getAsMention() + " is now a DJ.");
+					e.reply(mem.getUser().getAsTag() + " is now a DJ.");
 					gc.addDJ(Long.parseLong(id));
 					continue;
 				}

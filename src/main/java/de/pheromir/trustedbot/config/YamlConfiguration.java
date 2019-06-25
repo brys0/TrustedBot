@@ -20,7 +20,7 @@ import org.yaml.snakeyaml.representer.Representer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class YamlConfiguration extends ConfigurationProvider {
 
 	private static final ThreadLocal<Yaml> yaml = new ThreadLocal<Yaml>() {
