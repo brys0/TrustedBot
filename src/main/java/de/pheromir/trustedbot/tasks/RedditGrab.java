@@ -86,8 +86,8 @@ public class RedditGrab implements Runnable {
 								String link = "https://www.reddit.com" + post.getString("permalink");
 								String author = post.getString("author");
 								String postText = post.getString("selftext");
-								if (postText.length() > 4500) {
-									postText = postText.substring(0, 4500) + "..\n[Open post to read the full text]";
+								if (postText.length() > 2000) {
+									postText = postText.substring(0, 2000) + "..\n[Open post to read the full text]";
 								}
 
 								int score = post.getInt("score");
