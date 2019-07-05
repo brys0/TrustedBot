@@ -21,6 +21,8 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.tasks;
 
+import java.time.Instant;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -79,17 +81,21 @@ public class RedditGrab implements Runnable {
 								}
 								JSONObject post = ((JSONObject) postObject).getJSONObject("data");
 								String contentUrl = post.getString("url");
-								if (contentUrl.isEmpty())
-									continue;
-
 								String sub = post.getString("subreddit");
 								String title = post.getString("title");
 								String link = "https://www.reddit.com" + post.getString("permalink");
 								String author = post.getString("author");
+								String postText = post.getString("selftext");
+								if (postText.length() > 4500) {
+									postText = postText.substring(0, 4500) + "..\n[Open post to read the full text]";
+								}
+
 								int score = post.getInt("score");
 
 								EmbedBuilder emb = new EmbedBuilder();
+								emb.setTimestamp(Instant.ofEpochMilli(post.getLong("created_utc") * 1000));
 								emb.setAuthor(author);
+								emb.setDescription(postText);
 								emb.addField(new Field("Score", score + "", false));
 								emb.setFooter("/r/" + sub + " (" + sortType.name().toLowerCase()
 										+ ")", Main.jda.getSelfUser().getAvatarUrl());
@@ -107,13 +113,15 @@ public class RedditGrab implements Runnable {
 
 									if (!GuildConfig.RedditPosthistoryContains(contentUrl)) {
 										if (contentUrl.contains(".jpg") || contentUrl.contains(".png")
-												|| contentUrl.contains(".jpeg")) {
+												|| contentUrl.contains(".jpeg") || contentUrl.contains(".gif")) {
 											emb.setImage(contentUrl);
 											c.sendMessage(emb.build()).queue();
 										} else if (contentUrl.contains("v.redd.it")) {
 											emb.setImage(thumbUrl);
 											emb.setTitle("VIDEO: "
 													+ (title.length() > 249 ? title.substring(0, 249) : title), link);
+											c.sendMessage(emb.build()).queue();
+										} else if (contentUrl.contains("/comments/")) {
 											c.sendMessage(emb.build()).queue();
 										} else {
 											c.sendMessage(emb.build()).queue();
