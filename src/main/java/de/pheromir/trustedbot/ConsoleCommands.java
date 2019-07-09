@@ -47,7 +47,7 @@ public class ConsoleCommands implements Runnable {
 				if (!Main.redditTask.isCancelled()) {
 					Main.redditTask.cancel(true);
 				}
-				Main.redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 1, 5, TimeUnit.MINUTES);
+				Main.redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 1, 10, TimeUnit.MINUTES);
 				Main.LOG.info("Reddit-Grabber restarted.");
 
 			} else if (cmd.equalsIgnoreCase("twitchtask")) {

@@ -218,7 +218,7 @@ public class Main {
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 			// - - - - TASKS - - - - -
-			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 5, 5, TimeUnit.MINUTES);
+			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 5, 10, TimeUnit.MINUTES);
 			rewardTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				LocalTime today = LocalTime.now();
 				int hour = today.getHour();
