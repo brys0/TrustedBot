@@ -117,7 +117,9 @@ public class RedditGrab implements Runnable {
 											emb.setImage(contentUrl);
 											c.sendMessage(emb.build()).queue();
 										} else if (contentUrl.contains("v.redd.it")) {
-											emb.setImage(thumbUrl);
+											if(thumbUrl.contains(".")) {
+												emb.setImage(thumbUrl);
+											}
 											emb.setTitle("VIDEO: "
 													+ (title.length() > 249 ? title.substring(0, 249) : title), link);
 											c.sendMessage(emb.build()).queue();
