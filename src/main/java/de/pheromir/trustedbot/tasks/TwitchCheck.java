@@ -47,8 +47,6 @@ public class TwitchCheck implements Runnable {
 				break;
 			}
 
-			Main.LOG.debug("Checking Twitch User " + twitchname);
-
 			Unirest.get("https://api.twitch.tv/helix/streams/?user_login="
 					+ twitchname).header("Authorization", "Bearer "
 							+ Main.twitchToken).asJsonAsync(new Callback<JsonNode>() {
