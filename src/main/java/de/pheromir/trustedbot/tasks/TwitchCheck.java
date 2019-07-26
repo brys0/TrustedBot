@@ -69,8 +69,6 @@ public class TwitchCheck implements Runnable {
 										if (data.length() != 0) {
 											Main.onlineTwitchList.add(twitchname);
 											JSONObject stream = data.getJSONObject(0);
-											Main.LOG.debug(twitchname + " is online.");
-											Main.LOG.debug("type: " + stream.getString("type"));
 											if (!stream.getString("type").equals("live"))
 												return;
 											String gameId = stream.getString("game_id");
