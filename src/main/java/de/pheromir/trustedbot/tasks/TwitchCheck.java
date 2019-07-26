@@ -21,6 +21,7 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.tasks;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.HttpResponse;
@@ -38,72 +39,103 @@ public class TwitchCheck implements Runnable {
 	@Override
 	public void run() {
 		Thread.currentThread().setName("Twitch-Task");
+		if (Main.twitchToken.equals("none")) {
+			return;
+		}
 		for (String twitchname : GuildConfig.getTwitchList().keySet()) {
 			if (Thread.interrupted()) {
 				break;
 			}
 
-			Unirest.get("https://api.twitch.tv/kraken/streams/" + twitchname
-					+ "?stream_type=live").header("client-id", Main.twitchKey).asJsonAsync(new Callback<JsonNode>() {
+			Main.LOG.debug("Checking Twitch User " + twitchname);
 
-						@Override
-						public void completed(HttpResponse<JsonNode> response) {
-							if (response.getStatus() < 200 || response.getStatus() > 299) {
-								Main.LOG.error("Twitch-Task received HTTP Code " + response.getStatus() + " for User "
-										+ twitchname);
-								return;
-							}
-							JSONObject res = response.getBody().getObject();
-							if (Main.onlineTwitchList.contains(twitchname)) {
-								if (res.isNull("stream")) {
-									Main.onlineTwitchList.remove(twitchname);
-								}
-							} else {
+			Unirest.get("https://api.twitch.tv/helix/streams/?user_login="
+					+ twitchname).header("Authorization", "Bearer "
+							+ Main.twitchToken).asJsonAsync(new Callback<JsonNode>() {
 
-								if (!res.isNull("stream")) {
-									Main.onlineTwitchList.add(twitchname);
-									JSONObject stream = res.getJSONObject("stream");
-									if (stream.getBoolean("is_playlist"))
+								@Override
+								public void completed(HttpResponse<JsonNode> response) {
+									if (response.getStatus() < 200 || response.getStatus() > 299) {
+										Main.LOG.error("Twitch-Task received HTTP Code " + response.getStatus()
+												+ " for User " + twitchname);
 										return;
-									String game = stream.getString("game");
-									int viewers = stream.getInt("viewers");
-									String preview = stream.getJSONObject("preview").getString("large");
-									JSONObject channel = stream.getJSONObject("channel");
-									String status = channel.getString("status");
-									String displayname = channel.getString("display_name");
-									String userimage = channel.getString("logo");
-									String url = channel.getString("url");
-
-									EmbedBuilder eb = new EmbedBuilder();
-									eb.setTitle(status, url);
-									eb.setThumbnail(userimage);
-									eb.setAuthor(displayname);
-									eb.setImage(preview);
-									eb.addField("Game", game, true);
-									eb.addField("Viewers", Integer.toString(viewers), true);
-
-									for (Long chId : GuildConfig.getTwitchList().get(twitchname)) {
-										if (Main.jda.getTextChannelById(chId) == null) {
-											continue;
+									}
+									JSONObject res = response.getBody().getObject();
+									JSONArray data = res.getJSONArray("data");
+									if (Main.onlineTwitchList.contains(twitchname)) {
+										if (data.length() == 0) {
+											Main.onlineTwitchList.remove(twitchname);
 										}
-										Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + displayname
-												+ " is now live at " + url + " !").embed(eb.build()).complete();
+									} else {
+
+										if (data.length() != 0) {
+											Main.onlineTwitchList.add(twitchname);
+											JSONObject stream = data.getJSONObject(0);
+											Main.LOG.debug(twitchname + " is online.");
+											Main.LOG.debug("type: " + stream.getString("type"));
+											if (!stream.getString("type").equals("live"))
+												return;
+											String gameId = stream.getString("game_id");
+											int viewers = stream.getInt("viewer_count");
+											String preview = stream.getString("thumbnail_url").replace("{width}", "500").replace("{height}", "300");
+											String status = stream.getString("title");
+											String displayname = stream.getString("user_name");
+
+											EmbedBuilder eb = new EmbedBuilder();
+											try {
+												HttpResponse<JsonNode> request = Unirest.get("https://api.twitch.tv/helix/users/?login="
+														+ twitchname).header("Authorization", "Bearer "
+																+ Main.twitchToken).asJson();
+												JSONObject userdata = request.getBody().getObject();
+												if (request.getStatus() == 200
+														&& userdata.getJSONArray("data").length() != 0)
+													eb.setThumbnail(userdata.getJSONArray("data").getJSONObject(0).getString("profile_image_url"));
+											} catch (UnirestException e) {
+												Main.LOG.error("An error occurred getting userdata for " + twitchname
+														+ ":", e);
+												return;
+											}
+											try {
+												HttpResponse<JsonNode> request = Unirest.get("https://api.twitch.tv/helix/games/?id="
+														+ gameId).header("Authorization", "Bearer "
+																+ Main.twitchToken).asJson();
+												JSONObject gamedata = request.getBody().getObject();
+												if (request.getStatus() == 200
+														&& gamedata.getJSONArray("data").length() != 0)
+													eb.addField("Game", gamedata.getJSONArray("data").getJSONObject(0).getString("name"), true);
+											} catch (UnirestException e) {
+												Main.LOG.error("An error occurred getting userdata for " + twitchname
+														+ ":", e);
+												return;
+											}
+											eb.setTitle(status, "https://twitch.tv/" + twitchname);
+											eb.setAuthor(displayname);
+											eb.setImage(preview);
+											eb.addField("Viewers", Integer.toString(viewers), true);
+
+											for (Long chId : GuildConfig.getTwitchList().get(twitchname)) {
+												if (Main.jda.getTextChannelById(chId) == null) {
+													continue;
+												}
+												Main.jda.getTextChannelById(chId).sendMessage("Hey @here! "
+														+ displayname + " is now live at https://twitch.tv/"
+														+ twitchname + " !").embed(eb.build()).complete();
+											}
+										}
 									}
 								}
-							}
-						}
 
-						@Override
-						public void failed(UnirestException e) {
-							Main.LOG.error("Twitch-Task for User " + twitchname + " failed: ", e);
-						}
+								@Override
+								public void failed(UnirestException e) {
+									Main.LOG.error("Twitch-Task for User " + twitchname + " failed: ", e);
+								}
 
-						@Override
-						public void cancelled() {
-							Main.LOG.error("Twitch-Task for User " + twitchname + " cancelled.");
-						}
+								@Override
+								public void cancelled() {
+									Main.LOG.error("Twitch-Task for User " + twitchname + " cancelled.");
+								}
 
-					});
+							});
 			try {
 				Thread.sleep(2500);
 			} catch (InterruptedException e) {

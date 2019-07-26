@@ -51,6 +51,10 @@ public class TwitchCommand extends TrustedCommand {
 
 	@Override
 	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+		if(Main.twitchToken.equals("none")) {
+			e.reply("No active Twitch App Token present, Command disabled temporarily.");
+			return false;
+		}
 		if (args.length == 0) {
 			ArrayList<String> streams = (ArrayList<String>) GuildConfig.getTwitchList().keySet().stream().filter(k -> GuildConfig.getTwitchList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
 			if (streams.isEmpty()) {
@@ -76,8 +80,7 @@ public class TwitchCommand extends TrustedCommand {
 				e.reply("Twitch notifications for " + e.getArgs().toLowerCase()
 						+ " are now disabled for this channel.");
 			} else {
-				Unirest.get("https://api.twitch.tv/helix/users?login="
-						+ e.getArgs()).header("client-id", Main.twitchKey).asJsonAsync(new Callback<JsonNode>() {
+				Unirest.get("https://api.twitch.tv/helix/users?login={user}").routeParam("user", args[0]).header("Authorization", "Bearer " + Main.twitchToken).asJsonAsync(new Callback<JsonNode>() {
 
 							@Override
 							public void completed(HttpResponse<JsonNode> response) {
@@ -90,6 +93,7 @@ public class TwitchCommand extends TrustedCommand {
 								JSONObject res = response.getBody().getObject();
 								if (res != null && res.getJSONArray("data") != null
 										&& res.getJSONArray("data").length() > 0) {
+									// TODO: Check the actual names of the results, not only the length of the response
 									GuildConfig.addTwitchStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
 									e.reply("Twitch notifications for " + e.getArgs().toLowerCase()
 											+ " are now enabled for this channel.");

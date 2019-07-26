@@ -140,7 +140,9 @@ public class Main {
 	public static AudioPlayerManager playerManager;
 	public static String adminId = "none";
 	public static String youtubeKey = "none";
-	public static String twitchKey = "none";
+	public static String twitchClientId = "none";
+	private static String twitchSecret = "none";
+	public static String twitchToken = "none";
 	private static String spotifySecret = "none";
 	private static String spotifyClient = "none";
 	public static String spotifyToken = "none";
@@ -155,6 +157,7 @@ public class Main {
 	public static Configuration cfg;
 	public static CommandClient commandClient;
 	public static ScheduledExecutorService spotifyTask;
+	public static ScheduledExecutorService twitchAuthTask;
 	public static ScheduledFuture<?> redditTask;
 	public static ScheduledFuture<?> twitchTask;
 	public static ScheduledFuture<?> rewardTask;
@@ -189,9 +192,9 @@ public class Main {
 		cbuilder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand());
 		// Subscription Commands
 		cbuilder.addCommands(new RedditCommand());
-		if (!twitchKey.equals("none") && !twitchKey.isEmpty()) {
+		if (!twitchClientId.equals("none") && !twitchClientId.isEmpty()) {
 			cbuilder.addCommands(new TwitchCommand());
-			twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 5, 5, TimeUnit.MINUTES);
+			twitchTask = Executors.newScheduledThreadPool(0).scheduleAtFixedRate(new TwitchCheck(), 1, 5, TimeUnit.MINUTES);
 		}
 		// Money
 		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand(), new DailyCommand());
@@ -217,7 +220,9 @@ public class Main {
 					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown(), waiter).setAutoReconnect(true).build();
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
+			
 			// - - - - TASKS - - - - -
+			
 			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 5, 10, TimeUnit.MINUTES);
 			rewardTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				LocalTime today = LocalTime.now();
@@ -254,7 +259,7 @@ public class Main {
 			}, 0, 1, TimeUnit.HOURS);
 
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
-				spotifyTask = Executors.newScheduledThreadPool(1);
+				spotifyTask = Executors.newScheduledThreadPool(0);
 				spotifyTask.scheduleAtFixedRate(() -> {
 					Thread.currentThread().setName("Spotify-Task");
 					Unirest.post("https://accounts.spotify.com/api/token").basicAuth(spotifyClient, spotifySecret).header("Content-Type", "application/x-www-form-urlencoded").body("grant_type=client_credentials").asJsonAsync(new Callback<JsonNode>() {
@@ -286,6 +291,42 @@ public class Main {
 					});
 				}, 0, 3600, TimeUnit.SECONDS);
 			}
+			
+			if(!twitchClientId.equals("none") && !twitchSecret.equals("none")) {
+				twitchAuthTask = Executors.newScheduledThreadPool(0);
+				twitchAuthTask.scheduleAtFixedRate(() -> {
+					Unirest.post(String.format("https://id.twitch.tv/oauth2/token?client_id=%s&client_secret=%s&grant_type=client_credentials", Main.twitchClientId, Main.twitchSecret)).asJsonAsync(new Callback<JsonNode>() {
+
+						@Override
+						public void completed(HttpResponse<JsonNode> response) {
+							if(response.getStatus() != 200) {
+								LOG.error("Error getting a twitch access token");
+								if(response.getStatus() == 403) {
+									LOG.error("Cause: " + response.getBody().getObject().getString("message"));
+								}
+								twitchToken = "none";
+								twitchAuthTask.shutdownNow();
+								return;
+							}
+							twitchToken = response.getBody().getObject().getString("access_token");
+							LOG.debug("Twitch App Token renewed.");
+						}
+
+						@Override
+						public void failed(UnirestException e) {
+							twitchToken = "none";
+							LOG.error("Twitch Token renew failed: " + e.getMessage());
+						}
+
+						@Override
+						public void cancelled() {
+							twitchToken = "none";
+							LOG.error("Twitch Token renew cancelled.");
+						}
+						
+					});
+				}, 0, 12, TimeUnit.HOURS);
+			}
 			// - - - - - - -
 
 		} catch (LoginException | InterruptedException | IllegalStateException e) {
@@ -316,7 +357,8 @@ public class Main {
 			token = cfg.getString("Token");
 			adminId = cfg.getString("AdminID").replaceAll("[A-Za-z]+", "");
 			youtubeKey = cfg.getString("API-Keys.YouTube");
-			twitchKey = cfg.getString("API-Keys.Twitch");
+			twitchClientId = cfg.getString("API-Keys.TwitchClientId");
+			twitchSecret = cfg.getString("API-Keys.TwitchSecret");
 			spotifyClient = cfg.getString("API-Keys.Spotify.Client");
 			spotifySecret = cfg.getString("API-Keys.Spotify.Secret");
 			pastebinKey = cfg.getString("API-Keys.Pastebin");
