@@ -194,7 +194,7 @@ public class Main {
 		cbuilder.addCommands(new RedditCommand());
 		if (!twitchClientId.equals("none") && !twitchClientId.isEmpty()) {
 			cbuilder.addCommands(new TwitchCommand());
-			twitchTask = Executors.newScheduledThreadPool(0).scheduleAtFixedRate(new TwitchCheck(), 1, 5, TimeUnit.MINUTES);
+			twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 1, 5, TimeUnit.MINUTES);
 		}
 		// Money
 		cbuilder.addCommands(new CreditsCommand(), new SetCreditsCommand(), new DailyCommand());
@@ -222,6 +222,8 @@ public class Main {
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 			
 			// - - - - TASKS - - - - -
+			
+			
 			
 			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 5, 10, TimeUnit.MINUTES);
 			rewardTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
@@ -259,7 +261,7 @@ public class Main {
 			}, 0, 1, TimeUnit.HOURS);
 
 			if (!spotifyClient.equals("none") && !spotifySecret.equals("none")) {
-				spotifyTask = Executors.newScheduledThreadPool(0);
+				spotifyTask = Executors.newScheduledThreadPool(1);
 				spotifyTask.scheduleAtFixedRate(() -> {
 					Thread.currentThread().setName("Spotify-Task");
 					Unirest.post("https://accounts.spotify.com/api/token").basicAuth(spotifyClient, spotifySecret).header("Content-Type", "application/x-www-form-urlencoded").body("grant_type=client_credentials").asJsonAsync(new Callback<JsonNode>() {
@@ -293,7 +295,7 @@ public class Main {
 			}
 			
 			if(!twitchClientId.equals("none") && !twitchSecret.equals("none")) {
-				twitchAuthTask = Executors.newScheduledThreadPool(0);
+				twitchAuthTask = Executors.newScheduledThreadPool(1);
 				twitchAuthTask.scheduleAtFixedRate(() -> {
 					Unirest.post(String.format("https://id.twitch.tv/oauth2/token?client_id=%s&client_secret=%s&grant_type=client_credentials", Main.twitchClientId, Main.twitchSecret)).asJsonAsync(new Callback<JsonNode>() {
 
