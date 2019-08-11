@@ -30,6 +30,8 @@ public class HugCommand extends RandomImageCommand {
 		this.jsonKey = "url";
 		this.name = "hug";
 		this.help = "Shows a random hug gif.";
+		this.interactSelfText = "%s hugs him-/herself";
+		this.interactText = "%s hugs %s";
 	}
 
 }

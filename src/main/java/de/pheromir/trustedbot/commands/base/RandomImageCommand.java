@@ -40,6 +40,8 @@ public abstract class RandomImageCommand extends TrustedCommand {
 
 	protected String BASE_URL;
 	protected String jsonKey;
+	protected String interactText = null;
+	protected String interactSelfText = null;
 
 	public RandomImageCommand() {
 		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS };
@@ -64,9 +66,21 @@ public abstract class RandomImageCommand extends TrustedCommand {
 					return;
 				}
 				String imgUrl = response.getBody().getObject().getString(jsonKey);
-				e.reply(new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT
+				EmbedBuilder emb = new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT
 						? e.getSelfMember().getColor()
-						: Color.BLUE).build());
+						: Color.BLUE);
+
+				if (interactText != null && interactSelfText != null) {
+					if (e.getMessage().getMentionedMembers().size() != 0) {
+						if (e.getMessage().getMentionedMembers().get(0) == e.getMember()) {
+							emb.setDescription(String.format(interactSelfText, e.getMember().getAsMention()));
+						} else {
+							emb.setDescription(String.format(interactText, e.getMember().getAsMention(), e.getMessage().getMentionedMembers().get(0).getAsMention()));
+						}
+					}
+				}
+
+				e.reply(emb.build());
 			}
 
 			@Override

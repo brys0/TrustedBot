@@ -30,6 +30,8 @@ public class PokeCommand extends RandomImageCommand {
 		this.jsonKey = "url";
 		this.name = "poke";
 		this.help = "Shows a random poke gif.";
+		this.interactSelfText = "%s pokes him-/herself";
+		this.interactText = "%s pokes %s";
 	}
 
 }

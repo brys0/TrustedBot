@@ -30,6 +30,8 @@ public class KissCommand extends RandomImageCommand {
 		this.jsonKey = "url";
 		this.name = "kiss";
 		this.help = "Shows a random kiss gif.";
+		this.interactSelfText = "%s kisses him-/herself";
+		this.interactText = "%s kisses %s";
 	}
 
 }

@@ -30,6 +30,8 @@ public class CuddleCommand extends RandomImageCommand {
 		this.jsonKey = "url";
 		this.name = "cuddle";
 		this.help = "Shows a random cuddle gif.";
+		this.interactSelfText = "%s cuddles him-/herself";
+		this.interactText = "%s cuddles %s";
 	}
 
 }

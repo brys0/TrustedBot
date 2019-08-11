@@ -30,6 +30,8 @@ public class TickleCommand extends RandomImageCommand {
 		this.jsonKey = "url";
 		this.name = "tickle";
 		this.help = "Shows a random tickle gif.";
+		this.interactSelfText = "%s tickles him-/herself";
+		this.interactText = "%s tickles %s";
 	}
 
 }

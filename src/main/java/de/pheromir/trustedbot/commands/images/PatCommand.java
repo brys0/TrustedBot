@@ -30,6 +30,8 @@ public class PatCommand extends RandomImageCommand {
 		this.jsonKey = "url";
 		this.name = "pat";
 		this.help = "Shows a random pat gif.";
+		this.interactSelfText = "%s pats him-/herself";
+		this.interactText = "%s pats %s";
 	}
 
 }
