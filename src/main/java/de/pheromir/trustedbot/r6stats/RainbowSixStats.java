@@ -32,9 +32,11 @@ import org.json.JSONObject;
 
 import com.mashape.unirest.http.Unirest;
 
+import de.pheromir.trustedbot.Main;
+
 public class RainbowSixStats {
 
-	public static int currentSeason = 14;
+	public static int currentSeason = 15;
 
 	private String apiUrl;
 	private String updatedAgo;
@@ -140,7 +142,7 @@ public class RainbowSixStats {
 
 		c_kills = p_data.getInt(6);
 		c_deaths = p_data.getInt(7);
-		c_kd = Math.round(((double) c_kills / (c_deaths == 0.0 ? 1 : (double) c_deaths)) * 100.0) / 100.0;
+		c_kd = Math.round((c_kills / (c_deaths == 0.0 ? 1 : (double) c_deaths)) * 100.0) / 100.0;
 
 		cs_wins = seasonal.isNull("total_casualwins") ? 0 : seasonal.getInt("total_casualwins");
 		cs_losses = seasonal.isNull("total_casuallosses") ? 0 : seasonal.getInt("total_casuallosses");
@@ -164,23 +166,23 @@ public class RainbowSixStats {
 
 		// 1 season before
 		try {
-			if (jo.getString("season" + (currentSeason - 1)).split(":").length == 2) {
-				String[] tempSeason = jo.getString("season" + (currentSeason - 1)).split(":");
-				seasons[1][0] = Integer.parseInt(tempSeason[0]);
-				seasons[1][1] = Integer.parseInt(tempSeason[1]);
+			if (jo.has("season" + (currentSeason - 1) + "rank") && jo.has("season" + (currentSeason - 1) + "mmr")) {
+				seasons[1][0] = jo.getInt("season" + (currentSeason - 1) + "rank");
+				seasons[1][1] = jo.getInt("season" + (currentSeason - 1) + "mmr");
 			}
 		} catch (JSONException ex) {
+			Main.LOG.error("", ex);
 			seasons[1][0] = seasons[1][1] = -1;
 		}
 
 		// 2 seasons before
 		try {
-			if (jo.getString("season" + (currentSeason - 2)).split(":").length == 2) {
-				String[] tempSeason = jo.getString("season" + (currentSeason - 2)).split(":");
-				seasons[2][0] = Integer.parseInt(tempSeason[0]);
-				seasons[2][1] = Integer.parseInt(tempSeason[1]);
+			if (jo.has("season" + (currentSeason - 2) + "rank") && jo.has("season" + (currentSeason - 2) + "mmr")) {
+				seasons[2][0] = jo.getInt("season" + (currentSeason - 2) + "rank");
+				seasons[2][1] = jo.getInt("season" + (currentSeason - 2) + "mmr");
 			}
 		} catch (JSONException ex) {
+			Main.LOG.error("", ex);
 			seasons[2][0] = seasons[2][1] = -1;
 		}
 
@@ -439,6 +441,8 @@ public class RainbowSixStats {
 				return "Burnt Horizon";
 			case 14:
 				return "Phantom Sight";
+			case 15:
+				return "Ember Rise";
 			default:
 				return "Unknown";
 		}

@@ -58,7 +58,8 @@ public class R6Command extends TrustedCommand {
 			
 			eb.setAuthor(stats.getUsername(), stats.getProfileURL(), stats.getAvatarURL());
 			eb.setColor(e.getChannelType() == ChannelType.TEXT ? e.getSelfMember().getColor() : Color.BLUE);
-			eb.setDescription("Ranked stats on Uplay for region " + stats.getMainRegion());
+			eb.setDescription("Ranked stats on Uplay for region " + stats.getMainRegion() + "\n"
+					+ "Current Season: " + RainbowSixStats.translateSeason(RainbowSixStats.currentSeason));
 			eb.setTitle("View __" + stats.getUsername() + "__'s Full Stats on R6Tab", stats.getProfileURL());
 			
 
