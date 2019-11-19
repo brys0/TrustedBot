@@ -738,7 +738,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		sq.openConnection();
 		try {
 			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Reddit_Posts (Url) VALUES (?)");
-			prep.setString(1, post.length() > 190 ? post.substring(0, 190) : post);
+			prep.setString(1, post.length() > 150 ? post.substring(0, 150) : post);
 			prep.execute();
 		} catch (SQLException e) {
 			Main.LOG.error("Reddit add history failed: " + e);
@@ -752,7 +752,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		sq.openConnection();
 		try {
 			PreparedStatement prep = sq.getConnection().prepareStatement("SELECT * FROM Reddit_Posts WHERE Url = ?");
-			prep.setString(1, post.length() > 190 ? post.substring(0, 190) : post);
+			prep.setString(1, post.length() > 150 ? post.substring(0, 150) : post);
 			ResultSet res = prep.executeQuery();
 			boolean exists = res.next();
 			return exists;

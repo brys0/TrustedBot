@@ -78,46 +78,46 @@ public class R6Command extends TrustedCommand {
 			  + "**Playtime:** " + stats.getPlaytime()
 					+ " hours\n~~-----~~", true);
 			
-			eb.addField("Fav. Operators", 
-				"**Attacker:** " + stats.getFavAttacker() + "\n"
-			  + "**Defender:** " + stats.getFavDefender() + "\n"
-			  		+ "~~-----~~", true);	
+			eb.addField("Ranked Seasonal", 
+				"**Kills:** " + stats.getRankedKillsSeasonal() + " | **Deaths:** " + stats.getRankedDeathsSeasonal() + "\n"
+			  + "**Wins:** " + stats.getRankedWinsSeasonal() + " | **Lost:** " + stats.getRankedLossesSeasonal() + "\n"
+			  + "**KD:** " + String.format("%.1f", stats.getRankedKDRSeasonal()) + " | **WLR:** " + String.format("%.1f", stats.getRankedWinLoseRateSeasonal()) + "%\n"
+			  		+ "~~-----~~", true);
 
 			eb.addField("Ranked Matches", 
 				"**Wins:** " + stats.getRankedWins() + "\n"
 			  + "**Losses:** " + stats.getRankedLosses() + "\n"
-			  + "**WLR:** " + stats.getRankedWinLoseRate() + "%"
+			  + "**WLR:** " + String.format("%.1f", stats.getRankedWinLoseRate()) + "%"
 					+ "\n~~-----~~", true);
 			
 			eb.addField("Ranked Stats", 
 				"**Kills:** " + stats.getRankedKills() + "\n"
 			  + "**Deaths:** " + stats.getRankedDeaths() + "\n"
-			  + "**Overall KD:** " + stats.getRankedKDR() + "\n"
-			  		+ "~~-----~~", true);
-			
-			eb.addField("Ranked Seasonal", 
-				"**Kills:** " + stats.getRankedKillsSeasonal() + " | **Wins:** " + stats.getRankedWinsSeasonal() + "\n"
-			  + "**Deaths:** " + stats.getRankedDeathsSeasonal() + " | **Losses:** " + stats.getRankedLossesSeasonal() + "\n"
-			  + "**KD:** " + stats.getRankedKDRSeasonal() + " | **WLR:** " + stats.getRankedWinLoseRateSeasonal() + "%\n"
+			  + "**Overall KD:** " + String.format("%.1f", stats.getRankedKDR()) + "\n"
 			  		+ "~~-----~~", true);
 			
 			eb.addField("Casual Seasonal", 
-				"**Kills:** " + stats.getCasualKillsSeasonal() + " | **Wins:** " + stats.getCasualWinsSeasonal() + "\n"
-			  + "**Deaths:** " + stats.getCasualDeathsSeasonal() + " | **Losses:** " + stats.getCasualLossesSeasonal() + "\n"
-			  + "**KD:** " + stats.getCasualKDRSeasonal() + " | **WLR:** " + stats.getCasualWinLoseRateSeasonal() + "%\n"
+				"**Kills:** " + stats.getCasualKillsSeasonal() + " | **Deaths:** " + stats.getCasualDeathsSeasonal() + "\n"
+			  + "**Wins:** " + stats.getCasualWinsSeasonal() + " | **Lost:** " + stats.getCasualLossesSeasonal() + "\n"
+			  + "**KD:** " + String.format("%.1f", stats.getCasualKDRSeasonal()) + " | **WLR:** " + String.format("%.1f", stats.getCasualWinLoseRateSeasonal()) + "%\n"
 						  		+ "~~-----~~", true);
 
 			eb.addField("Casual Matches", 
 				"**Wins:** " + stats.getCasualWins() + "\n"
 			  + "**Losses:** " + stats.getCasualLosses() + "\n"
-			  + "**WLR:** " + stats.getCasualWinLoseRate() + "%"
+			  + "**WLR:** " + String.format("%.1f", stats.getCasualWinLoseRate()) + "%"
 					+ "\n~~-----~~", true);
 			
 			eb.addField("Casual Stats", 
 				"**Kills:** " + stats.getCasualKills() + "\n"
 			  + "**Deaths:** " + stats.getCasualDeaths() + "\n"
-			  + "**Overall KD:** " + stats.getCasualKDR() + "\n"
+			  + "**Overall KD:** " + String.format("%.1f", stats.getCasualKDR()) + "\n"
 			  		+ "~~-----~~", true);
+			
+			eb.addField("Fav. Operators", 
+				"**Attacker:** " + stats.getFavAttacker() + "\n"
+			  + "**Defender:** " + stats.getFavDefender() + "\n"
+			  		+ "~~-----~~", true);	
 
 			eb.addField(
 				RainbowSixStats.translateSeason(RainbowSixStats.currentSeason - 1), 

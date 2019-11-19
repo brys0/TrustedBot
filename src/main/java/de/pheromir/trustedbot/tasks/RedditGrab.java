@@ -45,6 +45,7 @@ public class RedditGrab implements Runnable {
 	public void run() {
 		Thread.currentThread().setName("Reddit-Task");
 		for (String subreddit : GuildConfig.getRedditList().keySet()) {
+			Main.LOG.debug("Checking Subreddit " + subreddit);
 			if (Thread.currentThread().isInterrupted()) {
 				Main.LOG.error("Reddit-Task interrupted.");
 				break;
@@ -79,6 +80,7 @@ public class RedditGrab implements Runnable {
 									Main.LOG.error("Reddit-Task interrupted.");
 									break;
 								}
+
 								JSONObject post = ((JSONObject) postObject).getJSONObject("data");
 								String contentUrl = post.getString("url");
 								String sub = post.getString("subreddit");
@@ -89,7 +91,7 @@ public class RedditGrab implements Runnable {
 								if (postText.length() > 2000) {
 									postText = postText.substring(0, 2000) + "..\n[Open post to read the full text]";
 								}
-
+								
 								int score = post.getInt("score");
 
 								EmbedBuilder emb = new EmbedBuilder();
@@ -101,7 +103,6 @@ public class RedditGrab implements Runnable {
 										+ ")", Main.jda.getSelfUser().getAvatarUrl());
 								emb.setTitle(title.length() > 256 ? title.substring(0, 256) : title, link);
 								String thumbUrl = contentUrl.contains("v.redd.it") ? post.getString("thumbnail") : "";
-
 								for (Long chId : GuildConfig.getRedditList().get(subreddit).getChannels(sortType)) {
 									if (Thread.interrupted()) {
 										break;
@@ -117,7 +118,7 @@ public class RedditGrab implements Runnable {
 											emb.setImage(contentUrl);
 											c.sendMessage(emb.build()).queue();
 										} else if (contentUrl.contains("v.redd.it")) {
-											if(thumbUrl.contains(".")) {
+											if (thumbUrl.contains(".")) {
 												emb.setImage(thumbUrl);
 											}
 											emb.setTitle("VIDEO: "
