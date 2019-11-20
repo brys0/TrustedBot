@@ -220,7 +220,7 @@ public class Main {
 					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown(), waiter).setAutoReconnect(true).build();
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
-			
+			 
 			// - - - - TASKS - - - - -
 			
 			
