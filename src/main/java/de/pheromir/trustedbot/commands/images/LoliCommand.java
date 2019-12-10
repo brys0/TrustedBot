@@ -31,5 +31,6 @@ public class LoliCommand extends RandomImageCommand {
 		this.BASE_URL = "https://nekos.life/api/v2/img/ero";
 		this.jsonKey = "url";
 		this.nsfw = true;
+		this.ownerCommand = true;
 	}
 }

@@ -24,6 +24,7 @@ package de.pheromir.trustedbot.commands;
 import java.util.ArrayList;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
@@ -71,7 +72,15 @@ public class QueueCommand extends TrustedCommand {
 		MessageBuilder mes = new MessageBuilder();
 		int amnt = titles.size() > 10 ? 10 : titles.size();
 
-		mes.append("**Queue** (" + (amnt > 10 ? "Next 10 tracks)" : amnt + " tracks)"));
+		mes.append("**Queue** (" + (amnt > 10 ? "Next 10 of " + amnt + " tracks)" : amnt + " tracks)"));
+		long totalDuration = 0;
+		for(QueueTrack qt : titles) {
+			AudioTrack t = qt.getTrack();
+			if(t.getDuration() != Long.MAX_VALUE) {
+				totalDuration += t.getDuration();
+			}
+		}
+		mes.append("\nTotal playlist length: " + Methods.getTimeString(totalDuration));
 		EmbedBuilder m = new EmbedBuilder();
 		m.setTitle("Queue repeating: " + (musicManager.scheduler.getRepeat() ? "on" : "off"));
 		m.setColor(e.getGuild().getSelfMember().getColor());
