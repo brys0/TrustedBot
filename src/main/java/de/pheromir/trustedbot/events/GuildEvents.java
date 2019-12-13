@@ -40,7 +40,11 @@ public class GuildEvents extends ListenerAdapter {
 
 	@Override
 	public void onGuildLeave(GuildLeaveEvent e) {
+		if(Main.getGuildConfig(e.getGuild()).player.getPlayingTrack() != null) {
+			Main.getGuildConfig(e.getGuild()).player.destroy();
+		}
 		SettingsManager.guildConfigs.remove(e.getGuild().getIdLong());
+		
 	}
 
 	@Override
