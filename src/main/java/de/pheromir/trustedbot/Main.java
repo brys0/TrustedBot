@@ -59,6 +59,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import de.pheromir.trustedbot.commands.AliasAddCommand;
 import de.pheromir.trustedbot.commands.AliasCmdsCommand;
 import de.pheromir.trustedbot.commands.AliasRemoveCommand;
+import de.pheromir.trustedbot.commands.ChangelogCommand;
 import de.pheromir.trustedbot.commands.CoinflipCommand;
 import de.pheromir.trustedbot.commands.ColorCommand;
 import de.pheromir.trustedbot.commands.CreditsCommand;
@@ -203,7 +204,7 @@ public class Main {
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
 		// Misc
-		cbuilder.addCommands(new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new ColorCommand(waiter));
+		cbuilder.addCommands(new ChangelogCommand(), new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new ColorCommand(waiter));
 
 		cbuilder.setLinkedCacheSize(0);
 		cbuilder.setListener(new CmdListener());
