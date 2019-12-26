@@ -78,7 +78,7 @@ Image commands are usable by everyone, but commands marked with a `*` are only u
 | `*`LewdKemo | Shows a random lewd kemonomimi image
 | `*`LewdYuri | Shows a random lewd yuri image
 | Lizard      | Shows a random lizard picture
-| `*`Loli     | Shows a random not-really-loli image
+| `*`Loli     | Shows a random not-really-loli image (Currently Owner-Only)
 | Neko        | Shows a random neko image
 | NekoGif     | Shows a random neko gif
 | Pat         | Shows a random pat gif
