@@ -36,7 +36,7 @@ import de.pheromir.trustedbot.Main;
 
 public class RainbowSixStats {
 
-	public static int currentSeason = 15;
+	public static int currentSeason = 16;
 
 	private String apiUrl;
 	private String updatedAgo;
@@ -443,6 +443,8 @@ public class RainbowSixStats {
 				return "Phantom Sight";
 			case 15:
 				return "Ember Rise";
+			case 16:
+				return "Shifting Tides";
 			default:
 				return "Unknown";
 		}
