@@ -21,6 +21,8 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.r6stats;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,7 @@ import de.pheromir.trustedbot.Main;
 
 public class RainbowSixStats {
 
-	public static int currentSeason = 16;
+	public static int currentSeason = 17;
 
 	private String apiUrl;
 	private String updatedAgo;
@@ -49,6 +51,7 @@ public class RainbowSixStats {
 	private int playtime;
 	private int currentRank;
 	private int currentMMR;
+	private int currentMMRchange;
 	private String mainRegion;
 
 	private String favAttacker;
@@ -85,7 +88,8 @@ public class RainbowSixStats {
 	private int cs_kills;
 	private int cs_deaths;
 	private double cs_kd;
-	
+	private String latestSeasonPlayed;
+
 	private List<String> aliases;
 
 	// int[rank][mmr]
@@ -102,17 +106,36 @@ public class RainbowSixStats {
 		seasons = new int[3][2];
 		aliases = new ArrayList<>();
 		JSONObject jo;
+		Unirest.get(String.format("https://r6tab.com/%s&updatenow=true", uuid)).asString();
 		jo = Unirest.get(apiUrl).asJson().getBody().getObject();
+		JSONObject ranked = (JSONObject) jo.get("ranked");
+		LocalDateTime euDate = LocalDateTime.parse(ranked.getString("EU_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
+		LocalDateTime naDate = LocalDateTime.parse(ranked.getString("NA_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
+		LocalDateTime asDate = LocalDateTime.parse(ranked.getString("AS_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
+		LocalDateTime newest = euDate;
+		latestSeasonPlayed = "EU";
+
+		Main.LOG.debug("Newest: " + newest);
+
+		if (naDate.compareTo(newest) > 0) {
+			newest = naDate;
+			latestSeasonPlayed = "NA";
+		}
+		if (asDate.compareTo(newest) > 0) {
+			newest = asDate;
+			latestSeasonPlayed = "AS";
+		}
 
 		username = jo.getString("p_name");
 		p_user = jo.getString("p_user");
 		level = jo.getInt("p_level");
-		currentRank = jo.getInt("p_currentrank");
-		currentMMR = jo.getInt("p_currentmmr");
+		currentRank = ranked.getInt(latestSeasonPlayed + "_rank");
+		currentMMR = ranked.getInt(latestSeasonPlayed + "_mmr");
+		currentMMRchange = ranked.getInt(latestSeasonPlayed + "_mmrchange");
 
 		JSONArray p_data = jo.getJSONArray("data");
 		JSONObject seasonal = jo.getJSONObject("seasonal");
-		if(jo.has("aliases")) {
+		if (jo.has("aliases")) {
 			JSONObject aliasesObj = jo.getJSONObject("aliases");
 			aliasesObj.keys().forEachRemaining(str -> aliases.add(aliasesObj.getString(str)));
 		}
@@ -126,13 +149,13 @@ public class RainbowSixStats {
 		r_deaths = p_data.getInt(2);
 		r_kd = (jo.getInt("kd") / 100.0);
 
-		rs_wins = seasonal.isNull("total_rankedwins") ? 0 : seasonal.getInt("total_rankedwins");
-		rs_losses = seasonal.isNull("total_rankedlosses") ? 0 : seasonal.getInt("total_rankedlosses");
+		rs_wins = ranked.getInt(latestSeasonPlayed + "_wins");
+		rs_losses = ranked.getInt(latestSeasonPlayed + "_losses");
 		rs_wlr = Math.floor(((double) rs_wins / (double) (rs_wins + rs_losses)) * 10000.0) / 100.0;
 		rs_wlr = Double.isNaN(rs_wlr) ? 0d : rs_wlr;
 
-		rs_kills = seasonal.isNull("total_rankedkills") ? 0 : seasonal.getInt("total_rankedkills");
-		rs_deaths = seasonal.isNull("total_rankeddeaths") ? 0 : seasonal.getInt("total_rankeddeaths");
+		rs_kills = ranked.getInt(latestSeasonPlayed + "_kills");
+		rs_deaths = ranked.getInt(latestSeasonPlayed + "_deaths");
 		rs_kd = Math.floor(((double) rs_kills / (double) (rs_deaths)) * 100.0) / 100.0;
 
 		c_wins = p_data.getInt(8);
@@ -161,8 +184,8 @@ public class RainbowSixStats {
 		favDefender = jo.getString("favdefender");
 
 		// latest season
-		seasons[0][0] = jo.getInt("p_maxrank");
-		seasons[0][1] = jo.getInt("p_maxmmr");
+		seasons[0][0] = ranked.getInt(latestSeasonPlayed + "_maxrank");
+		seasons[0][1] = ranked.getInt(latestSeasonPlayed + "_maxmmr");
 
 		// 1 season before
 		try {
@@ -189,11 +212,11 @@ public class RainbowSixStats {
 		updatedAgo = jo.getString("updatedon").replaceAll("(<u>|</u>)", "");
 		updatedMillis = jo.getLong("utime") * 1000;
 
-		if (currentMMR == jo.getInt("p_EU_currentmmr")) {
+		if (latestSeasonPlayed.equals("EU")) {
 			mainRegion = "Europe";
-		} else if (currentMMR == jo.getInt("p_NA_currentmmr")) {
+		} else if (latestSeasonPlayed.equals("NA")) {
 			mainRegion = "America";
-		} else if (currentMMR == jo.getInt("p_AS_currentmmr")) {
+		} else if (latestSeasonPlayed.equals("AS")) {
 			mainRegion = "Asia";
 		} else {
 			mainRegion = "Unknown";
@@ -312,6 +335,10 @@ public class RainbowSixStats {
 		return currentMMR;
 	}
 
+	public int getCurrentMMRChange() {
+		return currentMMRchange;
+	}
+
 	public int getMaxRank() {
 		return seasons[0][0];
 	}
@@ -359,7 +386,7 @@ public class RainbowSixStats {
 	public Long getUpdatedMillis() {
 		return updatedMillis;
 	}
-	
+
 	public List<String> getAliases() {
 		return aliases;
 	}
@@ -445,6 +472,8 @@ public class RainbowSixStats {
 				return "Ember Rise";
 			case 16:
 				return "Shifting Tides";
+			case 17:
+				return "Void Edge";
 			default:
 				return "Unknown";
 		}
@@ -532,6 +561,8 @@ public class RainbowSixStats {
 				return "Lion";
 			case "3:F":
 				return "Alibi";
+			case "3:17":
+				return "Wamai";
 			case "4:1":
 				return "Sledge";
 			case "4:2":

@@ -56,44 +56,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 
-import de.pheromir.trustedbot.commands.AliasAddCommand;
-import de.pheromir.trustedbot.commands.AliasCmdsCommand;
-import de.pheromir.trustedbot.commands.AliasRemoveCommand;
-import de.pheromir.trustedbot.commands.ChangelogCommand;
-import de.pheromir.trustedbot.commands.CoinflipCommand;
-import de.pheromir.trustedbot.commands.ColorCommand;
-import de.pheromir.trustedbot.commands.CreditsCommand;
-import de.pheromir.trustedbot.commands.DJAddCommand;
-import de.pheromir.trustedbot.commands.DJRemoveCommand;
-import de.pheromir.trustedbot.commands.DailyCommand;
-import de.pheromir.trustedbot.commands.ExportCommand;
-import de.pheromir.trustedbot.commands.ExtraAddCommand;
-import de.pheromir.trustedbot.commands.ExtraRemoveCommand;
-import de.pheromir.trustedbot.commands.ForwardCommand;
-import de.pheromir.trustedbot.commands.GoogleCommand;
-import de.pheromir.trustedbot.commands.ImportCommand;
-import de.pheromir.trustedbot.commands.NumberFactCommand;
-import de.pheromir.trustedbot.commands.PlayCommand;
-import de.pheromir.trustedbot.commands.PlayingCommand;
-import de.pheromir.trustedbot.commands.PrefixCommand;
-import de.pheromir.trustedbot.commands.QueueCommand;
-import de.pheromir.trustedbot.commands.R6Command;
-import de.pheromir.trustedbot.commands.RandomServerIconCommand;
-import de.pheromir.trustedbot.commands.RedditCommand;
-import de.pheromir.trustedbot.commands.RewindCommand;
-import de.pheromir.trustedbot.commands.SeekCommand;
-import de.pheromir.trustedbot.commands.SetCreditsCommand;
-import de.pheromir.trustedbot.commands.SkipCommand;
-import de.pheromir.trustedbot.commands.StatsCommand;
-import de.pheromir.trustedbot.commands.StatusCommand;
-import de.pheromir.trustedbot.commands.StopCommand;
-import de.pheromir.trustedbot.commands.TextCmdAddCommand;
-import de.pheromir.trustedbot.commands.TextCmdRemoveCommand;
-import de.pheromir.trustedbot.commands.TextCmdsCommand;
-import de.pheromir.trustedbot.commands.ToggleCommand;
-import de.pheromir.trustedbot.commands.TwitchCommand;
-import de.pheromir.trustedbot.commands.UrbanDictionaryCommand;
-import de.pheromir.trustedbot.commands.VolumeCommand;
+import de.pheromir.trustedbot.commands.*;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.commands.images.CatCommand;
 import de.pheromir.trustedbot.commands.images.CuddleCommand;
@@ -124,6 +87,7 @@ import de.pheromir.trustedbot.events.GuildEvents;
 import de.pheromir.trustedbot.events.Shutdown;
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
+
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -174,7 +138,7 @@ public class Main {
 		loadConfig();
 
 		Main.LOG.debug("AdminID: " + adminId);
-
+		
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
 		Unirest.setDefaultHeader("User-Agent", "Mozilla/5.0");
@@ -186,7 +150,7 @@ public class Main {
 		cbuilder.setOwnerId(adminId);
 		cbuilder.setGuildSettingsManager(new SettingsManager());
 		// Owner Commands + Settings
-		cbuilder.addCommands(new StatusCommand(), new StatsCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand(), new ToggleCommand());
+		cbuilder.addCommands(new StatusCommand(), new StatsCommand(), new ExtraAddCommand(), new ExtraRemoveCommand(), new PrefixCommand(), new ToggleCommand(), new BlacklistCommand());
 		// Music
 		cbuilder.addCommands(new PlayCommand(), new StopCommand(), new VolumeCommand(), new SkipCommand(), new PlayingCommand(), new QueueCommand(), new DJAddCommand(), new DJRemoveCommand(), new SeekCommand(), new ForwardCommand(), new RewindCommand(), new ExportCommand(), new ImportCommand());
 		// Alias + Custom Commands
@@ -204,7 +168,8 @@ public class Main {
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
 		// Misc
-		cbuilder.addCommands(new ChangelogCommand(), new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new ColorCommand(waiter));
+		cbuilder.addCommands(new ChangelogCommand(), new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new ColorCommand(
+				waiter));
 
 		cbuilder.setLinkedCacheSize(0);
 		cbuilder.setListener(new CmdListener());
@@ -221,11 +186,9 @@ public class Main {
 					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown(), waiter).setAutoReconnect(true).build();
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
-			 
+
 			// - - - - TASKS - - - - -
-			
-			
-			
+
 			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 1, 10, TimeUnit.MINUTES);
 			rewardTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				LocalTime today = LocalTime.now();
@@ -294,17 +257,17 @@ public class Main {
 					});
 				}, 0, 3600, TimeUnit.SECONDS);
 			}
-			
-			if(!twitchClientId.equals("none") && !twitchSecret.equals("none")) {
+
+			if (!twitchClientId.equals("none") && !twitchSecret.equals("none")) {
 				twitchAuthTask = Executors.newScheduledThreadPool(1);
 				twitchAuthTask.scheduleAtFixedRate(() -> {
 					Unirest.post(String.format("https://id.twitch.tv/oauth2/token?client_id=%s&client_secret=%s&grant_type=client_credentials", Main.twitchClientId, Main.twitchSecret)).asJsonAsync(new Callback<JsonNode>() {
 
 						@Override
 						public void completed(HttpResponse<JsonNode> response) {
-							if(response.getStatus() != 200) {
+							if (response.getStatus() != 200) {
 								LOG.error("Error getting a twitch access token");
-								if(response.getStatus() == 403) {
+								if (response.getStatus() == 403) {
 									LOG.error("Cause: " + response.getBody().getObject().getString("message"));
 								}
 								twitchToken = "none";
@@ -326,7 +289,7 @@ public class Main {
 							twitchToken = "none";
 							LOG.error("Twitch Token renew cancelled.");
 						}
-						
+
 					});
 				}, 0, 12, TimeUnit.HOURS);
 			}
@@ -372,6 +335,11 @@ public class Main {
 					+ " RandomServerIcon BOOLEAN NOT NULL DEFAULT FALSE);");
 
 			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS DJs" + " (GuildId VARCHAR(64) NOT NULL,"
+					+ " UserId VARCHAR(64) NOT NULL,"
+					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
+					+ " PRIMARY KEY (GuildId, UserId));");
+
+			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Blacklist" + " (GuildId VARCHAR(64) NOT NULL,"
 					+ " UserId VARCHAR(64) NOT NULL,"
 					+ " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
 					+ " PRIMARY KEY (GuildId, UserId));");
@@ -451,6 +419,11 @@ public class Main {
 	}
 
 	public static void getHelpConsumer(CommandEvent event) {
+		if (event.getGuild() != null) {
+			if (Main.getGuildConfig(event.getGuild()).getBlacklist().contains(event.getAuthor().getIdLong())) {
+				return;
+			}
+		}
 		StringBuilder builder = new StringBuilder("**Available commands for "
 				+ (event.getChannelType() == ChannelType.TEXT ? "the requested Guild" : "Direct Messages")
 				+ ":**\n*Note: The command prefix may vary between guilds. The prefix in Direct Messages is always "

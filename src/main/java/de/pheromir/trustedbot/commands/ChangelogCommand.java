@@ -9,6 +9,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import de.pheromir.trustedbot.Pair;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
+
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 
@@ -20,6 +21,7 @@ public class ChangelogCommand extends TrustedCommand {
 		this.name = "changelog";
 		this.aliases = new String[] { "cl" };
 		this.arguments = "[nr]";
+		this.help = "Show changelog(s)";
 		this.category = new Category("Miscellaneous");
 	}
 

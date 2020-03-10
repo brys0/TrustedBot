@@ -28,6 +28,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
+
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -52,6 +53,11 @@ public abstract class TrustedCommand extends Command {
 					+ " ", this.name, this.arguments));
 		} else {
 			GuildConfig gc = Main.getGuildConfig(e.getGuild());
+
+			if (gc.getBlacklist().contains(e.getAuthor().getIdLong())) {
+				return;
+			}
+
 			if (e.getChannelType() == ChannelType.TEXT && gc.isCommandDisabled(this.name) && !this.isOwnerCommand()) {
 				e.reply(Main.COMMAND_DISABLED);
 				return;

@@ -88,6 +88,7 @@ public class Methods {
 		YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
 				new HttpRequestInitializer() {
 
+					@Override
 					public void initialize(HttpRequest request) throws IOException {
 					}
 				}).setApplicationName("DiscordBot").build();

@@ -40,6 +40,7 @@ import de.pheromir.trustedbot.misc.RedditSubscription;
 import de.pheromir.trustedbot.music.AudioPlayerSendHandler;
 import de.pheromir.trustedbot.music.Suggestion;
 import de.pheromir.trustedbot.music.TrackScheduler;
+
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
@@ -52,6 +53,7 @@ public class GuildConfig implements GuildSettingsProvider {
 	public final TrackScheduler scheduler;
 	private List<Long> djs;
 	private List<String> disabledCommands;
+	private List<Long> blacklist;
 	private HashMap<User, ArrayList<Suggestion>> suggestions;
 	private HashMap<Long, Long> credits;
 	private ArrayList<Long> rewardClaimed;
@@ -81,6 +83,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		suggestions = new HashMap<>();
 		customCommands = new HashMap<>();
 		aliasCommands = new HashMap<>();
+		blacklist = new ArrayList<>();
 		player = Main.playerManager.createPlayer();
 		scheduler = new TrackScheduler(player, g);
 		player.addListener(scheduler);
@@ -161,6 +164,46 @@ public class GuildConfig implements GuildSettingsProvider {
 
 	public List<Long> getDJs() {
 		return djs;
+	}
+
+	public void addToBlacklist(Long longID) {
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Blacklist (GuildId, UserId) VALUES (?, ?)");
+			prep.setString(1, g.getId());
+			prep.setString(2, longID.toString());
+			if (!blacklist.contains(longID)) {
+				blacklist.add(longID);
+				prep.execute();
+			}
+		} catch (SQLException e) {
+			Main.LOG.error("Blacklist add failed: ", e);
+		} finally {
+			sq.closeConnection();
+		}
+	}
+
+	public void removeFromBlacklist(Long longID) {
+		MySQL sq = Main.getMySQL();
+		sq.openConnection();
+		try {
+			PreparedStatement prep = sq.getConnection().prepareStatement("DELETE IGNORE FROM Blacklist WHERE GuildId = ? AND UserId = ?");
+			prep.setString(1, g.getId());
+			prep.setString(2, longID.toString());
+			if (blacklist.contains(longID)) {
+				blacklist.remove(longID);
+				prep.execute();
+			}
+		} catch (SQLException e) {
+			Main.LOG.error("Blacklist remove failed: ", e);
+		} finally {
+			sq.closeConnection();
+		}
+	}
+
+	public List<Long> getBlacklist() {
+		return blacklist;
 	}
 
 	public void setVolume(int vol) {
@@ -288,6 +331,31 @@ public class GuildConfig implements GuildSettingsProvider {
 					res.close();
 			} catch (SQLException e) {
 				Main.LOG.error("Error downloading DJs: ", e);
+			}
+			sql.closeConnection();
+		}
+	}
+	
+	public void downloadBlacklist() {
+		MySQL sql = Main.getMySQL();
+		sql.openConnection();
+		PreparedStatement state;
+		ResultSet res = null;
+		try {
+			state = sql.getConnection().prepareStatement("SELECT UserId FROM Blacklist WHERE GuildId = ?");
+			state.setString(1, g.getId());
+			res = state.executeQuery();
+			while (res.next()) {
+				blacklist.add(Long.parseLong(res.getString("UserId")));
+			}
+		} catch (SQLException e) {
+			Main.LOG.error("Error downloading Blacklist: ", e);
+		} finally {
+			try {
+				if (res != null)
+					res.close();
+			} catch (SQLException e) {
+				Main.LOG.error("Error downloading Blacklist: ", e);
 			}
 			sql.closeConnection();
 		}

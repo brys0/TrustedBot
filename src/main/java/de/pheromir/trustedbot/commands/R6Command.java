@@ -32,6 +32,7 @@ import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.r6stats.RainbowSixStats;
+
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 
@@ -59,75 +60,77 @@ public class R6Command extends TrustedCommand {
 			eb.setAuthor(stats.getUsername(), stats.getProfileURL(), stats.getAvatarURL());
 			eb.setColor(e.getChannelType() == ChannelType.TEXT ? e.getSelfMember().getColor() : Color.BLUE);
 			eb.setDescription("Ranked stats on Uplay for region " + stats.getMainRegion() + "\n"
-					+ "Current Season: " + RainbowSixStats.translateSeason(RainbowSixStats.currentSeason));
+							+ "Current Season: " + RainbowSixStats.translateSeason(RainbowSixStats.currentSeason));
 			eb.setTitle("View __" + stats.getUsername() + "__'s Full Stats on R6Tab", stats.getProfileURL());
 			
 
 			eb.addField("Rank", 
 				"**Now:** " + RainbowSixStats.translateRank(stats.getCurrentRank()) + "\n"
 			  + "**Max:** "	+ RainbowSixStats.translateRank(stats.getMaxRank()) + "\n"
-			  		+ "~~-----~~", true);
+			  + "~~-----------~~", true);
 			
 			eb.addField("MMR", 
-				"**Now:** " + stats.getCurrentMMR() + "\n"
-			  + "**Max:** " + stats.getMaxMMR()
-					+ "\n~~-----~~", true);
+				"**Now:** " + stats.getCurrentMMR() + " (" + (stats.getCurrentMMRChange()>0?"+":"") + stats.getCurrentMMRChange() +")\n"
+			  + "**Max:** " + stats.getMaxMMR() 
+			  + "\n~~-----------~~", true);
 
 			eb.addField("General", 
 				"**Level:** " + stats.getLevel() + "\n"
 			  + "**Playtime:** " + stats.getPlaytime()
-					+ " hours\n~~-----~~", true);
+			  + " hours\n~~-----------~~", true);
 			
 			eb.addField("Ranked Seasonal", 
 				"**Kills:** " + stats.getRankedKillsSeasonal() + " | **Deaths:** " + stats.getRankedDeathsSeasonal() + "\n"
 			  + "**Wins:** " + stats.getRankedWinsSeasonal() + " | **Lost:** " + stats.getRankedLossesSeasonal() + "\n"
 			  + "**KD:** " + String.format("%.1f", stats.getRankedKDRSeasonal()) + " | **WLR:** " + String.format("%.1f", stats.getRankedWinLoseRateSeasonal()) + "%\n"
-			  		+ "~~-----~~", true);
+			  + "~~-----------~~", true);
 
 			eb.addField("Ranked Matches", 
 				"**Wins:** " + stats.getRankedWins() + "\n"
 			  + "**Losses:** " + stats.getRankedLosses() + "\n"
 			  + "**WLR:** " + String.format("%.1f", stats.getRankedWinLoseRate()) + "%"
-					+ "\n~~-----~~", true);
+			  + "\n~~-----------~~", true);
 			
 			eb.addField("Ranked Stats", 
 				"**Kills:** " + stats.getRankedKills() + "\n"
 			  + "**Deaths:** " + stats.getRankedDeaths() + "\n"
 			  + "**Overall KD:** " + String.format("%.1f", stats.getRankedKDR()) + "\n"
-			  		+ "~~-----~~", true);
+			  + "~~-----------~~", true);
 			
 			eb.addField("Casual Seasonal", 
 				"**Kills:** " + stats.getCasualKillsSeasonal() + " | **Deaths:** " + stats.getCasualDeathsSeasonal() + "\n"
 			  + "**Wins:** " + stats.getCasualWinsSeasonal() + " | **Lost:** " + stats.getCasualLossesSeasonal() + "\n"
 			  + "**KD:** " + String.format("%.1f", stats.getCasualKDRSeasonal()) + " | **WLR:** " + String.format("%.1f", stats.getCasualWinLoseRateSeasonal()) + "%\n"
-						  		+ "~~-----~~", true);
+			  + "~~-----------~~", true);
 
 			eb.addField("Casual Matches", 
 				"**Wins:** " + stats.getCasualWins() + "\n"
 			  + "**Losses:** " + stats.getCasualLosses() + "\n"
 			  + "**WLR:** " + String.format("%.1f", stats.getCasualWinLoseRate()) + "%"
-					+ "\n~~-----~~", true);
+			  + "\n~~-----------~~", true);
 			
 			eb.addField("Casual Stats", 
 				"**Kills:** " + stats.getCasualKills() + "\n"
 			  + "**Deaths:** " + stats.getCasualDeaths() + "\n"
 			  + "**Overall KD:** " + String.format("%.1f", stats.getCasualKDR()) + "\n"
-			  		+ "~~-----~~", true);
+			  + "~~-----------~~", true);
 			
 			eb.addField("Fav. Operators", 
 				"**Attacker:** " + stats.getFavAttacker() + "\n"
 			  + "**Defender:** " + stats.getFavDefender() + "\n"
-			  		+ "~~-----~~", true);	
+			  + "~~-----------~~", true);	
 
 			eb.addField(
 				RainbowSixStats.translateSeason(RainbowSixStats.currentSeason - 1), 
 				"**Rank**: " + RainbowSixStats.translateRank(stats.getLastThreeSeasonRanks()[1][0]) + "\n"
-			  + "**MMR:** " + stats.getLastThreeSeasonRanks()[1][1], true);
+			  + "**MMR:** " + stats.getLastThreeSeasonRanks()[1][1]
+			  + "\n~~-----------~~", true);
 			
 			eb.addField(
 				RainbowSixStats.translateSeason(RainbowSixStats.currentSeason - 2), 
 				"**Rank**: " + RainbowSixStats.translateRank(stats.getLastThreeSeasonRanks()[2][0]) + "\n"
-						+ "**MMR:** " + stats.getLastThreeSeasonRanks()[2][1], true);
+			  + "**MMR:** " + stats.getLastThreeSeasonRanks()[2][1] 
+			  + "\n~~-----------~~", true);
 			
 			String aliases;
 			if(stats.getAliases().size() == 0) {
