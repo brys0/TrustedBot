@@ -36,12 +36,12 @@
       </snapshots>
       <id>jcenter</id>
       <name>jcenter-bintray</name>
-      <url>http://jcenter.bintray.com</url>
+      <url>https://jcenter.bintray.com</url>
     </repository>
     <repository>
       <id>Sonatype-public</id>
       <name>SnakeYAML repository</name>
-      <url>http://oss.sonatype.org/content/groups/public/</url>
+      <url>https://oss.sonatype.org/content/groups/public/</url>
     </repository>
   </repositories>
   <dependencies>
