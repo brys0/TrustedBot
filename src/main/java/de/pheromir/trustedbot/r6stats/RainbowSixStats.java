@@ -21,8 +21,10 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.r6stats;
 
+import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.Main;
 
@@ -106,24 +109,39 @@ public class RainbowSixStats {
 		seasons = new int[3][2];
 		aliases = new ArrayList<>();
 		JSONObject jo;
-		Unirest.get(String.format("https://r6tab.com/%s&updatenow=true", uuid)).asString();
+		try {
+		Unirest.get(String.format("https://r6tab.com/mainpage.php?page=%s&updatenow=true", uuid)).asString();
+		} catch (UnirestException ex) {
+			if (ex.getCause() instanceof SocketTimeoutException) {
+				Main.LOG.warn("[R6STATS] Timeout while requesting stats update");
+			} else {
+				Main.LOG.error("", ex);
+			}
+		}
 		jo = Unirest.get(apiUrl).asJson().getBody().getObject();
 		JSONObject ranked = (JSONObject) jo.get("ranked");
-		LocalDateTime euDate = LocalDateTime.parse(ranked.getString("EU_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
-		LocalDateTime naDate = LocalDateTime.parse(ranked.getString("NA_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
-		LocalDateTime asDate = LocalDateTime.parse(ranked.getString("AS_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
-		LocalDateTime newest = euDate;
-		latestSeasonPlayed = "EU";
+		LocalDateTime euDate = null;
+		LocalDateTime naDate = null;
+		LocalDateTime asDate = null;
+		try {
+			euDate = LocalDateTime.parse(ranked.getString("EU_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
+			naDate = LocalDateTime.parse(ranked.getString("NA_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
+			asDate = LocalDateTime.parse(ranked.getString("AS_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
 
-		Main.LOG.debug("Newest: " + newest);
+			LocalDateTime newest = euDate;
+			latestSeasonPlayed = "EU";
 
-		if (naDate.compareTo(newest) > 0) {
-			newest = naDate;
-			latestSeasonPlayed = "NA";
-		}
-		if (asDate.compareTo(newest) > 0) {
-			newest = asDate;
-			latestSeasonPlayed = "AS";
+			if (naDate.compareTo(newest) > 0) {
+				newest = naDate;
+				latestSeasonPlayed = "NA";
+			}
+			if (asDate.compareTo(newest) > 0) {
+				newest = asDate;
+				latestSeasonPlayed = "AS";
+			}
+		} catch (DateTimeParseException ex) {
+			Main.LOG.warn("[R6STATS] Error parsing last update time for regions, falling back to EU");
+			latestSeasonPlayed = "EU";
 		}
 
 		username = jo.getString("p_name");
@@ -482,15 +500,16 @@ public class RainbowSixStats {
 	public static String translateOperators(String op) {
 		switch (op) {
 			case "1:1":
-				return "Recruit (SAS)";
+//				return "Recruit (SAS)";
 			case "1:2":
-				return "Recruit (FBI)";
+//				return "Recruit (FBI)";
 			case "1:3":
-				return "Recruit (GIGN)";
+//				return "Recruit (GIGN)";
 			case "1:4":
-				return "Recruit (Spetsnaz)";
+//				return "Recruit (Spetsnaz)";
 			case "1:5":
-				return "Recruit (GSG9)";
+//				return "Recruit (GSG9)";
+				return "Recruit";
 			case "2:1":
 				return "Smoke";
 			case "2:2":
