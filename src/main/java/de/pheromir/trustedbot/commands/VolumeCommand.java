@@ -57,7 +57,7 @@ public class VolumeCommand extends TrustedCommand {
 		int vol = 100;
 		try {
 			vol = Integer.parseInt(args[0]);
-			if (vol < 1 || vol > 100) {
+			if (vol < 1 || (vol > 100 && !e.getAuthor().getId().equals(Main.adminId))) {
 				throw new NumberFormatException();
 			}
 		} catch (NumberFormatException ex) {

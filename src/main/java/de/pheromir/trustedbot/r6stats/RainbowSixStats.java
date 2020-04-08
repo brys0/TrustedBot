@@ -99,7 +99,12 @@ public class RainbowSixStats {
 	private int[][] seasons;
 
 	public RainbowSixStats(String user) throws Exception {
-		JSONObject usersearch = Unirest.get(String.format("https://r6tab.com/api/search.php?platform=uplay&search=%s", user)).asJson().getBody().getObject();
+		JSONObject usersearch;
+		try {
+			usersearch = Unirest.get(String.format("https://r6tab.com/api/search.php?platform=uplay&search=%s", user)).asJson().getBody().getObject();
+		} catch (UnirestException e) {
+			throw e;
+		}
 		if (usersearch.getInt("totalresults") < 1) {
 			throw new NameNotFoundException("Sorry, i can't find the specified user.");
 		} else {
@@ -110,7 +115,7 @@ public class RainbowSixStats {
 		aliases = new ArrayList<>();
 		JSONObject jo;
 		try {
-		Unirest.get(String.format("https://r6tab.com/mainpage.php?page=%s&updatenow=true", uuid)).asString();
+			Unirest.get(String.format("https://r6tab.com/mainpage.php?page=%s&updatenow=true", uuid)).asString();
 		} catch (UnirestException ex) {
 			if (ex.getCause() instanceof SocketTimeoutException) {
 				Main.LOG.warn("[R6STATS] Timeout while requesting stats update");
@@ -118,7 +123,11 @@ public class RainbowSixStats {
 				Main.LOG.error("", ex);
 			}
 		}
-		jo = Unirest.get(apiUrl).asJson().getBody().getObject();
+		try {
+			jo = Unirest.get(apiUrl).asJson().getBody().getObject();
+		} catch (UnirestException e) {
+			throw e;
+		}
 		JSONObject ranked = (JSONObject) jo.get("ranked");
 		LocalDateTime euDate = null;
 		LocalDateTime naDate = null;

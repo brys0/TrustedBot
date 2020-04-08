@@ -168,7 +168,7 @@ public class Main {
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
 		// Misc
-		cbuilder.addCommands(new ChangelogCommand(), new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new ColorCommand(
+		cbuilder.addCommands(new ChangelogCommand(), new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), /*new R6Command(),*/ new ColorCommand(
 				waiter));
 
 		cbuilder.setLinkedCacheSize(0);

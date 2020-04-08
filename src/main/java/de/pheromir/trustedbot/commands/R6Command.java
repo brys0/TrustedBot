@@ -27,6 +27,7 @@ import java.time.Instant;
 import javax.naming.NameNotFoundException;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
@@ -154,6 +155,11 @@ public class R6Command extends TrustedCommand {
 		} catch (Exception e1) {
 			if (e1 instanceof NameNotFoundException) {
 				e.reply("I'm sorry, but I couldn't find the requested user.");
+				return false;
+			} else if (e1 instanceof UnirestException) {
+				if(e1.getMessage().contains("A JSONArray text must start with")) {
+					e.reply("Couldn't parse data, is R6Tab working?");
+				}
 				return false;
 			} else {
 				e.reply("An error occurred. Sorry.");
