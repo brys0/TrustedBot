@@ -98,11 +98,12 @@ public class R6Command extends TrustedCommand {
 			  + "**Overall KD:** " + String.format("%.1f", stats.getRankedKDR()) + "\n"
 			  + "~~-----------~~", true);
 			
-			eb.addField("Casual Seasonal", 
-				"**Kills:** " + stats.getCasualKillsSeasonal() + " | **Deaths:** " + stats.getCasualDeathsSeasonal() + "\n"
-			  + "**Wins:** " + stats.getCasualWinsSeasonal() + " | **Lost:** " + stats.getCasualLossesSeasonal() + "\n"
-			  + "**KD:** " + String.format("%.1f", stats.getCasualKDRSeasonal()) + " | **WLR:** " + String.format("%.1f", stats.getCasualWinLoseRateSeasonal()) + "%\n"
-			  + "~~-----------~~", true);
+			
+//			eb.addField("Casual Seasonal", 
+//				"**Kills:** " + stats.getCasualKillsSeasonal() + " | **Deaths:** " + stats.getCasualDeathsSeasonal() + "\n"
+//			  + "**Wins:** " + stats.getCasualWinsSeasonal() + " | **Lost:** " + stats.getCasualLossesSeasonal() + "\n"
+//			  + "**KD:** " + String.format("%.1f", stats.getCasualKDRSeasonal()) + " | **WLR:** " + String.format("%.1f", stats.getCasualWinLoseRateSeasonal()) + "%\n"
+//			  + "~~-----------~~", true);
 
 			eb.addField("Casual Matches", 
 				"**Wins:** " + stats.getCasualWins() + "\n"
@@ -115,23 +116,18 @@ public class R6Command extends TrustedCommand {
 			  + "**Deaths:** " + stats.getCasualDeaths() + "\n"
 			  + "**Overall KD:** " + String.format("%.1f", stats.getCasualKDR()) + "\n"
 			  + "~~-----------~~", true);
-			
-			eb.addField("Fav. Operators", 
-				"**Attacker:** " + stats.getFavAttacker() + "\n"
-			  + "**Defender:** " + stats.getFavDefender() + "\n"
-			  + "~~-----------~~", true);	
 
+			eb.addBlankField(true);
+			
 			eb.addField(
 				RainbowSixStats.translateSeason(RainbowSixStats.currentSeason - 1), 
 				"**Rank**: " + RainbowSixStats.translateRank(stats.getLastThreeSeasonRanks()[1][0]) + "\n"
-			  + "**MMR:** " + stats.getLastThreeSeasonRanks()[1][1]
-			  + "\n~~-----------~~", true);
+			  + "**MMR:** " + stats.getLastThreeSeasonRanks()[1][1], true);
 			
 			eb.addField(
 				RainbowSixStats.translateSeason(RainbowSixStats.currentSeason - 2), 
 				"**Rank**: " + RainbowSixStats.translateRank(stats.getLastThreeSeasonRanks()[2][0]) + "\n"
-			  + "**MMR:** " + stats.getLastThreeSeasonRanks()[2][1] 
-			  + "\n~~-----------~~", true);
+			  + "**MMR:** " + stats.getLastThreeSeasonRanks()[2][1] , true);
 			
 			String aliases;
 			if(stats.getAliases().size() == 0) {
@@ -143,11 +139,11 @@ public class R6Command extends TrustedCommand {
 			}
 			
 			eb.addField("Previous Names", 
-				aliases, false);
+				aliases, true);
 			
-			eb.setThumbnail(String.format("https://r6tab.com/images/pngranks/%d.png", stats.getCurrentRank()));
+			eb.setThumbnail(String.format("https://cdn.tab.one/r6/images/ranks/?rank=%d", stats.getCurrentRank()));
 			
-			eb.setFooter("Stats provided by R6Tab.com, Updated: ", "https://r6tab.com/images/logoimg.png");
+			eb.setFooter("Stats provided by R6Tab.com, Updated: ", "https://cdn.tab.one/r6/images/homelogo.png");
 			eb.setTimestamp(Instant.ofEpochMilli(stats.getUpdatedMillis()));
 
 			e.reply(eb.build());

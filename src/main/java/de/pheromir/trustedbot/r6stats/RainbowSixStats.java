@@ -22,15 +22,12 @@
 package de.pheromir.trustedbot.r6stats;
 
 import java.net.SocketTimeoutException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.naming.NameNotFoundException;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,7 +41,6 @@ public class RainbowSixStats {
 	public static int currentSeason = 17;
 
 	private String apiUrl;
-	private String updatedAgo;
 	private Long updatedMillis;
 	private String uuid;
 	private String username;
@@ -56,9 +52,6 @@ public class RainbowSixStats {
 	private int currentMMR;
 	private int currentMMRchange;
 	private String mainRegion;
-
-	private String favAttacker;
-	private String favDefender;
 
 	// Ranked Stats
 	// Total
@@ -85,12 +78,12 @@ public class RainbowSixStats {
 	private int c_deaths;
 	private double c_kd;
 	// Seasonal
-	private int cs_wins;
-	private int cs_losses;
-	private double cs_wlr;
-	private int cs_kills;
-	private int cs_deaths;
-	private double cs_kd;
+//	private int cs_wins;
+//	private int cs_losses;
+//	private double cs_wlr;
+//	private int cs_kills;
+//	private int cs_deaths;
+//	private double cs_kd;
 	private String latestSeasonPlayed;
 
 	private List<String> aliases;
@@ -101,21 +94,21 @@ public class RainbowSixStats {
 	public RainbowSixStats(String user) throws Exception {
 		JSONObject usersearch;
 		try {
-			usersearch = Unirest.get(String.format("https://r6tab.com/api/search.php?platform=uplay&search=%s", user)).asJson().getBody().getObject();
+			usersearch = Unirest.get(String.format("https://r6.apitab.com/search/uplay/%s?u=%d", user, System.currentTimeMillis()/1000)).asJson().getBody().getObject();
 		} catch (UnirestException e) {
 			throw e;
 		}
-		if (usersearch.getInt("totalresults") < 1) {
+		if (!usersearch.getBoolean("foundmatch")) {
 			throw new NameNotFoundException("Sorry, i can't find the specified user.");
 		} else {
-			uuid = ((JSONObject) usersearch.getJSONArray("results").get(0)).getString("p_id");
+			uuid = usersearch.getJSONObject("players").getJSONObject(usersearch.getJSONObject("players").keys().next()).getJSONObject("profile").getString("p_user");
 		}
-		apiUrl = String.format("https://r6tab.com/api/player.php?p_id=%s", uuid);
+		apiUrl = String.format("https://r6.apitab.com/player/%s?u=%d", uuid, System.currentTimeMillis()/1000);
 		seasons = new int[3][2];
 		aliases = new ArrayList<>();
 		JSONObject jo;
 		try {
-			Unirest.get(String.format("https://r6tab.com/mainpage.php?page=%s&updatenow=true", uuid)).asString();
+			Unirest.get(String.format("https://r6.apitab.com/update/%s", uuid)).asString();
 		} catch (UnirestException ex) {
 			if (ex.getCause() instanceof SocketTimeoutException) {
 				Main.LOG.warn("[R6STATS] Timeout while requesting stats update");
@@ -129,53 +122,52 @@ public class RainbowSixStats {
 			throw e;
 		}
 		JSONObject ranked = (JSONObject) jo.get("ranked");
-		LocalDateTime euDate = null;
-		LocalDateTime naDate = null;
-		LocalDateTime asDate = null;
 		try {
-			euDate = LocalDateTime.parse(ranked.getString("EU_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
-			naDate = LocalDateTime.parse(ranked.getString("NA_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
-			asDate = LocalDateTime.parse(ranked.getString("AS_updatedon"), DateTimeFormatter.ISO_DATE_TIME);
-
-			LocalDateTime newest = euDate;
 			latestSeasonPlayed = "EU";
-
-			if (naDate.compareTo(newest) > 0) {
-				newest = naDate;
+			mainRegion = "Europe";
+			if (ranked.getString("topregion").equals("Europe")) {
+				latestSeasonPlayed = "EU";
+				mainRegion = "Europe";
+			} else
+			if (ranked.getString("topregion").equals("America")) {
 				latestSeasonPlayed = "NA";
-			}
-			if (asDate.compareTo(newest) > 0) {
-				newest = asDate;
+				mainRegion = "America";
+			} else
+			if (ranked.getString("topregion").equals("Asia")) {
 				latestSeasonPlayed = "AS";
+				mainRegion = "Asia";
 			}
 		} catch (DateTimeParseException ex) {
 			Main.LOG.warn("[R6STATS] Error parsing last update time for regions, falling back to EU");
 			latestSeasonPlayed = "EU";
 		}
-
-		username = jo.getString("p_name");
-		p_user = jo.getString("p_user");
-		level = jo.getInt("p_level");
+		
+		username = jo.getJSONObject("player").getString("p_name");
+		p_user = jo.getJSONObject("player").getString("p_user");
+		
+		JSONObject stats = jo.getJSONObject("stats");
+		
+		level = stats.getInt("level");
 		currentRank = ranked.getInt(latestSeasonPlayed + "_rank");
 		currentMMR = ranked.getInt(latestSeasonPlayed + "_mmr");
 		currentMMRchange = ranked.getInt(latestSeasonPlayed + "_mmrchange");
 
-		JSONArray p_data = jo.getJSONArray("data");
-		JSONObject seasonal = jo.getJSONObject("seasonal");
 		if (jo.has("aliases")) {
 			JSONObject aliasesObj = jo.getJSONObject("aliases");
-			aliasesObj.keys().forEachRemaining(str -> aliases.add(aliasesObj.getString(str)));
+			aliasesObj.keys().forEachRemaining(ind -> aliases.add(aliasesObj.getJSONObject(ind).getString("name")));
 		}
-
-		r_wins = p_data.getInt(3);
-		r_losses = p_data.getInt(4);
+		
+		// Ranked overall
+		r_wins = stats.getInt("rankedpvp_matchwon");
+		r_losses = stats.getInt("rankedpvp_matchlost");
 		r_wlr = Math.floor(((double) r_wins / (double) (r_wins + r_losses)) * 10000.0) / 100.0;
 		r_wlr = Double.isNaN(r_wlr) ? 0d : r_wlr;
 
-		r_kills = p_data.getInt(1);
-		r_deaths = p_data.getInt(2);
-		r_kd = (jo.getInt("kd") / 100.0);
-
+		r_kills = stats.getInt("rankedpvp_kills");
+		r_deaths = stats.getInt("rankedpvp_death");
+		r_kd = Double.parseDouble(stats.getString("rankedpvp_kd"));
+		
+		// Ranked seasonal
 		rs_wins = ranked.getInt(latestSeasonPlayed + "_wins");
 		rs_losses = ranked.getInt(latestSeasonPlayed + "_losses");
 		rs_wlr = Math.floor(((double) rs_wins / (double) (rs_wins + rs_losses)) * 10000.0) / 100.0;
@@ -184,42 +176,54 @@ public class RainbowSixStats {
 		rs_kills = ranked.getInt(latestSeasonPlayed + "_kills");
 		rs_deaths = ranked.getInt(latestSeasonPlayed + "_deaths");
 		rs_kd = Math.floor(((double) rs_kills / (double) (rs_deaths)) * 100.0) / 100.0;
-
-		c_wins = p_data.getInt(8);
-		c_losses = p_data.getInt(9);
+		
+		// Casual overall
+		c_wins = stats.getInt("casualpvp_matchwon");
+		c_losses = stats.getInt("casualpvp_matchlost");
 		c_wlr = Math.floor(((double) c_wins / (double) (c_wins + c_losses)) * 10000.0) / 100.0;
 		c_wlr = Double.isNaN(c_wlr) ? 0d : c_wlr;
 
-		c_kills = p_data.getInt(6);
-		c_deaths = p_data.getInt(7);
-		c_kd = Math.round((c_kills / (c_deaths == 0.0 ? 1 : (double) c_deaths)) * 100.0) / 100.0;
+		c_kills = stats.getInt("casualpvp_kills");
+		c_deaths = stats.getInt("casualpvp_death");
+		c_kd = Double.parseDouble(stats.getString("casualpvp_kd"));
+		
+//		// Casual seasonal
+//		if(jo.has("db")) {
+//			JSONObject db = jo.getJSONObject("db");
+//			cs_wins = db.getInt("casual_wins");
+//			cs_losses = db.getInt("casual_losses");
+//			cs_wlr = Math.floor(((double) cs_wins / (double) (cs_wins + cs_losses)) * 10000.0) / 100.0;
+//			cs_wlr = Double.isNaN(cs_wlr) ? 0d : cs_wlr;
+//
+//			cs_kills = db.getInt("casual_kills");
+//			cs_deaths = db.getInt("casual_deaths");
+//			cs_kd = Math.floor(((double) cs_kills / (double) (cs_deaths)) * 100.0) / 100.0;
+//		} else {
+//			cs_wins = 0;
+//			cs_losses = 0;
+//			cs_wlr = 0;
+//			cs_wlr = 0;
+//
+//			cs_kills = 0;
+//			cs_deaths = 0;
+//			cs_kd = 0;
+//		}
+		
 
-		cs_wins = seasonal.isNull("total_casualwins") ? 0 : seasonal.getInt("total_casualwins");
-		cs_losses = seasonal.isNull("total_casuallosses") ? 0 : seasonal.getInt("total_casuallosses");
-		cs_wlr = Math.floor(((double) cs_wins / (double) (cs_wins + cs_losses)) * 10000.0) / 100.0;
-		cs_wlr = Double.isNaN(cs_wlr) ? 0d : cs_wlr;
-
-		cs_kills = seasonal.isNull("total_casualkills") ? 0 : seasonal.getInt("total_casualkills");
-		cs_deaths = seasonal.isNull("total_casualdeaths") ? 0 : seasonal.getInt("total_casualdeaths");
-		cs_kd = Math.floor(((double) cs_kills / (double) (cs_deaths)) * 100.0) / 100.0;
-
-		int ranked_playtime = p_data.getInt(0);
-		int casual_playtime = p_data.getInt(5);
+		
+		int ranked_playtime = stats.getInt("rankedpvp_timeplayed");
+		int casual_playtime = stats.getInt("casualpvp_timeplayed");
 		playtime = Math.round((ranked_playtime + casual_playtime) / (60 * 60));
 
-		favAttacker = jo.getString("favattacker");
-		favDefender = jo.getString("favdefender");
-
+		JSONObject pastSeasons = jo.getJSONObject("seasons");
 		// latest season
 		seasons[0][0] = ranked.getInt(latestSeasonPlayed + "_maxrank");
 		seasons[0][1] = ranked.getInt(latestSeasonPlayed + "_maxmmr");
 
 		// 1 season before
 		try {
-			if (jo.has("season" + (currentSeason - 1) + "rank") && jo.has("season" + (currentSeason - 1) + "mmr")) {
-				seasons[1][0] = jo.getInt("season" + (currentSeason - 1) + "rank");
-				seasons[1][1] = jo.getInt("season" + (currentSeason - 1) + "mmr");
-			}
+			seasons[1][0] = pastSeasons.getJSONObject(currentSeason-1+"").getInt("maxrank");
+			seasons[1][1] = pastSeasons.getJSONObject(currentSeason-1+"").get("maxmmr") instanceof String?0:pastSeasons.getJSONObject(currentSeason-1+"").getInt("maxmmr");
 		} catch (JSONException ex) {
 			Main.LOG.error("", ex);
 			seasons[1][0] = seasons[1][1] = -1;
@@ -227,27 +231,14 @@ public class RainbowSixStats {
 
 		// 2 seasons before
 		try {
-			if (jo.has("season" + (currentSeason - 2) + "rank") && jo.has("season" + (currentSeason - 2) + "mmr")) {
-				seasons[2][0] = jo.getInt("season" + (currentSeason - 2) + "rank");
-				seasons[2][1] = jo.getInt("season" + (currentSeason - 2) + "mmr");
-			}
+			seasons[2][0] = pastSeasons.getJSONObject(currentSeason-2+"").getInt("maxrank");
+			seasons[2][1] = pastSeasons.getJSONObject(currentSeason-2+"").get("maxmmr") instanceof String?0:pastSeasons.getJSONObject(currentSeason-2+"").getInt("maxmmr");
 		} catch (JSONException ex) {
 			Main.LOG.error("", ex);
 			seasons[2][0] = seasons[2][1] = -1;
 		}
 
-		updatedAgo = jo.getString("updatedon").replaceAll("(<u>|</u>)", "");
-		updatedMillis = jo.getLong("utime") * 1000;
-
-		if (latestSeasonPlayed.equals("EU")) {
-			mainRegion = "Europe";
-		} else if (latestSeasonPlayed.equals("NA")) {
-			mainRegion = "America";
-		} else if (latestSeasonPlayed.equals("AS")) {
-			mainRegion = "Asia";
-		} else {
-			mainRegion = "Unknown";
-		}
+		updatedMillis = jo.getJSONObject("refresh").getLong("utime") * 1000;
 	}
 
 	public String getUUID() {
@@ -330,29 +321,29 @@ public class RainbowSixStats {
 		return rs_kd;
 	}
 
-	public int getCasualWinsSeasonal() {
-		return cs_wins;
-	}
-
-	public int getCasualLossesSeasonal() {
-		return cs_losses;
-	}
-
-	public double getCasualWinLoseRateSeasonal() {
-		return cs_wlr;
-	}
-
-	public int getCasualKillsSeasonal() {
-		return cs_kills;
-	}
-
-	public int getCasualDeathsSeasonal() {
-		return cs_deaths;
-	}
-
-	public double getCasualKDRSeasonal() {
-		return cs_kd;
-	}
+//	public int getCasualWinsSeasonal() {
+//		return cs_wins;
+//	}
+//
+//	public int getCasualLossesSeasonal() {
+//		return cs_losses;
+//	}
+//
+//	public double getCasualWinLoseRateSeasonal() {
+//		return cs_wlr;
+//	}
+//
+//	public int getCasualKillsSeasonal() {
+//		return cs_kills;
+//	}
+//
+//	public int getCasualDeathsSeasonal() {
+//		return cs_deaths;
+//	}
+//
+//	public double getCasualKDRSeasonal() {
+//		return cs_kd;
+//	}
 
 	public int getCurrentRank() {
 		return currentRank;
@@ -382,14 +373,6 @@ public class RainbowSixStats {
 		return playtime;
 	}
 
-	public String getFavAttacker() {
-		return translateOperators(favAttacker);
-	}
-
-	public String getFavDefender() {
-		return translateOperators(favDefender);
-	}
-
 	public String getMainRegion() {
 		return mainRegion;
 	}
@@ -404,10 +387,6 @@ public class RainbowSixStats {
 
 	public int[][] getLastThreeSeasonRanks() {
 		return seasons;
-	}
-
-	public String getUpdatedAgo() {
-		return updatedAgo;
 	}
 
 	public Long getUpdatedMillis() {
