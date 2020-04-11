@@ -6,10 +6,12 @@ import java.util.function.Predicate;
 
 /**
  * The available Challenges, currently hard coded
+ *
  * @author MeFisto94
  */
 public enum Challenges {
-	// Languages
+
+	  // Languages
     GERMAN_FRENCH(op -> {
         List<Language> list = Arrays.asList(op.unit.languages);
         return op.unit.continent.equals(Continent.EUROPE) && (list.contains(Language.GERMAN) || list.contains(Language.FRENCH));
@@ -52,14 +54,46 @@ public enum Challenges {
     
     // Misc
     TOXIC(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TOXIC), "Toxic", "Play operators that are considered as toxic"),
-	RANDOM_OP(op -> true, "Random Operator", "Play as a random operator (don't choose one)"); 
+	  RANDOM_OP(op -> true, "Random Operator", "Play as a random operator (don't choose one)"); 
 
+
+    /**
+     * The Predicate used to filter operators capable of fulfilling this challenge
+     */
     public Predicate<Operator> filter;
+
+    /**
+     * The canonical name of this challenge
+     */
     public String name;
+
+    /**
+     * The Description of this challenge
+     */
     public String desc;
+
+    /**
+     * Whether this challenge is permitted on all operators (operator agnostic)
+     */
+    public boolean allOperators;
+
+    /**
+     * Constructs a challenge which is only completable with Operators passing the filter.
+     *
+     * @param filter The predicated used to filter capable operators
+     * @param name The canonical name of this challenge
+     * @param desc The description of this challenge.
+     */
     Challenges(Predicate<Operator> filter, String name, String desc) {
         this.filter = filter;
         this.name = name;
         this.desc = desc;
+        this.allOperators = false;
+    }
+
+    Challenges(String name, String desc) {
+        this.name = name;
+        this.desc = desc;
+        this.allOperators = true;
     }
 }
