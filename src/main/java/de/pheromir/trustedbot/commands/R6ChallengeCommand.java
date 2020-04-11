@@ -9,12 +9,15 @@ import javax.annotation.Nullable;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 
+import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.r6.ChallengeResult;
 import de.pheromir.trustedbot.r6.Challenges;
 import de.pheromir.trustedbot.r6.Operator;
 import de.pheromir.trustedbot.r6.Side;
+
+import net.dv8tion.jda.core.EmbedBuilder;
 
 /**
  * The Rainbow Six Random Challenge Command
@@ -76,9 +79,14 @@ public class R6ChallengeCommand extends TrustedCommand {
         } else {
             Random randy = new Random();
             ChallengeResult res = opList.get(randy.nextInt(opList.size()));
-            e.reply(String.format("Do the following Challenge(s): %s\nOperators: %s",
-                res.challenges.stream().map(String::valueOf).collect(Collectors.joining(" ")),
-                res.eligibleOperators.stream().map(String::valueOf).collect(Collectors.joining(", "))));
+            Challenges challenge = res.challenges.get(randy.nextInt(res.challenges.size()));
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Rainbow Six Challenge");
+            eb.addField("Challenge", challenge.name, true);
+            eb.addBlankField(true);
+            eb.addField("Description", challenge.desc, true);
+            eb.addField("Eligible Operators", res.eligibleOperators.stream().map(op -> op.emote+" "+Methods.convertToTitleCase(op.toString())).collect(Collectors.joining("\n")), false);
+            e.reply(eb.build());
             return true;
         }
     }
