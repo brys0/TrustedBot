@@ -1,15 +1,20 @@
 package de.pheromir.trustedbot.commands;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import de.pheromir.trustedbot.commands.base.TrustedCommand;
-import de.pheromir.trustedbot.config.GuildConfig;
-import de.pheromir.trustedbot.r6.*;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+
+import com.jagrosh.jdautilities.command.CommandEvent;
+
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
+import de.pheromir.trustedbot.config.GuildConfig;
+import de.pheromir.trustedbot.r6.ChallengeResult;
+import de.pheromir.trustedbot.r6.Challenges;
+import de.pheromir.trustedbot.r6.Operator;
+import de.pheromir.trustedbot.r6.Side;
 
 /**
  * The Rainbow Six Random Challenge Command
@@ -19,8 +24,9 @@ import java.util.stream.Collectors;
 public class R6ChallengeCommand extends TrustedCommand {
 
     public R6ChallengeCommand() {
-        this.name = "r6c";
-        this.help = "Create a Rainbow Six Challenge for X PLayers";
+        this.name = "r6challenge";
+        this.aliases = new String[] {"r6c"};
+        this.help = "Create a Rainbow Six Challenge for X Players";
         this.arguments = "<atk/def> <Number of Players>";
         this.category = new Category("Miscellaneous");
     }
@@ -70,12 +76,9 @@ public class R6ChallengeCommand extends TrustedCommand {
         } else {
             Random randy = new Random();
             ChallengeResult res = opList.get(randy.nextInt(opList.size()));
-
-            e.reply(String.format("Do the following Challenge(s): %s\nOperators: %s\n**GameMode: %s**",
+            e.reply(String.format("Do the following Challenge(s): %s\nOperators: %s",
                 res.challenges.stream().map(String::valueOf).collect(Collectors.joining(" ")),
-                res.eligibleOperators.stream().map(String::valueOf).collect(Collectors.joining(", ")),
-                GameMode.values()[randy.nextInt(GameMode.values().length)].toString()
-            ));
+                res.eligibleOperators.stream().map(String::valueOf).collect(Collectors.joining(", "))));
             return true;
         }
     }

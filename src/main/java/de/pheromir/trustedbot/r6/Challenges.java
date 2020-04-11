@@ -13,9 +13,11 @@ public enum Challenges {
         List<Language> list = Arrays.asList(op.unit.languages);
         return list.contains(Language.GERMAN) || list.contains(Language.FRENCH);
     }),
+    
     ENGLISHMEN(op -> Arrays.asList(op.unit.languages).contains(Language.ENGLISH)),
     SPANISH(op -> Arrays.asList(op.unit.languages).contains(Language.SPANISH)),
-
+    RANDOM_OP(op -> true),
+    
     TOXIC(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TOXIC)),
     TRAPS(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TRAPS)),
     C4(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.C4)),
@@ -25,7 +27,7 @@ public enum Challenges {
     MEMES(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.MEME)),
     RUSH(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.RUSH)),
     CLAYMORE(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.CLAYMORE)),
-
+    
     // Continents
     ASIA(op -> op.unit.continent == Continent.ASIA),
     EUROPE(op -> op.unit.continent == Continent.EUROPE),
