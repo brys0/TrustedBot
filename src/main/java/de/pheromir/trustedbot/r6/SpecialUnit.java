@@ -9,7 +9,7 @@ public enum SpecialUnit {
     GIGN(Continent.EUROPE, Language.FRENCH),
     SAS(Continent.EUROPE, Language.ENGLISH),
     SWAT(Continent.NORTH_AMERICA, Language.ENGLISH),
-    SPETZNAS(Continent.ASIA, Language.RUSSIAN),
+    SPETSNAZ(Continent.ASIA, Language.RUSSIAN),
     GSG9(Continent.EUROPE, Language.GERMAN),
     JTF2(Continent.NORTH_AMERICA, Language.ENGLISH, Language.FRENCH),
     NAVY(Continent.NORTH_AMERICA, Language.ENGLISH),
