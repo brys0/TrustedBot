@@ -34,6 +34,7 @@ public enum Operator {
     AMARU("<:amaru:698351308272566303>", false, SpecialUnit.APCA, Side.ATTACKERS, new WeaponType[]{ WeaponType.LMG, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG}, SpecialAbilities.CLAYMORE, SpecialAbilities.RUSH),
     KALI("<:kali:698351308989661204>", false, SpecialUnit.NIGHTHAVEN, Side.ATTACKERS, new WeaponType[]{ WeaponType.DMR, WeaponType.SECONDARY_SMG }, SpecialAbilities.CLAYMORE, SpecialAbilities.DISABLER),
     IANA("<:iana:698351308276760637>", false, SpecialUnit.REU, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE }, SpecialAbilities.FRAGS, SpecialAbilities.RUSH),
+    RECRUIT_ATK("<:recruit:698553471531745320>", true, SpecialUnit.UNKNOWN, Side.ATTACKERS, new WeaponType[] { WeaponType.LMG, WeaponType.RIFLE, WeaponType.DMR, WeaponType.SHOTGUN }, SpecialAbilities.MEME, SpecialAbilities.CLAYMORE),
 
     // DEFENDERS
     SMOKE("<:smoke:698351308733939752>", true, SpecialUnit.SAS, Side.DEFENDERS, new WeaponType[]{ WeaponType.SMG, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG }),
@@ -62,7 +63,8 @@ public enum Operator {
     WARDEN("<:warden:698351457992179833>", true, SpecialUnit.NAVY, Side.DEFENDERS, new WeaponType[]{WeaponType.SMG, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG}, SpecialAbilities.C4),
     GOYO("<:goyo:698351308230623274>", true, SpecialUnit.APCA, Side.DEFENDERS, new WeaponType[]{WeaponType.SMG, WeaponType.SHOTGUN }, SpecialAbilities.C4, SpecialAbilities.TRAPS),
     WAMAI("<:wamai:698351457686257766>", true, SpecialUnit.NIGHTHAVEN, Side.DEFENDERS, new WeaponType[]{ WeaponType.SMG, WeaponType.RIFLE, WeaponType.REVOLVER}),
-    ORYX("<:oryx:698351308230492252>", true, SpecialUnit.REU /* Unaffiliated */, Side.DEFENDERS, new WeaponType[]{ WeaponType.SMG, WeaponType.SHOTGUN, WeaponType.REVOLVER });
+    ORYX("<:oryx:698351308230492252>", true, SpecialUnit.REU /* Unaffiliated */, Side.DEFENDERS, new WeaponType[]{ WeaponType.SMG, WeaponType.SHOTGUN, WeaponType.REVOLVER }),
+	RECRUIT_DEF("<:recruit:698553471531745320>", true, SpecialUnit.UNKNOWN, Side.DEFENDERS, new WeaponType[] { WeaponType.SMG, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG }, SpecialAbilities.MEME, SpecialAbilities.C4);
 
     public boolean male;
     public SpecialUnit unit;

@@ -18,5 +18,6 @@ public enum Language {
     ITALIAN,
     DANISH,
     AFRICAN,
-    GREEK_AND_DUTCH;
+    GREEK_AND_DUTCH,
+    UNKNOWN;
 }
