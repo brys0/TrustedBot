@@ -26,7 +26,7 @@ public enum Challenges {
     SHIELD(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.SHIELD), "Shield", "Play with a shield"),
     FRAGS(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.FRAGS), "Frags", "Play with frag grenades and use them"),
     CLAYMORE(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.CLAYMORE), "Claymore", "Play with a claymore and use it"),
-    NO_DEF_SHIELD(op -> !Arrays.asList(op.specialAbilities).contains(SpecialAbilities.DEF_SHIELD), "No deployable Shields", "You're not allowed to play with deployable shields"),
+    NO_DEF_SHIELD(op -> op.side == Side.DEFENDERS && !Arrays.asList(op.specialAbilities).contains(SpecialAbilities.DEF_SHIELD), "No deployable Shields", "You're not allowed to play with deployable shields"),
     NO_HARDBREACH(op -> op.side == Side.ATTACKERS && !Arrays.asList(op.specialAbilities).contains(SpecialAbilities.HARD_BREACH), "No hard breach", "You're not allowed to play with hard breachers"),
     
     // Continents
