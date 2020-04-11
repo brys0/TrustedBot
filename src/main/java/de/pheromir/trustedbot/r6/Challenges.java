@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 public enum Challenges {
     GERMAN_FRENCH(op -> {
         List<Language> list = Arrays.asList(op.unit.languages);
-        return list.contains(Language.GERMAN) || list.contains(Language.FRENCH);
+        return op.unit.continent.equals(Continent.EUROPE) && (list.contains(Language.GERMAN) || list.contains(Language.FRENCH));
     }, "German & French", "Play german or french operators only"),
     
     ENGLISHMEN(op -> Arrays.asList(op.unit.languages).contains(Language.ENGLISH), "Englishmen", "Play english speaking operators only"),
