@@ -6,9 +6,11 @@ import java.util.function.Predicate;
 
 /**
  * The available Challenges, currently hard coded
+ *
  * @author MeFisto94
  */
 public enum Challenges {
+
     GERMAN_FRENCH(op -> {
         List<Language> list = Arrays.asList(op.unit.languages);
         return op.unit.continent.equals(Continent.EUROPE) && (list.contains(Language.GERMAN) || list.contains(Language.FRENCH));
@@ -16,7 +18,8 @@ public enum Challenges {
     
     ENGLISHMEN(op -> Arrays.asList(op.unit.languages).contains(Language.ENGLISH), "Englishmen", "Play english speaking operators only"),
     SPANISH(op -> Arrays.asList(op.unit.languages).contains(Language.SPANISH), "Spanish", "Play spanish operators only"),
-    RANDOM_OP(op -> true, "Random Operator", "Play as a random operator (don't choose one)"),
+
+    RANDOM_OP("Random Operator", "Play as a random operator (don't choose one)"),
     
     TOXIC(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TOXIC), "Toxic", "Play operators that are considered as toxic"),
     TRAPS(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TRAPS), "Traps", "Play trap operators"),
@@ -46,12 +49,44 @@ public enum Challenges {
     FEMALE(op -> !op.male, "Female", "Play with female operators only"),
     MALE(op -> op.male, "Male", "Play with male operators only");
 
+
+    /**
+     * The Predicate used to filter operators capable of fulfilling this challenge
+     */
     public Predicate<Operator> filter;
+
+    /**
+     * The canonical name of this challenge
+     */
     public String name;
+
+    /**
+     * The Description of this challenge
+     */
     public String desc;
+
+    /**
+     * Whether this challenge is permitted on all operators (operator agnostic)
+     */
+    public boolean allOperators;
+
+    /**
+     * Constructs a challenge which is only completable with Operators passing the filter.
+     *
+     * @param filter The predicated used to filter capable operators
+     * @param name The canonical name of this challenge
+     * @param desc The description of this challenge.
+     */
     Challenges(Predicate<Operator> filter, String name, String desc) {
         this.filter = filter;
         this.name = name;
         this.desc = desc;
+        this.allOperators = false;
+    }
+
+    Challenges(String name, String desc) {
+        this.name = name;
+        this.desc = desc;
+        this.allOperators = true;
     }
 }

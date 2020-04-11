@@ -85,7 +85,11 @@ public class R6ChallengeCommand extends TrustedCommand {
             eb.addField("Challenge", challenge.name, true);
             eb.addBlankField(true);
             eb.addField("Description", challenge.desc, true);
-            eb.addField("Eligible Operators", res.eligibleOperators.stream().map(op -> op.emote+" "+Methods.convertToTitleCase(op.toString())).collect(Collectors.joining("\n")), false);
+            if (challenge.allOperators) {
+                eb.addField("Eligible Operators", "All Operators!", false);
+            } else {
+                eb.addField("Eligible Operators", res.eligibleOperators.stream().map(op -> op.emote + " " + Methods.convertToTitleCase(op.toString())).collect(Collectors.joining("\n")), false);
+            }
             e.reply(eb.build());
             return true;
         }
