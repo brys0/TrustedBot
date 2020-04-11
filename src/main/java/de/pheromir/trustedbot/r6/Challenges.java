@@ -49,17 +49,18 @@ public enum Challenges {
     MALE(op -> op.male, "Male", "Play with male operators only"),
 	
     // Playstyle
-    RUSH(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.RUSH), "Rush", "Rush (B) сука блять"),
+    RUSH(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.RUSH), "Rush", "Rush B сука блять\n(Dont stop walking!)"),
     SPAWN_PEEK(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.SPAWN_PEEK), "Spawn peek", "Peek the hell out of the attackers"),
     MEMES(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.MEME), "Meme", "Play \"Meme-operators\""),
     REVERSE(op -> op.side == Side.DEFENDERS, "Reverse Role", "Roamers are anchors, anchors are roamers"),
     NO_REINFORCEMENTS("No Reinforcements", "You're not allowed to use any reinforcement each"),
     ONE_REINFORCEMENT("One Reinforcement", "You're only allowed to use one reinforcement each"),
     NO_GADGETS("No Gadgets", "You're not allowed to use your primary-/secondary gadgets"),
+    ONE_AT_A_TIME(op -> op.side == Side.ATTACKERS, "One at a time", "Only one person at the same time in the building. The last one in the scoreboard starts, then the one above (and so on..)"),
     
     // Misc
     TOXIC(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TOXIC), "Toxic", "Play operators that are considered as toxic"),
-	RANDOM_OP("Random Operator", "Play as a random operator (don't choose one)"); 
+	RANDOM_OP("Random Operator", "Play as a random operator (don't choose one)");
 
 
     /**

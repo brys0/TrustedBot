@@ -10,9 +10,9 @@ public enum Operator {
     SLEDGE("<:sledge:698351308779814941>", "Sledge", true, SpecialUnit.SAS, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG}, SpecialAbilities.FRAGS, SpecialAbilities.RUSH),
     THATCHER("<:thatcher:698351308305989644> ", "Thatcher", true, SpecialUnit.SAS, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.SHOTGUN}, SpecialAbilities.CLAYMORE, SpecialAbilities.DISABLER),
     ASH("<:ash:698351308452659302>", "Ash", false, SpecialUnit.SWAT, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE }, SpecialAbilities.RUSH),
-    THERMITE("<:thermite:698351308712706119>", "Thermite", false, SpecialUnit.SWAT, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.SHOTGUN}, SpecialAbilities.CLAYMORE, SpecialAbilities.HARD_BREACH),
+    THERMITE("<:thermite:698351308712706119>", "Thermite", true, SpecialUnit.SWAT, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.SHOTGUN}, SpecialAbilities.CLAYMORE, SpecialAbilities.HARD_BREACH),
     TWITCH("<:twitch:698351308922683402>", "Twitch", false, SpecialUnit.GIGN, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.DMR, WeaponType.SHOTGUN, WeaponType.REVOLVER }, SpecialAbilities.CLAYMORE, SpecialAbilities.RUSH),
-    MONTAGNE("<:montagne:698351310558462072>", "Montagne", false, SpecialUnit.GIGN, Side.ATTACKERS, new WeaponType[] { WeaponType.REVOLVER }, SpecialAbilities.SHIELD),
+    MONTAGNE("<:montagne:698351310558462072>", "Montagne", true, SpecialUnit.GIGN, Side.ATTACKERS, new WeaponType[] { WeaponType.REVOLVER }, SpecialAbilities.SHIELD),
     GLAZ("<:glaz:698351308419235861>", "Glaz", true, SpecialUnit.SPETSNAZ, Side.ATTACKERS, new WeaponType[] { WeaponType.DMR }, SpecialAbilities.FRAGS, SpecialAbilities.MEME),
     FUZE("<:fuze:698351308746260571>","Fuze",  true, SpecialUnit.SPETSNAZ, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.LMG }, SpecialAbilities.SHIELD),
     BLITZ("<:blitz:698351308687540254>", "Blitz", true, SpecialUnit.GSG9, Side.ATTACKERS, new WeaponType[0], SpecialAbilities.SHIELD, SpecialAbilities.RUSH, SpecialAbilities.TOXIC),
@@ -24,7 +24,7 @@ public enum Operator {
     JACKAL("<:jackal:698351308607848478>", "Jackal", true, SpecialUnit.GEO, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.SMG, WeaponType.SHOTGUN }, SpecialAbilities.MEME, SpecialAbilities.CLAYMORE, SpecialAbilities.TOXIC),
     YING("<:ying:698351457987985409>", "Ying", false, SpecialUnit.SDU, Side.ATTACKERS, new WeaponType[]{ WeaponType.LMG, WeaponType.SHOTGUN }, SpecialAbilities.TOXIC, SpecialAbilities.CLAYMORE),
     ZOFIA("<:zofia:698351457992442028>", "Zofia", false, SpecialUnit.GROM, Side.ATTACKERS, new WeaponType[]{ WeaponType.LMG, WeaponType.RIFLE }, SpecialAbilities.CLAYMORE),
-    DOKKAEBI("<:dokkaebi:698351308523962450>", "Dokkaebi", false, SpecialUnit.SevenOSeven, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG }, SpecialAbilities.TOXIC),
+    DOKKAEBI("<:dokkaebi:698351308523962450>", "Dokkaebi", false, SpecialUnit.SevenOSeven, Side.ATTACKERS, new WeaponType[]{ WeaponType.DMR, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG }, SpecialAbilities.TOXIC),
     LION("<:lion:698351308456984707>", "Lion", true, SpecialUnit.GIGN /* French, actually CBRN */, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.DMR, WeaponType.SHOTGUN, WeaponType.REVOLVER }, SpecialAbilities.CLAYMORE, SpecialAbilities.TOXIC, SpecialAbilities.RUSH),
     FINKA("<:finka:698351308310315129>", "Finka", false, SpecialUnit.SPETSNAZ /* See above */, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.LMG, WeaponType.SHOTGUN }, SpecialAbilities.FRAGS),
     MAVERICK("<:maverick:698351308876546128>", "Maverick", true, SpecialUnit.NAVY /* See above */, Side.ATTACKERS, new WeaponType[]{ WeaponType.RIFLE, WeaponType.DMR }, SpecialAbilities.CLAYMORE, SpecialAbilities.FRAGS, SpecialAbilities.DISABLER, SpecialAbilities.HARD_BREACH),
@@ -63,7 +63,7 @@ public enum Operator {
     WARDEN("<:warden:698351457992179833>", "Warden", true, SpecialUnit.NAVY, Side.DEFENDERS, new WeaponType[]{WeaponType.SMG, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG}, SpecialAbilities.C4, SpecialAbilities.DEF_SHIELD),
     GOYO("<:goyo:698351308230623274>", "Goyo", true, SpecialUnit.APCA, Side.DEFENDERS, new WeaponType[]{WeaponType.SMG, WeaponType.SHOTGUN }, SpecialAbilities.C4, SpecialAbilities.TRAPS, SpecialAbilities.DEF_SHIELD),
     WAMAI("<:wamai:698351457686257766>", "Wamai", true, SpecialUnit.NIGHTHAVEN, Side.DEFENDERS, new WeaponType[]{ WeaponType.SMG, WeaponType.RIFLE, WeaponType.REVOLVER}, SpecialAbilities.DEF_SHIELD),
-    ORYX("<:oryx:698351308230492252>", "Oryx", true, SpecialUnit.REU /* Unaffiliated */, Side.DEFENDERS, new WeaponType[]{ WeaponType.SMG, WeaponType.SHOTGUN, WeaponType.REVOLVER }),
+    ORYX("<:oryx:698351308230492252>", "Oryx", true, SpecialUnit.REU /* Unaffiliated */, Side.DEFENDERS, new WeaponType[]{ WeaponType.SMG, WeaponType.SHOTGUN }),
 	RECRUIT_DEF("<:recruit:698553471531745320>", "Recruit", true, SpecialUnit.UNKNOWN, Side.DEFENDERS, new WeaponType[] { WeaponType.SMG, WeaponType.SHOTGUN, WeaponType.SECONDARY_SMG }, SpecialAbilities.MEME, SpecialAbilities.C4, SpecialAbilities.DEF_SHIELD);
 
     public boolean male;
