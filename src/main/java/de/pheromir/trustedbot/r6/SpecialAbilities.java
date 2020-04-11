@@ -16,5 +16,6 @@ public enum SpecialAbilities {
     RUSH,
     DISABLER,
     HARD_BREACH,
-    C4
+    C4,
+    DEF_SHIELD;
 }

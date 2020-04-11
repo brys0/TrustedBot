@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.r6.ChallengeResult;
@@ -67,7 +66,7 @@ public class R6ChallengeCommand extends TrustedCommand {
         List<ChallengeResult> opList = Arrays.stream(Challenges.values()).map(c ->
             // Challenge to possible Operator List
             new ChallengeResult(c,
-                Arrays.stream(Operator.values()).filter((Operator op) -> op.side.equals(side) && c.filter.test(op)).collect(Collectors.toList())
+                Arrays.stream(Operator.values()).filter((Operator op) -> op.side.equals(side) && (c.allOperators || c.filter.test(op))).collect(Collectors.toList())
             )
             // Doable with current party.
         ).filter(cr -> cr.eligibleOperators.size() >= numPlayers).collect(Collectors.toList());
@@ -88,7 +87,7 @@ public class R6ChallengeCommand extends TrustedCommand {
             if (challenge.allOperators) {
                 eb.addField("Eligible Operators", "All Operators!", false);
             } else {
-                eb.addField("Eligible Operators", res.eligibleOperators.stream().map(op -> op.emote + " " + Methods.convertToTitleCase(op.toString())).collect(Collectors.joining("\n")), false);
+                eb.addField("Eligible Operators", res.eligibleOperators.stream().map(op -> op.emote + " " + op.name).collect(Collectors.joining("\n")), false);
             }
             e.reply(eb.build());
             return true;
