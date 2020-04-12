@@ -61,6 +61,7 @@ public enum Challenges {
     // Misc
     TOXIC(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TOXIC), "Toxic", "Play operators that are considered as toxic"),
 	RANDOM_OP("Random Operator", "Play as a random operator (don't choose one)"),
+	CARAMELLDANSEN("Caramelldansen", "Hear [Caramelldansen](https://www.youtube.com/watch?v=6-8E4Nirh9s) on 100% Volume while playing the round"),
     BRIGHTNESS_LOWEST("Lowest Brightness", "Turn your Display Brightness to the lowest value possible"),
     BRIGHTNESS_HIGHEST("Highest Brightness", "Turn your Display Brightness to the highest value possible"),
     INVERTED_CONTROLS("Inverted Controls", "Invert your Mouse Axis in the Controls");
