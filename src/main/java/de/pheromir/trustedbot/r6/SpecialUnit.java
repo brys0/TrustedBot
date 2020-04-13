@@ -24,7 +24,7 @@ public enum SpecialUnit {
     JAGERKORPSET(Continent.EUROPE, Language.DANISH),
     GIS(Continent.EUROPE, Language.ITALIAN),
     APCA(Continent.SOUTH_AMERICA, Language.SPANISH),
-    REU(Continent.EUROPE, Language.GREEK_AND_DUTCH),
+    REU(Continent.ASIA, Language.GREEK_AND_DUTCH),
     NIGHTHAVEN(Continent.AFRICA, Language.AFRICAN), /* Kali is Indian(?) */
 	UNKNOWN(Continent.UNKNOWN, Language.UNKNOWN);
 
