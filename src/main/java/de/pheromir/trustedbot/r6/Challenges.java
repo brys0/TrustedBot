@@ -57,6 +57,7 @@ public enum Challenges {
     ONE_REINFORCEMENT(op -> op.side == Side.DEFENDERS, "One Reinforcement", "You're only allowed to use one reinforcement each", true),
     NO_GADGETS("No Gadgets", "You're not allowed to use your primary-/secondary gadgets"),
     ONE_AT_A_TIME(op -> op.side == Side.ATTACKERS, "One at a time", "Only one person at the same time in the building. The last one in the scoreboard starts, then the one above (and so on..)", true),
+    I_LIKE_DRONES(op -> op.side == Side.DEFENDERS, "I like drones!", "You're not allowed to destroy any drone (Hacking still allowed)"),
     
     // Misc
     TOXIC(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TOXIC), "Toxic", "Play operators that are considered as toxic"),

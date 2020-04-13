@@ -66,7 +66,7 @@ public class R6ChallengeCommand extends TrustedCommand {
         List<ChallengeResult> opList = Arrays.stream(Challenges.values()).map(c ->
             // Challenge to possible Operator List
             new ChallengeResult(c,
-                Arrays.stream(Operator.values()).filter((Operator op) -> op.side.equals(side) && (c.allOperators || c.filter.test(op))).collect(Collectors.toList())
+                Arrays.stream(Operator.values()).filter((Operator op) -> op.side.equals(side) && c.filter.test(op)).collect(Collectors.toList())
             )
             // Doable with current party.
         ).filter(cr -> cr.eligibleOperators.size() >= numPlayers).collect(Collectors.toList());
