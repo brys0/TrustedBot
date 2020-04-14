@@ -29,6 +29,7 @@ import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.AliasCommand;
 import de.pheromir.trustedbot.commands.base.CustomCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
+
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -47,9 +48,9 @@ public class CmdListener implements CommandListener {
 				|| gc.getPrefixes().stream().anyMatch(s -> content.toLowerCase().startsWith(s.toLowerCase()))) {
 			final String cmd;
 			if (content.startsWith(Main.commandClient.getTextualPrefix())) {
-				cmd = content.substring(Main.commandClient.getTextualPrefix().length(), content.length()).trim().split(" ")[0];
+				cmd = content.substring(Main.commandClient.getTextualPrefix().length(), content.length()).trim().split(" ")[0].toLowerCase();
 			} else {
-				cmd = contentRaw.substring(Main.getGuildConfig(e.getGuild()).getPrefix().length(), contentRaw.length()).split(" ")[0];
+				cmd = contentRaw.substring(Main.getGuildConfig(e.getGuild()).getPrefix().length(), contentRaw.length()).split(" ")[0].toLowerCase();
 			}
 			if (gc.getAliasCommands().containsKey(cmd)) {
 				if (Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
