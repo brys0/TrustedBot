@@ -45,7 +45,7 @@ public class ColorCommand extends TrustedCommand {
 		this.aliases = new String[] { "colorchooser", "colors" };
 		this.help = "Creates a Message for users to choose a role-color using reactions";
 		this.guildOnly = true;
-		this.botPermissions = new Permission[] { Permission.MANAGE_ROLES };
+		this.botPermissions = new Permission[] { Permission.MANAGE_ROLES, Permission.MESSAGE_MANAGE };
 		this.waiter = waiter;
 		this.category = new Category("Miscellaneous");
 	}
@@ -97,7 +97,7 @@ public class ColorCommand extends TrustedCommand {
 					if (roleName == "" || color == null) {
 						return;
 					}
-					m.getRoles().stream().filter(rol -> colors.contains(rol.getName())).forEach(rol -> g.removeRoleFromMember(m, rol));
+					m.getRoles().stream().filter(rol -> colors.contains(rol.getName())).forEach(rol -> g.removeRoleFromMember(m, rol).queue());
 					if (color != 0xFFFFFF) {
 						if (g.getRolesByName(roleName, false).size() == 0) {
 							g.createRole().setName(roleName).setColor(color).queue(r -> {
@@ -109,7 +109,7 @@ public class ColorCommand extends TrustedCommand {
 								e.reply("An error occurred: " + thr.getMessage());
 							});
 						} else {
-							g.addRoleToMember(m, g.getRolesByName(roleName, false).get(0)).queue(v -> {
+							g.addRoleToMember(m, g.getRolesByName(roleName, false).get(0)).queueAfter(1, TimeUnit.SECONDS, v -> {
 							}, thr -> {
 								e.reply("An error occurred: " + thr.getMessage());
 							});
