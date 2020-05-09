@@ -112,6 +112,7 @@ public class Main {
 	private static String spotifyClient = "none";
 	public static String spotifyToken = "none";
 	public static String pastebinKey = "none";
+	public static String r6TabKey = "none";
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
 	public static ArrayList<String> onlineCBList = new ArrayList<>();
 	public static List<Long> extraPermissions = new ArrayList<>();
@@ -168,8 +169,12 @@ public class Main {
 		// Fun
 		cbuilder.addCommands(new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
 		// Misc
-		cbuilder.addCommands(new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new R6Command(), new R6ChallengeCommand(), new ColorCommand(
-				waiter));
+		cbuilder.addCommands(new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new ColorCommand(
+				waiter), new R6ChallengeCommand());
+		
+		if(!r6TabKey.equalsIgnoreCase("none") && !r6TabKey.isEmpty()) {
+			cbuilder.addCommands(new R6Command());
+		}
 
 		cbuilder.setLinkedCacheSize(0);
 		cbuilder.setListener(new CmdListener());
@@ -328,6 +333,7 @@ public class Main {
 			spotifyClient = cfg.getString("API-Keys.Spotify.Client");
 			spotifySecret = cfg.getString("API-Keys.Spotify.Secret");
 			pastebinKey = cfg.getString("API-Keys.Pastebin");
+			r6TabKey = cfg.getString("API-Keys.R6Tab");
 			extraPermissions = cfg.getLongList("ExtraPermissions");
 
 			Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Guilds" + " (GuildId VARCHAR(64) PRIMARY KEY,"

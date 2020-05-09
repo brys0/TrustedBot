@@ -94,7 +94,7 @@ public class RainbowSixStats {
 	public RainbowSixStats(String user) throws Exception {
 		JSONObject usersearch;
 		try {
-			usersearch = Unirest.get(String.format("https://r6.apitab.com/search/uplay/%s?u=%d", user, System.currentTimeMillis()/1000)).asJson().getBody().getObject();
+			usersearch = Unirest.get(String.format("https://r6.apitab.com/search/uplay/%s?u=%d&cid=%s", user, System.currentTimeMillis()/1000, Main.r6TabKey)).asJson().getBody().getObject();
 		} catch (UnirestException e) {
 			throw e;
 		}
@@ -103,12 +103,12 @@ public class RainbowSixStats {
 		} else {
 			uuid = usersearch.getJSONObject("players").getJSONObject(usersearch.getJSONObject("players").keys().next()).getJSONObject("profile").getString("p_user");
 		}
-		apiUrl = String.format("https://r6.apitab.com/player/%s?u=%d", uuid, System.currentTimeMillis()/1000);
+		apiUrl = String.format("https://r6.apitab.com/player/%s?u=%d&cid=%s", uuid, System.currentTimeMillis()/1000, Main.r6TabKey);
 		seasons = new int[3][2];
 		aliases = new ArrayList<>();
 		JSONObject jo;
 		try {
-			Unirest.get(String.format("https://r6.apitab.com/update/%s", uuid)).asString();
+			Unirest.get(String.format("https://r6.apitab.com/update/%s&cid=%s", uuid, Main.r6TabKey)).asString();
 		} catch (UnirestException ex) {
 			if (ex.getCause() instanceof SocketTimeoutException) {
 				Main.LOG.warn("[R6STATS] Timeout while requesting stats update");
@@ -152,7 +152,7 @@ public class RainbowSixStats {
 		currentMMR = ranked.getInt(latestSeasonPlayed + "_mmr");
 		currentMMRchange = ranked.getInt(latestSeasonPlayed + "_mmrchange");
 
-		if (jo.has("aliases")) {
+		if (jo.has("aliases") && jo.get("aliases") instanceof JSONObject) {
 			JSONObject aliasesObj = jo.getJSONObject("aliases");
 			aliasesObj.keys().forEachRemaining(ind -> aliases.add(aliasesObj.getJSONObject(ind).getString("name")));
 		}
