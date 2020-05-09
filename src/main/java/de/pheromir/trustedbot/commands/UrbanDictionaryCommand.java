@@ -34,9 +34,10 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
+
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 
 public class UrbanDictionaryCommand extends TrustedCommand {
 
@@ -45,7 +46,7 @@ public class UrbanDictionaryCommand extends TrustedCommand {
 	public UrbanDictionaryCommand() {
 		this.name = "urbandictionary";
 		this.aliases = new String[] { "ud" };
-		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
+		this.botPermissions = new Permission[] { Permission.MESSAGE_EMBED_LINKS };
 		this.help = "Show the definitions of the specified word from the UrbanDictionary.";
 		this.guildOnly = false;
 		this.category = new Category("Miscellaneous");

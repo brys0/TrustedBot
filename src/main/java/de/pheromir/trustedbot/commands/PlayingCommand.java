@@ -44,9 +44,10 @@ import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.music.IcecastMeta;
 import de.pheromir.trustedbot.music.YouTubeTitleCache;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.MessageEmbed.Field;
+
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 
 public class PlayingCommand extends TrustedCommand {
 
@@ -59,7 +60,7 @@ public class PlayingCommand extends TrustedCommand {
 		this.aliases = new String[] { "np" };
 		this.help = "Shows the currently playing track.";
 		this.guildOnly = true;
-		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
+		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE }; 
 		this.category = new Category("Music");
 	}
 
@@ -131,6 +132,7 @@ public class PlayingCommand extends TrustedCommand {
 			YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
 					new HttpRequestInitializer() {
 
+						@Override
 						public void initialize(HttpRequest request) throws IOException {
 						}
 					}).setApplicationName("DiscordBot").build();

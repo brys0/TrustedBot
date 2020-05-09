@@ -29,7 +29,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
-import net.dv8tion.jda.core.entities.User;
+
+import net.dv8tion.jda.api.entities.User;
 
 public class ExtraAddCommand extends TrustedCommand {
 
@@ -46,7 +47,7 @@ public class ExtraAddCommand extends TrustedCommand {
 		for (String arg : args) {
 			Pattern p = Pattern.compile("(\\d+)");
 			Matcher m = p.matcher(arg);
-			if (m.find()) {
+			if (m.find()) { 
 				String id = m.group(1);
 				User mem = Main.jda.getUserById(id);
 				if (mem == null) {

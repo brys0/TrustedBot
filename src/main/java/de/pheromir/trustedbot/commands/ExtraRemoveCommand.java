@@ -29,7 +29,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
-import net.dv8tion.jda.core.entities.User;
+
+import net.dv8tion.jda.api.entities.User;
 
 public class ExtraRemoveCommand extends TrustedCommand {
 

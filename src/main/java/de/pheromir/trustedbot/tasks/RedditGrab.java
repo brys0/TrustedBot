@@ -35,9 +35,11 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.misc.RedditSubscription.SortType;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed.Field;
-import net.dv8tion.jda.core.entities.TextChannel;
+
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.entities.TextChannel;
+
 
 public class RedditGrab implements Runnable {
 

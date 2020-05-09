@@ -21,10 +21,12 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.music;
 
+import java.nio.ByteBuffer;
+
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 
-import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.api.audio.AudioSendHandler;
 
 /**
  * This is a wrapper around AudioPlayer which makes it behave as an
@@ -37,33 +39,19 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
 	private final AudioPlayer audioPlayer;
 	private AudioFrame lastFrame;
 
-	/**
-	 * @param audioPlayer
-	 *            Audio player to wrap.
-	 */
 	public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
 		this.audioPlayer = audioPlayer;
 	}
 
 	@Override
 	public boolean canProvide() {
-		if (lastFrame == null) {
-			lastFrame = audioPlayer.provide();
-		}
-
+		lastFrame = audioPlayer.provide();
 		return lastFrame != null;
 	}
 
 	@Override
-	public byte[] provide20MsAudio() {
-		if (lastFrame == null) {
-			lastFrame = audioPlayer.provide();
-		}
-
-		byte[] data = lastFrame != null ? lastFrame.getData() : null;
-		lastFrame = null;
-
-		return data;
+	public ByteBuffer provide20MsAudio() {
+		return ByteBuffer.wrap(lastFrame.getData());
 	}
 
 	@Override

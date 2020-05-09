@@ -38,7 +38,8 @@ import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.misc.RedditSubscription;
 import de.pheromir.trustedbot.misc.RedditSubscription.SortType;
-import net.dv8tion.jda.core.Permission;
+
+import net.dv8tion.jda.api.Permission;
 
 public class RedditCommand extends TrustedCommand {
 

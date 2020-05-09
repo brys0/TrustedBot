@@ -16,7 +16,7 @@ import de.pheromir.trustedbot.r6.Challenges;
 import de.pheromir.trustedbot.r6.Operator;
 import de.pheromir.trustedbot.r6.Side;
 
-import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 /**
  * The Rainbow Six Random Challenge Command

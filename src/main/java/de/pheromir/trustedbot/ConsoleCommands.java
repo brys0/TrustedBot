@@ -30,7 +30,8 @@ import com.mashape.unirest.http.Unirest;
 
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
-import net.dv8tion.jda.core.entities.Icon;
+
+import net.dv8tion.jda.api.entities.Icon;
 
 public class ConsoleCommands implements Runnable {
 

@@ -30,9 +30,10 @@ import de.pheromir.trustedbot.commands.base.AliasCommand;
 import de.pheromir.trustedbot.commands.base.CustomCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
 
 public class CmdListener implements CommandListener {
 

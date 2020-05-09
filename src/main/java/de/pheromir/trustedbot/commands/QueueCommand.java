@@ -30,9 +30,10 @@ import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.music.QueueTrack;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
+
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.Permission;
 
 public class QueueCommand extends TrustedCommand {
 
@@ -41,7 +42,7 @@ public class QueueCommand extends TrustedCommand {
 		this.aliases = new String[] { "q", "playlist" };
 		this.help = "Shows current queue.";
 		this.guildOnly = true;
-		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE };
+		this.botPermissions = new Permission[] { Permission.MESSAGE_WRITE }; 
 		this.category = new Category("Music");
 	}
 

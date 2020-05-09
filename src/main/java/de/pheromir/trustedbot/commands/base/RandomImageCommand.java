@@ -32,9 +32,10 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
+
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 
 public abstract class RandomImageCommand extends TrustedCommand {
 

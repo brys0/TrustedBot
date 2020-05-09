@@ -25,7 +25,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
-import net.dv8tion.jda.core.Permission;
+
+import net.dv8tion.jda.api.Permission;
 
 public class RandomServerIconCommand extends TrustedCommand {
 
@@ -35,6 +36,7 @@ public class RandomServerIconCommand extends TrustedCommand {
 		this.guildOnly = true;
 		this.category = new Category("Miscellaneous");
 		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
+		this.botPermissions = new Permission[] {Permission.MANAGE_SERVER};
 	}
 
 	@Override

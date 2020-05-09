@@ -26,7 +26,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import de.pheromir.trustedbot.Methods;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
-import net.dv8tion.jda.core.Permission;
+
+import net.dv8tion.jda.api.Permission;
 
 public class ForwardCommand extends TrustedCommand {
 
@@ -48,7 +49,7 @@ public class ForwardCommand extends TrustedCommand {
 				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			e.reply("You need DJ privileges to fast-forward the track.");
 			return false;
-		}
+		} 
 		long time;
 		try {
 			time = Methods.parseTimeString(e.getArgs());

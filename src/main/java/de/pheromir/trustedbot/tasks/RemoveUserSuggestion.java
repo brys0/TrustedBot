@@ -22,8 +22,9 @@
 package de.pheromir.trustedbot.tasks;
 
 import de.pheromir.trustedbot.Main;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.User;
+
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 
 public class RemoveUserSuggestion implements Runnable {
 

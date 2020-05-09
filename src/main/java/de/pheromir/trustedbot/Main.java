@@ -88,15 +88,14 @@ import de.pheromir.trustedbot.events.Shutdown;
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
 
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Icon;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.User;
 
 public class Main {
 
@@ -139,7 +138,7 @@ public class Main {
 		loadConfig();
 
 		Main.LOG.debug("AdminID: " + adminId);
-		
+
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
 		Unirest.setDefaultHeader("User-Agent", "Mozilla/5.0");
@@ -171,14 +170,14 @@ public class Main {
 		// Misc
 		cbuilder.addCommands(new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new ColorCommand(
 				waiter), new R6ChallengeCommand());
-		
-		if(!r6TabKey.equalsIgnoreCase("none") && !r6TabKey.isEmpty()) {
+
+		if (!r6TabKey.equalsIgnoreCase("none") && !r6TabKey.isEmpty()) {
 			cbuilder.addCommands(new R6Command());
 		}
 
 		cbuilder.setLinkedCacheSize(0);
 		cbuilder.setListener(new CmdListener());
-		cbuilder.setGame(Game.playing("Trusted-Community.eu"));
+		cbuilder.setActivity(Activity.watching("Trusted-Community.eu"));
 
 		cbuilder.setEmojis("\u2705", "", "");
 
@@ -187,13 +186,12 @@ public class Main {
 		commandClient = cbuilder.build();
 		try {
 			/* - - - - - - - - - - - BOT STARTEN - - - - - - - - - - - - - - */
-			jda = new JDABuilder(
-					AccountType.BOT).setToken(token).addEventListener(commandClient, new GuildEvents(), new Shutdown(), waiter).setAutoReconnect(true).build();
+			jda = JDABuilder.createDefault(token).addEventListeners(new GuildEvents(), new Shutdown(), commandClient, waiter).build();
 			jda.awaitReady();
 			jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 
 			// - - - - TASKS - - - - -
-
+			
 			redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 1, 10, TimeUnit.MINUTES);
 			rewardTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				LocalTime today = LocalTime.now();

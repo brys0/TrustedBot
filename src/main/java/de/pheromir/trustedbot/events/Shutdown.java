@@ -26,8 +26,10 @@ import java.io.IOException;
 import com.mashape.unirest.http.Unirest;
 
 import de.pheromir.trustedbot.Main;
-import net.dv8tion.jda.core.events.ShutdownEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
+import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
 
 public class Shutdown extends ListenerAdapter {
 

@@ -55,12 +55,13 @@ import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.music.Suggestion;
 import de.pheromir.trustedbot.tasks.RemoveUserSuggestion;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.managers.AudioManager;
+
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.managers.AudioManager;
 
 public class PlayCommand extends TrustedCommand {
 
@@ -229,6 +230,7 @@ public class PlayCommand extends TrustedCommand {
 		YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
 				new HttpRequestInitializer() {
 
+					@Override
 					public void initialize(HttpRequest request) throws IOException {
 					}
 				}).setApplicationName("TrustedBot").build();

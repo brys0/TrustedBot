@@ -25,8 +25,9 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Game;
+
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Activity;
 
 public class StatusCommand extends TrustedCommand {
 
@@ -52,16 +53,16 @@ public class StatusCommand extends TrustedCommand {
 			String msg = sb.toString().trim();
 			switch (args[0].toLowerCase()) {
 				case "play":
-					api.getPresence().setGame(Game.playing(msg));
+					api.getPresence().setActivity(Activity.playing(msg));
 					break;
 				case "watch":
-					api.getPresence().setGame(Game.watching(msg));
+					api.getPresence().setActivity(Activity.watching(msg));
 					break;
 				case "listen":
-					api.getPresence().setGame(Game.listening(msg));
+					api.getPresence().setActivity(Activity.listening(msg));
 					break;
 				case "stream":
-					api.getPresence().setGame(Game.streaming(msg, args[1]));
+					api.getPresence().setActivity(Activity.streaming(msg, args[1]));
 					break;
 				default:
 					e.reply(usage);

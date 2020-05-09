@@ -41,8 +41,8 @@ import de.pheromir.trustedbot.music.AudioPlayerSendHandler;
 import de.pheromir.trustedbot.music.Suggestion;
 import de.pheromir.trustedbot.music.TrackScheduler;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 
 public class GuildConfig implements GuildSettingsProvider {
 
@@ -279,7 +279,7 @@ public class GuildConfig implements GuildSettingsProvider {
 		return suggestions;
 	}
 
-	public Guild getGuild() {
+	public Guild getGuild() { 
 		return g;
 	}
 

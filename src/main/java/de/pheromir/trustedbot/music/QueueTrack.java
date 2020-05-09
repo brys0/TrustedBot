@@ -23,9 +23,9 @@ package de.pheromir.trustedbot.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.User;
 
-public class QueueTrack {
+public class QueueTrack { 
 
 	private AudioTrack track;
 	private User requestor;

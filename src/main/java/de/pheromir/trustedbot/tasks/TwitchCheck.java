@@ -32,7 +32,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
-import net.dv8tion.jda.core.EmbedBuilder;
+
+import net.dv8tion.jda.api.EmbedBuilder;
 
 public class TwitchCheck implements Runnable {
 
