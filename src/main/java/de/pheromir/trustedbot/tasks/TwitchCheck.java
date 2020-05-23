@@ -50,7 +50,7 @@ public class TwitchCheck implements Runnable {
 
 			Unirest.get("https://api.twitch.tv/helix/streams/?user_login="
 					+ twitchname).header("Authorization", "Bearer "
-							+ Main.twitchToken).asJsonAsync(new Callback<JsonNode>() {
+							+ Main.twitchToken).header("Client-ID", Main.twitchClientId).asJsonAsync(new Callback<JsonNode>() {
 
 								@Override
 								public void completed(HttpResponse<JsonNode> response) {
