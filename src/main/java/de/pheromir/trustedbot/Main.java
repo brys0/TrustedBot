@@ -294,7 +294,7 @@ public class Main {
 						}
 
 					});
-				}, 0, 12, TimeUnit.HOURS);
+				}, 0, 14, TimeUnit.DAYS);
 			}
 			// - - - - - - -
 
