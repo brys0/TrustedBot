@@ -21,6 +21,9 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew shadowJar
+      env:
+        MVN_USER: ${{ secrets.MVN_USER }}
+        MVN_PASS: ${{ secrets.MVN_PASS }}
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
