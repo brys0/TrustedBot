@@ -14,7 +14,7 @@ jobs:
       # ...
       - name: "Build & test"
         run: |
-          echo "done!"
+          ./gradlew shadowJar
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
