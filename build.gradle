@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'org.hidetake.ssh' version '2.10.1'
 	id "com.github.johnrengelman.shadow" version "6.0.0"
+    id "io.github.http-builder-ng.http-plugin" version "0.1.1"
     //id 'signing'
 }
 
@@ -15,6 +16,9 @@ try {
 } catch (IOException ignored) {
     props.scp_user= "user"
     props.scp_pass = "pass"
+    props.scp_host = "host"
+    props.pd_id = "id"
+    props.pd_key = "key"
     // CI will pass those
     props.mvn_user_fetch = System.getenv("MVN_USER")
     props.mvn_pass_fetch = System.getenv("MVN_PASS")
@@ -22,7 +26,7 @@ try {
 
 remotes {
     prod {
-        host = 'wi.trstd.eu'
+        host = "${props.scp_host}"
         port = 2022
         user = props.scp_user
         password = props.scp_pass
@@ -52,6 +56,37 @@ task copyProd(dependsOn: renameJar) {
             }
         }
     }
+}
+
+// Only for own Server instance, mostly not usable for you
+import io.github.httpbuilderng.http.HttpTask;
+task restartBot(type:HttpTask){
+    config {
+        request.uri = "https://${props.scp_host}"
+    }
+    post {
+        request.uri.path = "/api/client/servers/${props.pd_id}/power"
+        HashMap<String, CharSequence> headers = new HashMap<>()
+        headers.put("Authorization", "Bearer ${props.pd_key}")
+        headers.put("Accept", "application/json")
+        request.contentType = "application/json"
+        request.headers = headers
+        request.body = '{"signal":"restart"}'
+        response.success {
+            println 'Restarting bot successful'
+        }
+        response.failure {
+            println 'Restarting bot failed.'
+        }
+    }
+}
+
+task uploadAndRestart() {
+    dependsOn 'clean'
+    dependsOn 'copyProd'
+    dependsOn 'restartBot'
+    tasks.findByName("copyProd").mustRunAfter("clean")
+    tasks.findByName("restartBot").mustRunAfter("copyProd")
 }
 
 repositories {
@@ -115,7 +150,7 @@ publishing {
 jar {
   manifest {
     attributes(
-      'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+      'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' '),
       'Main-Class': 'de.pheromir.trustedbot.Main'
     )
   }
