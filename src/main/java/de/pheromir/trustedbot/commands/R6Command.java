@@ -27,7 +27,7 @@ import java.time.Instant;
 import javax.naming.NameNotFoundException;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.*;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;

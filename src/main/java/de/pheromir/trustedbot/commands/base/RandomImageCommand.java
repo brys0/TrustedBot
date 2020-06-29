@@ -24,15 +24,11 @@ package de.pheromir.trustedbot.commands.base;
 import java.awt.Color;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
 
+import kong.unirest.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -97,6 +93,8 @@ public abstract class RandomImageCommand extends TrustedCommand {
 			}
 
 		});
+
+
 		return true;
 	}
 }

@@ -26,11 +26,10 @@ import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.mashape.unirest.http.Unirest;
-
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
 
+import kong.unirest.Unirest;
 import net.dv8tion.jda.api.entities.Icon;
 
 public class ConsoleCommands implements Runnable {
@@ -64,7 +63,7 @@ public class ConsoleCommands implements Runnable {
 				}
 				Main.avatarTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 					try {
-						Main.jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).complete();
+						Main.jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBytes().getBody())).complete();
 					} catch (Exception e) {
 						Main.LOG.error("", e);
 					}

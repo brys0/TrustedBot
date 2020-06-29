@@ -23,10 +23,9 @@ package de.pheromir.trustedbot.events;
 
 import java.io.IOException;
 
-import com.mashape.unirest.http.Unirest;
-
 import de.pheromir.trustedbot.Main;
 
+import kong.unirest.Unirest;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -35,12 +34,8 @@ public class Shutdown extends ListenerAdapter {
 
 	@Override
 	public void onShutdown(ShutdownEvent e) {
-		try {
-			Unirest.shutdown();
-			System.exit(0);
-		} catch (IOException e1) {
-			Main.LOG.error("", e);
-		}
+		Unirest.shutDown();
+		System.exit(0);
 	}
 
 }

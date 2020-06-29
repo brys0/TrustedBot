@@ -39,8 +39,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.*;
 
 public class Methods {
 
@@ -48,7 +47,7 @@ public class Methods {
 	 * CONVERT TIMEMILLIS INTO A HH:mm:ss STRING
 	 */
 
-	public static String getTimeString(long millis) {
+	public static String getTimeString(long millis, boolean showSeconds) {
 		if (millis == Long.MAX_VALUE || millis == 0L)
 			return "Stream";
 		long days = TimeUnit.MILLISECONDS.toDays(millis);
@@ -58,39 +57,27 @@ public class Methods {
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
 		millis -= TimeUnit.MINUTES.toMillis(minutes);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-		if (days > 0)
-			return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
-		if (hours > 0)
-			return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-		else
-			return String.format("%02d:%02d", minutes, seconds);
-	}
+		if (showSeconds) {
+			if (days > 0)
+				return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
+			if (hours > 0)
+				return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+			else
+				return String.format("%02d:%02d", minutes, seconds);
+		} else {
+			if (days > 0)
+				return String.format("%02d:%02d:%02d", days, hours, minutes);
+			if (hours > 0)
+				return String.format("%02d:%02d", hours, minutes);
+			else
+				return String.format("%02d", minutes);
+		}
 
-	public static String getTimeString2(long millis) {
-		if (millis == Long.MAX_VALUE || millis == 0L)
-			return "Stream";
-		long days = TimeUnit.MILLISECONDS.toDays(millis);
-		millis -= TimeUnit.DAYS.toMillis(days);
-		long hours = TimeUnit.MILLISECONDS.toHours(millis);
-		millis -= TimeUnit.HOURS.toMillis(hours);
-		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-		millis -= TimeUnit.MINUTES.toMillis(minutes);
-		minutes++;
-		if (days > 0)
-			return String.format("%02d:%02d:%02d", days, hours, minutes);
-		if (hours > 0)
-			return String.format("%02d:%02d", hours, minutes);
-		else
-			return String.format("%02d", minutes);
 	}
 
 	public static long getYoutubeDuration(String videoId) {
 		YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
-				new HttpRequestInitializer() {
-
-					@Override
-					public void initialize(HttpRequest request) throws IOException {
-					}
+				request -> {
 				}).setApplicationName("DiscordBot").build();
 
 		YouTube.Videos.List videoRequest;
@@ -136,14 +123,16 @@ public class Methods {
 	static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^(\\d?\\d)(?::([0-5]?\\d))?(?::([0-5]?\\d))?$");
 
 	public static long parseTimeString(String str) throws NumberFormatException {
-		long millis = 0;
+		long millis;
 		long seconds = 0;
 		long minutes = 0;
 		long hours = 0;
 
 		Matcher m = TIMESTAMP_PATTERN.matcher(str);
 
-		m.find();
+		if (!m.find()) {
+			throw new IllegalStateException("Unable to match " + str);
+		}
 
 		int capturedGroups = 0;
 		if (m.group(1) != null)

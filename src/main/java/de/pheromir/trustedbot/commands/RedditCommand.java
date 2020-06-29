@@ -24,14 +24,8 @@ package de.pheromir.trustedbot.commands;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import org.json.JSONObject;
-
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.*;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
@@ -39,6 +33,7 @@ import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.misc.RedditSubscription;
 import de.pheromir.trustedbot.misc.RedditSubscription.SortType;
 
+import kong.unirest.json.JSONObject;
 import net.dv8tion.jda.api.Permission;
 
 public class RedditCommand extends TrustedCommand {

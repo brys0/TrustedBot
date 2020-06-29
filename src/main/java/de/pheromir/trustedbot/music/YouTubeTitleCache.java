@@ -63,7 +63,7 @@ public class YouTubeTitleCache {
 	}
 
 	public String getDurationString() {
-		return Methods.getTimeString(duration);
+		return Methods.getTimeString(duration, true);
 	}
 
 	public String getThumbnailURL() {

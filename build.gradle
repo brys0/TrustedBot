@@ -1,0 +1,133 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.hidetake.ssh' version '2.10.1'
+	id "com.github.johnrengelman.shadow" version "6.0.0"
+    //id 'signing'
+}
+
+group = 'de.pheromir'
+version = "1.0.0"
+
+Properties props = new Properties()
+try {
+    props.load(new FileInputStream("$project.rootDir/private.properties"))
+} catch (IOException ignored) {
+    props.scp_user= "user"
+    props.scp_pass = "pass"
+    // CI will pass those
+    props.mvn_user_fetch = System.getenv("MVN_USER")
+    props.mvn_pass_fetch = System.getenv("MVN_PASS")
+}
+
+remotes {
+    prod {
+        host = 'wi.trstd.eu'
+        port = 2022
+        user = props.scp_user
+        password = props.scp_pass
+    }
+}
+
+ssh.settings {
+    knownHosts = allowAnyHosts
+}
+
+props.each { prop ->
+    project.ext.set(prop.key, prop.value)
+}
+
+task renameJar(dependsOn: shadowJar, type: Copy) {
+    from ('build/libs/')
+    include "TrustedBot-$project.version-all.jar"
+    destinationDir file('build/libs/')
+    rename "TrustedBot-$project.version-all.jar", "TrustedBot.jar"
+}
+
+task copyProd(dependsOn: renameJar) {
+    doLast {
+        ssh.run {
+            session(remotes.prod) {
+                put from: fileTree(dir: "$project.projectDir/build/libs", includes: ['TrustedBot.jar']), into: "/"
+            }
+        }
+    }
+}
+
+repositories {
+    maven { url 'https://jcenter.bintray.com' }
+    maven { url 'https://oss.sonatype.org/content/groups/public/' }
+}
+
+dependencies {
+    implementation "net.dv8tion:JDA:4.1.1_146"
+    implementation "com.jagrosh:jda-utilities:3.0.4"
+	implementation "com.sedmelluq:lavaplayer:1.3.47"
+	implementation "ch.qos.logback:logback-classic:1.2.3"
+	implementation "org.yaml:snakeyaml:1.24"
+	implementation "com.google.api-client:google-api-client:1.23.0"
+	implementation "org.projectlombok:lombok:1.18.0"
+	implementation "com.google.apis:google-api-services-youtube:v3-rev198-1.23.0"
+	implementation "com.konghq:unirest-java:3.8.00"
+	implementation "mysql:mysql-connector-java:5.1.47"
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'TrustedBot'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'TrustedBot'
+                description = 'A Bot for Discord using JDA'
+            }
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username = System.getenv("MVN_USER_PUBLISH")
+                password = System.getenv("MVN_PASS_PUBLISH")
+            }
+            url "https://repo.cytherion.eu/artifactory/private/"
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+}
+
+jar {
+  manifest {
+    attributes(
+      'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+      'Main-Class': 'de.pheromir.trustedbot.Main'
+    )
+  }
+}
+
+/*signing {
+    sign publishing.publications.mavenJava
+}*/
+
+javadoc {
+	options.encoding = 'UTF-8'
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}

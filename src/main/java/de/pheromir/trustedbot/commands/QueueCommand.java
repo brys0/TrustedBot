@@ -81,13 +81,13 @@ public class QueueCommand extends TrustedCommand {
 				totalDuration += t.getDuration();
 			}
 		}
-		mes.append("\nTotal playlist length: " + Methods.getTimeString(totalDuration));
+		mes.append("\nTotal playlist length: " + Methods.getTimeString(totalDuration, true));
 		EmbedBuilder m = new EmbedBuilder();
 		m.setTitle("Queue repeating: " + (musicManager.scheduler.getRepeat() ? "on" : "off"));
 		m.setColor(e.getGuild().getSelfMember().getColor());
 		m.appendDescription("Currently playing: " + (musicManager.player.getPlayingTrack() == null ? "nothing"
 				: musicManager.player.getPlayingTrack().getInfo().title + " ["
-						+ Methods.getTimeString(musicManager.player.getPlayingTrack().getInfo().length)
+						+ Methods.getTimeString(musicManager.player.getPlayingTrack().getInfo().length, true)
 						+ "], *requested by "
 						+ (e.getGuild().getMember(musicManager.scheduler.getCurrentRequester()) != null
 								? (e.getGuild().getMember(musicManager.scheduler.getCurrentRequester()).getNickname() != null
@@ -102,7 +102,7 @@ public class QueueCommand extends TrustedCommand {
 		}
 		for (int i = 0; i < amnt; i++) {
 			m.appendDescription("**[" + (i + 1) + "]** " + titles.get(i).getTrack().getInfo().title + " ["
-					+ Methods.getTimeString(titles.get(i).getTrack().getDuration()) + "], *requested by "
+					+ Methods.getTimeString(titles.get(i).getTrack().getDuration(), true) + "], *requested by "
 					+ (e.getGuild().getMember(titles.get(i).getRequestor()) != null
 							? (e.getGuild().getMember(titles.get(i).getRequestor()).getNickname() != null
 									? e.getGuild().getMember(titles.get(i).getRequestor()).getNickname()

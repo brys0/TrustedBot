@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 
@@ -59,6 +60,14 @@ public class GuildEvents extends ListenerAdapter {
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent e) {
 		Main.getGuildConfig(e.getGuild()).setUserCredits(e.getMember().getUser().getIdLong(), 0L);
+	}
+	
+	@Override
+	public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
+		if(e.getChannel().getIdLong() == 713741649217323158L && !e.getAuthor().isBot()) {
+			e.getMessage().addReaction("\uD83D\uDC4D").queue();
+			e.getMessage().addReaction("\uD83D\uDC4E").queue();
+		}
 	}
 
 	// @Override

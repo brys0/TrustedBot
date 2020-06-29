@@ -23,14 +23,10 @@ package de.pheromir.trustedbot.tasks;
 
 import java.time.Instant;
 
-import org.json.JSONArray;
+import kong.unirest.json.JSONArray;
 import org.json.JSONObject;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.*;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
@@ -68,10 +64,10 @@ public class RedditGrab implements Runnable {
 										+ " for subreddit " + subreddit + " (" + sortType.name() + ")");
 								return;
 							}
-							JSONObject res = response.getBody().getObject();
+							kong.unirest.json.JSONObject res = response.getBody().getObject();
 							if (!res.has("data"))
 								return;
-							JSONObject data = res.getJSONObject("data");
+							kong.unirest.json.JSONObject data = res.getJSONObject("data");
 							if (!data.has("children"))
 								return;
 							JSONArray children = data.getJSONArray("children");
@@ -133,7 +129,6 @@ public class RedditGrab implements Runnable {
 											c.sendMessage(contentUrl).queue();
 										}
 									}
-									c = null;
 								}
 								GuildConfig.addSubredditPostHistory(contentUrl);
 								try {
@@ -143,7 +138,6 @@ public class RedditGrab implements Runnable {
 									Main.LOG.error("", e);
 								}
 							}
-							res = null;
 						}
 
 						@Override

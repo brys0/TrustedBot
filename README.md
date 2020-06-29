@@ -13,7 +13,7 @@ The TrustedBot is a bot for Discord written in Java using [JDA](https://github.c
 
 ## Setup
 1. Clone the repository.
-2. Build the Bot using maven.
+2. Build the Bot using gradle.
 3. Start the Bot for the first time to create the default config. It will shutdown right after creating it.
 4. Fill out the config.yml, everything should be commented.
 5. Launch the Bot again.

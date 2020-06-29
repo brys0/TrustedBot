@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
 
-import org.json.JSONObject;
+import kong.unirest.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +47,7 @@ import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.*;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -113,7 +109,6 @@ public class Main {
 	public static String pastebinKey = "none";
 	public static String r6TabKey = "none";
 	public static ArrayList<String> onlineTwitchList = new ArrayList<>();
-	public static ArrayList<String> onlineCBList = new ArrayList<>();
 	public static List<Long> extraPermissions = new ArrayList<>();
 	public static JDA jda;
 	public static final Long startMillis = System.currentTimeMillis();
@@ -141,8 +136,8 @@ public class Main {
 
 		playerManager = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerRemoteSources(playerManager);
-		Unirest.setDefaultHeader("User-Agent", "Mozilla/5.0");
-		Unirest.setTimeouts(10000, 30000);
+		Unirest.config().setDefaultHeader("User-Agent", "Mozilla/5.0");
+		Unirest.config().connectTimeout(10000).socketTimeout(30000);
 		EventWaiter waiter = new EventWaiter();
 
 		/* COMMANDS KONFIGURIEREN */
@@ -181,7 +176,7 @@ public class Main {
 
 		cbuilder.setEmojis("\u2705", "", "");
 
-		cbuilder.setHelpConsumer((event) -> getHelpConsumer(event));
+		cbuilder.setHelpConsumer(Main::getHelpConsumer);
 
 		commandClient = cbuilder.build();
 		try {
@@ -205,7 +200,7 @@ public class Main {
 
 			avatarTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
 				try {
-					jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).queue();
+					jda.getSelfUser().getManager().setAvatar(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBytes().getBody())).queue();
 				} catch (Exception e) {
 					LOG.error("Error updating RandomAvatar: ", e);
 				}
@@ -216,8 +211,8 @@ public class Main {
 					jda.getGuilds().forEach(g -> {
 						if (getGuildConfig(g).getRandomServerIcon()) {
 							try {
-								g.getManager().setIcon(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBinary().getBody())).queue();
-							} catch (IOException | UnirestException e) {
+								g.getManager().setIcon(Icon.from(Unirest.get(Methods.getRandomAvatarURL()).asBytes().getBody())).queue();
+							} catch (UnirestException e) {
 								e.printStackTrace();
 							}
 						}
@@ -263,38 +258,36 @@ public class Main {
 
 			if (!twitchClientId.equals("none") && !twitchSecret.equals("none")) {
 				twitchAuthTask = Executors.newScheduledThreadPool(1);
-				twitchAuthTask.scheduleAtFixedRate(() -> {
-					Unirest.post(String.format("https://id.twitch.tv/oauth2/token?client_id=%s&client_secret=%s&grant_type=client_credentials", Main.twitchClientId, Main.twitchSecret)).asJsonAsync(new Callback<JsonNode>() {
+				twitchAuthTask.scheduleAtFixedRate(() -> Unirest.post(String.format("https://id.twitch.tv/oauth2/token?client_id=%s&client_secret=%s&grant_type=client_credentials", Main.twitchClientId, Main.twitchSecret)).asJsonAsync(new Callback<JsonNode>() {
 
-						@Override
-						public void completed(HttpResponse<JsonNode> response) {
-							if (response.getStatus() != 200) {
-								LOG.error("Error getting a twitch access token");
-								if (response.getStatus() == 403) {
-									LOG.error("Cause: " + response.getBody().getObject().getString("message"));
-								}
-								twitchToken = "none";
-								twitchAuthTask.shutdownNow();
-								return;
+					@Override
+					public void completed(HttpResponse<JsonNode> response) {
+						if (response.getStatus() != 200) {
+							LOG.error("Error getting a twitch access token");
+							if (response.getStatus() == 403) {
+								LOG.error("Cause: " + response.getBody().getObject().getString("message"));
 							}
-							twitchToken = response.getBody().getObject().getString("access_token");
-							LOG.debug("Twitch App Token renewed.");
-						}
-
-						@Override
-						public void failed(UnirestException e) {
 							twitchToken = "none";
-							LOG.error("Twitch Token renew failed: " + e.getMessage());
+							twitchAuthTask.shutdownNow();
+							return;
 						}
+						twitchToken = response.getBody().getObject().getString("access_token");
+						LOG.debug("Twitch App Token renewed.");
+					}
 
-						@Override
-						public void cancelled() {
-							twitchToken = "none";
-							LOG.error("Twitch Token renew cancelled.");
-						}
+					@Override
+					public void failed(UnirestException e) {
+						twitchToken = "none";
+						LOG.error("Twitch Token renew failed: " + e.getMessage());
+					}
 
-					});
-				}, 0, 14, TimeUnit.DAYS);
+					@Override
+					public void cancelled() {
+						twitchToken = "none";
+						LOG.error("Twitch Token renew cancelled.");
+					}
+
+				}), 0, 14, TimeUnit.DAYS);
 			}
 			// - - - - - - -
 
@@ -455,8 +448,7 @@ public class Main {
 					builder.append(" *[NSFW]*");
 				}
 				if (command.costsCredits()) {
-					builder.append(" **[" + command.getCreditCost() + " credit"
-							+ (command.getCreditCost() == 1 ? "" : "s") + "]**");
+					builder.append(" **[").append(command.getCreditCost()).append(" credit").append(command.getCreditCost() == 1 ? "" : "s").append("]**");
 				}
 			}
 		}

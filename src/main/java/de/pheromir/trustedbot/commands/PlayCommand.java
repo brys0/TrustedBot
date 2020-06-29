@@ -39,11 +39,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.*;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -186,7 +182,7 @@ public class PlayCommand extends TrustedCommand {
 				}
 				audioManager.openAudioConnection(vc);
 				musicManager.scheduler.queue(track, e.getAuthor());
-				e.reply("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration())
+				e.reply("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration(), true)
 						+ "] has been added to the queue.");
 			}
 
@@ -201,13 +197,13 @@ public class PlayCommand extends TrustedCommand {
 					StringBuilder sb = new StringBuilder();
 					playlist.getTracks().forEach(track -> {
 						musicManager.scheduler.queue(track, e.getAuthor());
-						sb.append("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration())
+						sb.append("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration(), true)
 								+ "] has been added to the queue.\n");
 					});
 					e.reply(sb.toString());
 				} else {
 					musicManager.scheduler.queue(firstTrack, e.getAuthor());
-					e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration())
+					e.reply("`" + firstTrack.getInfo().title + "` [" + Methods.getTimeString(firstTrack.getDuration(), true)
 							+ "] has been added to the queue.");
 				}
 
@@ -257,7 +253,7 @@ public class PlayCommand extends TrustedCommand {
 			suggests.add(new Suggestion(videoList.get(i).getSnippet().getTitle(),
 					videoList.get(i).getId().getVideoId()));
 			m.appendDescription("**[" + (i + 1) + "]** " + videoList.get(i).getSnippet().getTitle() + " *["
-					+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId()))
+					+ Methods.getTimeString(Methods.getYoutubeDuration(videoList.get(i).getId().getVideoId()), true)
 					+ "]*\n\n");
 		}
 		if (suggests.size() > 0) {

@@ -22,11 +22,7 @@
 package de.pheromir.trustedbot.commands;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.*;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import de.pheromir.trustedbot.Main;

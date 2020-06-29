@@ -39,7 +39,7 @@ public class StatsCommand extends TrustedCommand {
 
 	@Override
 	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
-		String ans = "Uptime: " + Methods.getTimeString(System.currentTimeMillis() - Main.startMillis) + "\n"
+		String ans = "Uptime: " + Methods.getTimeString(System.currentTimeMillis() - Main.startMillis, true) + "\n"
 				+ "Guilds: " + e.getJDA().getGuilds().size() + "\n" 
 				+ "Exceptions (WARN or higher): " + Main.exceptionAmount + "\n" 
 				+ "Max Memory: " + Runtime.getRuntime().maxMemory() / 1024L / 1024L + " MiB\n"

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/* *****************************************************************************
  * Copyright (C) 2019 Pheromir
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,19 +21,15 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.tasks;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.*;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
 
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class TwitchCheck implements Runnable {
 
@@ -111,10 +107,11 @@ public class TwitchCheck implements Runnable {
 											eb.addField("Viewers", Integer.toString(viewers), true);
 
 											for (Long chId : GuildConfig.getTwitchList().get(twitchname)) {
-												if (Main.jda.getTextChannelById(chId) == null) {
+												TextChannel tc = Main.jda.getTextChannelById(chId);
+												if (tc == null) {
 													continue;
 												}
-												Main.jda.getTextChannelById(chId).sendMessage("Hey @here! "
+												tc.sendMessage("Hey @here! "
 														+ displayname + " is now live at https://twitch.tv/"
 														+ twitchname + " !").embed(eb.build()).complete();
 											}
@@ -138,7 +135,6 @@ public class TwitchCheck implements Runnable {
 			} catch (InterruptedException e) {
 				Main.LOG.error("InterruptionException in TwitchCheck: " + e.getMessage());
 				Thread.currentThread().interrupt();
-				continue;
 			}
 		}
 	}
