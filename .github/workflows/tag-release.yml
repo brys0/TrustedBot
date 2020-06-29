@@ -28,4 +28,4 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: false
-        files: build/libs/*-all.jar
+        files: build/libs/TrustedBot.jar
