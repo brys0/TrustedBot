@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'de.pheromir'
-version = "1.0.0"
+version = "1.0.1"
 
 Properties props = new Properties()
 try {
