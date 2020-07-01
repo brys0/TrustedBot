@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2019 Pheromir
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,34 +22,32 @@
 package de.pheromir.trustedbot.commands;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
-
 import net.dv8tion.jda.api.Permission;
 
 public class StopCommand extends TrustedCommand {
 
-	public StopCommand() {
-		this.name = "stop";
-		this.help = "Stop the playback.";
-		this.guildOnly = true;
-		this.category = new Category("Music");
-	}
+    public StopCommand() {
+        this.name = "stop";
+        this.help = "Stop the playback.";
+        this.guildOnly = true;
+        this.category = new Category("Music");
+    }
 
-	@Override
-	protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
-		if (!gc.getDJs().contains(e.getAuthor().getIdLong())
-				&& !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-			e.reply("You need DJ privileges to stop the playback.");
-			return false;
-		}
+    @Override
+    protected boolean exec(CommandEvent e, GuildConfig gc, String[] args, String usage) {
+        if (!gc.getDJs().contains(e.getAuthor().getIdLong())
+                && !e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            e.reply("You need DJ privileges to stop the playback.");
+            return false;
+        }
 
-		e.getGuild().getAudioManager().closeAudioConnection();
-		gc.player.stopTrack();
-		gc.scheduler.clearQueue();
-		e.reactSuccess();
-		return true;
-	}
+        e.getGuild().getAudioManager().closeAudioConnection();
+        gc.player.stopTrack();
+        gc.scheduler.clearQueue();
+        e.reactSuccess();
+        return true;
+    }
 
 }

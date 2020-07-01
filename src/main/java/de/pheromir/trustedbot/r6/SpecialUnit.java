@@ -26,7 +26,7 @@ public enum SpecialUnit {
     APCA(Continent.SOUTH_AMERICA, Language.SPANISH),
     REU(Continent.ASIA, Language.GREEK_AND_DUTCH),
     NIGHTHAVEN(Continent.AFRICA, Language.AFRICAN), /* Kali is Indian(?) */
-	UNKNOWN(Continent.UNKNOWN, Language.UNKNOWN);
+    UNKNOWN(Continent.UNKNOWN, Language.UNKNOWN);
 
     public Continent continent;
     public Language[] languages;

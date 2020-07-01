@@ -11,15 +11,15 @@ import java.util.function.Predicate;
  */
 public enum Challenges {
 
-	// Languages
+    // Languages
     GERMAN_FRENCH(op -> {
         List<Language> list = Arrays.asList(op.unit.languages);
         return op.unit.continent.equals(Continent.EUROPE) && (list.contains(Language.GERMAN) || list.contains(Language.FRENCH));
     }, "German & French", "Play german or french operators only"),
-    
+
     ENGLISHMEN(op -> Arrays.asList(op.unit.languages).contains(Language.ENGLISH), "Englishmen", "Play english speaking operators only"),
     SPANISH(op -> Arrays.asList(op.unit.languages).contains(Language.SPANISH), "Spanish", "Play spanish speaking operators only"),
-    
+
     // Equipment
     TRAPS(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TRAPS), "Traps", "Play trap operators"),
     C4(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.C4), "C4", "Play with a C4 (nitro cell) and use it"),
@@ -28,7 +28,7 @@ public enum Challenges {
     CLAYMORE(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.CLAYMORE), "Claymore", "Play with a claymore and use it"),
     NO_DEF_SHIELD(op -> op.side == Side.DEFENDERS && !Arrays.asList(op.specialAbilities).contains(SpecialAbilities.DEF_SHIELD), "No deployable Shields", "You're not allowed to play with deployable shields"),
     NO_HARDBREACH(op -> op.side == Side.ATTACKERS && !Arrays.asList(op.specialAbilities).contains(SpecialAbilities.HARD_BREACH), "No hard breach", "You're not allowed to play with hard breachers"),
-    
+
     // Continents
     ASIA(op -> op.unit.continent == Continent.ASIA, "Asia", "Play operators from Asia"),
     EUROPE(op -> op.unit.continent == Continent.EUROPE, "Europe", "Play operators from Europe"),
@@ -47,7 +47,7 @@ public enum Challenges {
     // Gender
     FEMALE(op -> !op.male, "Female", "Play with female operators only"),
     MALE(op -> op.male, "Male", "Play with male operators only"),
-	
+
     // Playstyle
     RUSH(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.RUSH), "Rush", "Rush B сука блять\n(Dont stop walking!)"),
     SPAWN_PEEK(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.SPAWN_PEEK), "Spawn peek", "Peek the hell out of the attackers"),
@@ -58,11 +58,11 @@ public enum Challenges {
     NO_GADGETS("No Gadgets", "You're not allowed to use your primary-/secondary gadgets"),
     ONE_AT_A_TIME(op -> op.side == Side.ATTACKERS, "One at a time", "Only one person at the same time in the building. The last one in the scoreboard starts, then the one above (and so on..)", true),
     I_LIKE_DRONES(op -> op.side == Side.DEFENDERS, "I like drones!", "You're not allowed to destroy any drone (Hacking still allowed)"),
-    
+
     // Misc
     TOXIC(op -> Arrays.asList(op.specialAbilities).contains(SpecialAbilities.TOXIC), "Toxic", "Play operators that are considered as toxic"),
-	RANDOM_OP("Random Operator", "Play as a random operator (don't choose one)"),
-	CARAMELLDANSEN("Caramelldansen", "Hear [Caramelldansen](https://www.youtube.com/watch?v=6-8E4Nirh9s) on 100% Volume while playing the round"),
+    RANDOM_OP("Random Operator", "Play as a random operator (don't choose one)"),
+    CARAMELLDANSEN("Caramelldansen", "Hear [Caramelldansen](https://www.youtube.com/watch?v=6-8E4Nirh9s) on 100% Volume while playing the round"),
     BRIGHTNESS_LOWEST("Lowest Brightness", "Turn your Display Brightness to the lowest value possible"),
     BRIGHTNESS_HIGHEST("Highest Brightness", "Turn your Display Brightness to the highest value possible"),
     INVERTED_CONTROLS("Inverted Controls", "Invert your Mouse Axis in the Controls");
@@ -92,8 +92,8 @@ public enum Challenges {
      * Constructs a challenge which is only completable with Operators passing the filter.
      *
      * @param filter The predicate used to filter capable operators
-     * @param name The canonical name of this challenge
-     * @param desc The description of this challenge.
+     * @param name   The canonical name of this challenge
+     * @param desc   The description of this challenge.
      */
     Challenges(Predicate<Operator> filter, String name, String desc) {
         this(filter, name, desc, false);
@@ -101,6 +101,7 @@ public enum Challenges {
 
     /**
      * Constructs a challenge which is completable with all Operators
+     *
      * @param name The canonical name of this challenge
      * @param desc The description of this challenge
      */
@@ -114,9 +115,9 @@ public enum Challenges {
      * Operators. Thus one can specify allOperators to indicate that the individual Operators aren't printed to the
      * message, even though some Operators might be filtered.
      *
-     * @param filter The predicate used to filter capable operators
-     * @param name The canonical name of this challenge
-     * @param desc The description of this challenge
+     * @param filter       The predicate used to filter capable operators
+     * @param name         The canonical name of this challenge
+     * @param desc         The description of this challenge
      * @param allOperators Whether this Challenge is completable on "ALL" Operators, regardless of the filter this is
      *                     just a Hint for the UI to NOT print out all individual operators.
      */

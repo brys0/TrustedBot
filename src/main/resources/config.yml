@@ -12,12 +12,12 @@ API-Keys:
   TwitchSecret: "none"
   # Needed to export Playlists to Pastebin
   Pastebin: "none"
-  
+
   # Needed for accessing information of spotify-tracks so they can be played from youtube
   Spotify:
     Client: "none"
     Secret: "none"
-  
+
 # Users with Extra-Permissions can play titles longer than 2 hours and have access to !volume
 # you can assign Extra-Permissions with the !extraadd @UserTag and remove them with !extraremove @UserTag
 ExtraPermissions: []

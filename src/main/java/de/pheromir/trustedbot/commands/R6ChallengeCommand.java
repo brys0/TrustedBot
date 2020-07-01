@@ -1,22 +1,19 @@
 package de.pheromir.trustedbot.commands;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-
 import com.jagrosh.jdautilities.command.CommandEvent;
-
 import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.r6.ChallengeResult;
 import de.pheromir.trustedbot.r6.Challenges;
 import de.pheromir.trustedbot.r6.Operator;
 import de.pheromir.trustedbot.r6.Side;
-
 import net.dv8tion.jda.api.EmbedBuilder;
+
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * The Rainbow Six Random Challenge Command
@@ -27,11 +24,12 @@ public class R6ChallengeCommand extends TrustedCommand {
 
     public R6ChallengeCommand() {
         this.name = "r6challenge";
-        this.aliases = new String[] {"r6c"};
+        this.aliases = new String[]{"r6c"};
         this.help = "Create a Rainbow Six Challenge for X Players";
         this.arguments = "<atk/def> <Number of Players>";
         this.category = new Category("Miscellaneous");
     }
+
     @Override
     protected boolean exec(CommandEvent e, @Nullable GuildConfig gc, String[] args, String usage) {
         if (args.length != 2) {
@@ -64,11 +62,11 @@ public class R6ChallengeCommand extends TrustedCommand {
         }
 
         List<ChallengeResult> opList = Arrays.stream(Challenges.values()).map(c ->
-            // Challenge to possible Operator List
-            new ChallengeResult(c,
-                Arrays.stream(Operator.values()).filter((Operator op) -> op.side.equals(side) && c.filter.test(op)).collect(Collectors.toList())
-            )
-            // Doable with current party.
+                        // Challenge to possible Operator List
+                        new ChallengeResult(c,
+                                Arrays.stream(Operator.values()).filter((Operator op) -> op.side.equals(side) && c.filter.test(op)).collect(Collectors.toList())
+                        )
+                // Doable with current party.
         ).filter(cr -> cr.eligibleOperators.size() >= numPlayers).collect(Collectors.toList());
 
         if (opList.isEmpty()) {
