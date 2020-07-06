@@ -13,7 +13,7 @@ public class ChallengeResult {
     public List<Operator> eligibleOperators;
 
     public ChallengeResult(Challenges challenge, List<Operator> eligibleOperators) {
-        this(Arrays.asList(new Challenges[]{challenge}), eligibleOperators);
+        this(Arrays.asList(challenge), eligibleOperators);
     }
 
     public ChallengeResult(List<Challenges> challenges, List<Operator> eligibleOperators) {

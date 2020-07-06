@@ -44,24 +44,24 @@ import java.util.List;
 
 public class GuildConfig implements GuildSettingsProvider {
 
-    private Guild g;
-    private Long guildId;
+    private final Guild g;
+    private final Long guildId;
     private int volume;
     public final AudioPlayer player;
     public final TrackScheduler scheduler;
-    private List<Long> djs;
-    private List<String> disabledCommands;
-    private List<Long> blacklist;
-    private HashMap<User, ArrayList<Suggestion>> suggestions;
-    private HashMap<Long, Long> credits;
-    private ArrayList<Long> rewardClaimed;
-    private HashMap<String, CustomCommand> customCommands;
-    private HashMap<String, AliasCommand> aliasCommands;
+    private final List<Long> djs;
+    private final List<String> disabledCommands;
+    private final List<Long> blacklist;
+    private final HashMap<User, ArrayList<Suggestion>> suggestions;
+    private final HashMap<Long, Long> credits;
+    private final ArrayList<Long> rewardClaimed;
+    private final HashMap<String, CustomCommand> customCommands;
+    private final HashMap<String, AliasCommand> aliasCommands;
     private String cmdPrefix;
     private boolean randomServerIcon;
 
-    private static HashMap<String, List<Long>> twitch = new HashMap<>();
-    private static HashMap<String, RedditSubscription> reddit = new HashMap<>();
+    private static final HashMap<String, List<Long>> twitch = new HashMap<>();
+    private static final HashMap<String, RedditSubscription> reddit = new HashMap<>();
 
     static {
         downloadTwitchUsers();
@@ -655,8 +655,7 @@ public class GuildConfig implements GuildSettingsProvider {
             List<Long> list = new ArrayList<>();
             if (twitch.containsKey(twitchname)) {
                 list = twitch.get(twitchname);
-                if (list.contains(channelID))
-                    list.remove(channelID);
+                list.remove(channelID);
                 twitch.put(twitchname, list);
                 prep.execute();
             } else {

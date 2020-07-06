@@ -26,8 +26,8 @@ import net.dv8tion.jda.api.entities.User;
 
 public class QueueTrack {
 
-    private AudioTrack track;
-    private User requestor;
+    private final AudioTrack track;
+    private final User requestor;
 
     public QueueTrack(AudioTrack track, User requestor) {
         this.track = track;

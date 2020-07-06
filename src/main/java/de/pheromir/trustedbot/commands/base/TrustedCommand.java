@@ -34,7 +34,7 @@ public abstract class TrustedCommand extends Command {
 
     protected long creditsCost;
     protected boolean nsfw;
-    private static String usageString = "Invalid Syntax. Usage: `%s%s %s`";
+    private static final String usageString = "Invalid Syntax. Usage: `%s%s %s`";
 
     public TrustedCommand() {
         this.creditsCost = 0;

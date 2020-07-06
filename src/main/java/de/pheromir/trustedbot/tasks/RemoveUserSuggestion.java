@@ -27,8 +27,8 @@ import net.dv8tion.jda.api.entities.User;
 
 public class RemoveUserSuggestion implements Runnable {
 
-    private Guild g;
-    private User user;
+    private final Guild g;
+    private final User user;
 
     public RemoveUserSuggestion(Guild g, User user) {
         this.g = g;

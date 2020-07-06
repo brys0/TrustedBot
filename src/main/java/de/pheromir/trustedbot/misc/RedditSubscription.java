@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 
 public class RedditSubscription {
 
-    private String subreddit;
-    private HashMap<Long, SortType> channel;
+    private final String subreddit;
+    private final HashMap<Long, SortType> channel;
 
     public RedditSubscription(String subreddit) {
         this.subreddit = subreddit;
@@ -36,7 +36,7 @@ public class RedditSubscription {
     }
 
     public boolean containsSorting(SortType sorttype) {
-        return channel.values().contains(sorttype);
+        return channel.containsValue(sorttype);
     }
 
     public String getSubreddit() {
@@ -52,9 +52,7 @@ public class RedditSubscription {
     }
 
     public void removeChannel(Long channelId) {
-        if (channel.containsKey(channelId)) {
-            channel.remove(channelId);
-        }
+        channel.remove(channelId);
     }
 
     public boolean containsChannel(Long channelId) {
@@ -74,6 +72,6 @@ public class RedditSubscription {
     }
 
     public enum SortType {
-        NEW, HOT, BEST;
+        NEW, HOT, BEST
     }
 }

@@ -19,5 +19,5 @@ public enum Language {
     DANISH,
     AFRICAN,
     GREEK_AND_DUTCH,
-    UNKNOWN;
+    UNKNOWN
 }

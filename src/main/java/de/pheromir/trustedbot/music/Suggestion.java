@@ -23,8 +23,8 @@ package de.pheromir.trustedbot.music;
 
 public class Suggestion {
 
-    private String title;
-    private String id;
+    private final String title;
+    private final String id;
 
     public Suggestion(String title, String id) {
         this.title = title;

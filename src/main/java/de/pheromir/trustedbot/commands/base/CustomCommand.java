@@ -23,9 +23,9 @@ package de.pheromir.trustedbot.commands.base;
 
 public class CustomCommand {
 
-    private String name;
-    private String response;
-    private Long guildId;
+    private final String name;
+    private final String response;
+    private final Long guildId;
 
     public CustomCommand(String name, String response, Long guildId) {
         this.name = name.toLowerCase();

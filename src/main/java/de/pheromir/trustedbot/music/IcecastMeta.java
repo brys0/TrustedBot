@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 public class IcecastMeta {
 
     private URL url;
-    private DocumentBuilderFactory factory;
+    private final DocumentBuilderFactory factory;
     private DocumentBuilder builder;
     private Document doc;
     private XPathFactory xpathFactory;

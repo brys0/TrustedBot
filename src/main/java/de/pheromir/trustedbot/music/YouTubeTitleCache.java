@@ -25,12 +25,12 @@ import de.pheromir.trustedbot.Methods;
 
 public class YouTubeTitleCache {
 
-    private String id;
-    private String title;
-    private long duration;
-    private String description;
-    private String channel;
-    private String thumbnailUrl;
+    private final String id;
+    private final String title;
+    private final long duration;
+    private final String description;
+    private final String channel;
+    private final String thumbnailUrl;
 
     public YouTubeTitleCache(String id, String title, long duration, String description, String channel,
                              String thumbnailUrl) {

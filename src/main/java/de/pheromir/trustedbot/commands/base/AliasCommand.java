@@ -23,10 +23,10 @@ package de.pheromir.trustedbot.commands.base;
 
 public class AliasCommand {
 
-    private String name;
-    private String command;
-    private String args;
-    private Long guildId;
+    private final String name;
+    private final String command;
+    private final String args;
+    private final Long guildId;
 
     public AliasCommand(String name, String command, String args, Long guildId) {
         this.name = name.toLowerCase();

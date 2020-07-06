@@ -42,12 +42,12 @@ import java.util.concurrent.TimeUnit;
 public class TrackScheduler extends AudioEventAdapter {
 
     private final AudioPlayer player;
-    private ArrayList<QueueTrack> queue;
+    private final ArrayList<QueueTrack> queue;
     private boolean repeat;
     private QueueTrack currentTrack;
-    private ScheduledExecutorService exServ;
+    private final ScheduledExecutorService exServ;
     private Future<?> future;
-    private Guild g;
+    private final Guild g;
 
     /**
      * @param player The audio player this scheduler uses

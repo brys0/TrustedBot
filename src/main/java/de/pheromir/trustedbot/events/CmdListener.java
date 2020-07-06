@@ -47,9 +47,9 @@ public class CmdListener implements CommandListener {
                 || gc.getPrefixes().stream().anyMatch(s -> content.toLowerCase().startsWith(s.toLowerCase()))) {
             final String cmd;
             if (content.startsWith(Main.commandClient.getTextualPrefix())) {
-                cmd = content.substring(Main.commandClient.getTextualPrefix().length(), content.length()).trim().split(" ")[0].toLowerCase();
+                cmd = content.substring(Main.commandClient.getTextualPrefix().length()).trim().split(" ")[0].toLowerCase();
             } else {
-                cmd = contentRaw.substring(Main.getGuildConfig(e.getGuild()).getPrefix().length(), contentRaw.length()).split(" ")[0].toLowerCase();
+                cmd = contentRaw.substring(Main.getGuildConfig(e.getGuild()).getPrefix().length()).split(" ")[0].toLowerCase();
             }
             if (gc.getAliasCommands().containsKey(cmd)) {
                 if (Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
@@ -70,7 +70,6 @@ public class CmdListener implements CommandListener {
             } else if (gc.getCustomCommands().containsKey(cmd)) {
                 if (Main.getGuildConfig(e.getGuild()).isCommandDisabled(cmd)) {
                     e.getChannel().sendMessage(Main.COMMAND_DISABLED).complete();
-                    ;
                     return;
                 }
                 CustomCommand cc = gc.getCustomCommands().get(cmd);

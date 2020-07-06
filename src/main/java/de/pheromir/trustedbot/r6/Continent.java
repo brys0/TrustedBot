@@ -12,5 +12,5 @@ public enum Continent {
     SOUTH_AMERICA,
     AFRICA,
     AUSTRALIA,
-    UNKNOWN;
+    UNKNOWN
 }

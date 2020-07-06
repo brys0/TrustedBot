@@ -61,7 +61,7 @@ public class CoinflipCommand extends TrustedCommand {
         }
 
         // heads = true, tails = false
-        boolean chosenSide = args[0].equalsIgnoreCase("heads") ? true : false;
+        boolean chosenSide = args[0].equalsIgnoreCase("heads");
         boolean random = new Random().nextBoolean();
         if (random == chosenSide) {
             long wonCredits = (long) Math.ceil((stake * 0.5));
