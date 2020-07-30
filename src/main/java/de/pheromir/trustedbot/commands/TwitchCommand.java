@@ -74,7 +74,8 @@ public class TwitchCommand extends TrustedCommand {
                 e.reply("Twitch notifications for " + e.getArgs().toLowerCase()
                         + " are now disabled for this channel.");
             } else {
-                Unirest.get("https://api.twitch.tv/helix/users?login={user}").routeParam("user", args[0]).header("Authorization", "Bearer " + Main.twitchToken).asJsonAsync(new Callback<JsonNode>() {
+                Unirest.get("https://api.twitch.tv/helix/users?login={user}").routeParam("user", args[0]).header("Authorization", "Bearer "
+                        + Main.twitchToken).header("Client-ID", Main.twitchClientId).asJsonAsync(new Callback<JsonNode>() {
 
                     @Override
                     public void completed(HttpResponse<JsonNode> response) {

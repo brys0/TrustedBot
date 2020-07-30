@@ -61,14 +61,6 @@ public class GuildEvents extends ListenerAdapter {
         Main.getGuildConfig(e.getGuild()).setUserCredits(e.getMember().getUser().getIdLong(), 0L);
     }
 
-    @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        if (e.getChannel().getIdLong() == 713741649217323158L && !e.getAuthor().isBot()) {
-            e.getMessage().addReaction("\uD83D\uDC4D").queue();
-            e.getMessage().addReaction("\uD83D\uDC4E").queue();
-        }
-    }
-
     // @Override
     // public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
     // GuildConfig gc = Main.getGuildConfig(e.getGuild());
