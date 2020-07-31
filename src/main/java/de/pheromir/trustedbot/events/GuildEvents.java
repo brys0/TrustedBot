@@ -54,6 +54,7 @@ public class GuildEvents extends ListenerAdapter {
         long channelId = e.getChannel().getIdLong();
         GuildConfig.getTwitchList().entrySet().stream().filter(ent -> ent.getValue().contains(channelId)).forEach(ent -> GuildConfig.removeTwitchStream(ent.getKey(), channelId));
         GuildConfig.getRedditList().entrySet().stream().filter(ent -> ent.getValue().containsChannel(channelId)).forEach(ent -> GuildConfig.removeSubreddit(ent.getKey(), channelId));
+        GuildConfig.getCBList().entrySet().stream().filter(ent -> ent.getValue().contains(channelId)).forEach(ent -> GuildConfig.removeCBStream(ent.getKey(), channelId));
     }
 
     @Override

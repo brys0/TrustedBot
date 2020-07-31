@@ -21,6 +21,7 @@
  ******************************************************************************/
 package de.pheromir.trustedbot;
 
+import de.pheromir.trustedbot.tasks.CBCheck;
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
 import kong.unirest.Unirest;
@@ -55,6 +56,13 @@ public class ConsoleCommands implements Runnable {
                 }
                 Main.twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 1, 5, TimeUnit.MINUTES);
                 Main.LOG.info("Twitch-Notifications restarted.");
+
+            } else if(cmd.equalsIgnoreCase("cbtask")) {
+                if(!Main.cbTask.isCancelled()) {
+                    Main.cbTask.cancel(true);
+                }
+                Main.cbTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 1, 15, TimeUnit.MINUTES);
+                Main.LOG.info("CB-Task restarted.");
 
             } else if (cmd.equalsIgnoreCase("avatartask")) {
                 if (!Main.avatarTask.isCancelled()) {

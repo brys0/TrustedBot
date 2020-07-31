@@ -62,10 +62,12 @@ public class GuildConfig implements GuildSettingsProvider {
 
     private static final HashMap<String, List<Long>> twitch = new HashMap<>();
     private static final HashMap<String, RedditSubscription> reddit = new HashMap<>();
+    private static HashMap<String, List<Long>> cb = new HashMap<>();
 
     static {
         downloadTwitchUsers();
         downloadSubreddits();
+        downloadCBUsers();
     }
 
     public GuildConfig(Guild g) {
@@ -673,6 +675,102 @@ public class GuildConfig implements GuildSettingsProvider {
     public static HashMap<String, List<Long>> getTwitchList() {
         return twitch;
     }
+
+    public static void downloadCBUsers() {
+        MySQL sql = Main.getMySQL();
+        sql.openConnection();
+        PreparedStatement state;
+        ResultSet res = null;
+        try {
+            state = sql.getConnection().prepareStatement("SELECT ChannelId, Username FROM Chaturbate");
+            res = state.executeQuery();
+            while (res.next()) {
+                String username = res.getString("Username");
+                Long channelId = Long.parseLong(res.getString("ChannelId"));
+                username = username.toLowerCase();
+                List<Long> list = new ArrayList<>();
+                if (cb.containsKey(username)) {
+                    list = cb.get(username);
+                    if (!list.contains(channelId)) {
+                        list.add(channelId);
+                        cb.put(username, list);
+                    }
+                } else {
+                    list.add(channelId);
+                    cb.put(username, list);
+                }
+            }
+            sql.closeConnection();
+        } catch (SQLException e) {
+            Main.LOG.error("", e);
+        } finally {
+            try {
+                if (res != null)
+                    res.close();
+            } catch (SQLException e) {
+                Main.LOG.error("", e);
+            }
+        }
+    }
+
+    public static void addCBStream(String username, Long channelID, Long guildId) {
+        username = username.toLowerCase();
+        MySQL sq = Main.getMySQL();
+        sq.openConnection();
+        try {
+            PreparedStatement prep = sq.getConnection().prepareStatement("INSERT IGNORE INTO Chaturbate (ChannelId, Username, GuildId) VALUES (?, ?, ?)");
+            prep.setString(1, channelID.toString());
+            prep.setString(2, username);
+            prep.setString(3, guildId.toString());
+            List<Long> list = new ArrayList<>();
+            if (cb.containsKey(username)) {
+                list = cb.get(username);
+                if (!list.contains(channelID)) {
+                    list.add(channelID);
+                    cb.put(username, list);
+                    prep.execute();
+                }
+            } else {
+                list.add(channelID);
+                cb.put(username, list);
+                prep.execute();
+            }
+            sq.closeConnection();
+        } catch (SQLException e) {
+            Main.LOG.error("Chaturbate add failed: " + e);
+        }
+    }
+
+    public static void removeCBStream(String username, Long channelID) {
+        username = username.toLowerCase();
+        MySQL sq = Main.getMySQL();
+        sq.openConnection();
+        try {
+            PreparedStatement prep = sq.getConnection().prepareStatement("DELETE IGNORE FROM Chaturbate WHERE ChannelId = ? AND Username = ?");
+            prep.setString(1, channelID.toString());
+            prep.setString(2, username);
+            List<Long> list = new ArrayList<>();
+            if (cb.containsKey(username)) {
+                list = cb.get(username);
+                if (list.contains(channelID))
+                    list.remove(channelID);
+                cb.put(username, list);
+                prep.execute();
+            } else {
+                list.add(channelID);
+                cb.put(username, list);
+                prep.execute();
+            }
+            sq.closeConnection();
+        } catch (SQLException e) {
+            Main.LOG.error("Chaturbate remove failed: " + e);
+        }
+    }
+
+    public static HashMap<String, List<Long>> getCBList() {
+        return cb;
+    }
+
 
     public static void addSubreddit(String subreddit, Long channelID, Long guildId, RedditSubscription.SortType sortType) {
         subreddit = subreddit.toLowerCase();

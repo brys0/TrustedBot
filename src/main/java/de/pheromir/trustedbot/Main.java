@@ -40,6 +40,7 @@ import de.pheromir.trustedbot.config.YamlConfiguration;
 import de.pheromir.trustedbot.events.CmdListener;
 import de.pheromir.trustedbot.events.GuildEvents;
 import de.pheromir.trustedbot.events.Shutdown;
+import de.pheromir.trustedbot.tasks.CBCheck;
 import de.pheromir.trustedbot.tasks.RedditGrab;
 import de.pheromir.trustedbot.tasks.TwitchCheck;
 import kong.unirest.*;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -74,6 +76,7 @@ public class Main {
     public static String adminId = "none";
     public static String youtubeKey = "none";
     public static String twitchClientId = "none";
+    public static ArrayList<String> onlineCBList = new ArrayList<>();
     private static String twitchSecret = "none";
     public static String twitchToken = "none";
     private static String spotifySecret = "none";
@@ -91,6 +94,7 @@ public class Main {
     public static CommandClient commandClient;
     public static ScheduledExecutorService spotifyTask;
     public static ScheduledExecutorService twitchAuthTask;
+    public static ScheduledFuture<?> cbTask;
     public static ScheduledFuture<?> redditTask;
     public static ScheduledFuture<?> twitchTask;
     public static ScheduledFuture<?> rewardTask;
@@ -124,7 +128,7 @@ public class Main {
         // Alias + Custom Commands
         cbuilder.addCommands(new AliasAddCommand(), new AliasRemoveCommand(), new AliasCmdsCommand(), new TextCmdAddCommand(), new TextCmdRemoveCommand(), new TextCmdsCommand());
         // Subscription Commands
-        cbuilder.addCommands(new RedditCommand());
+        cbuilder.addCommands(new RedditCommand(), new CBCommand());
         if (!twitchClientId.equals("none") && !twitchClientId.isEmpty()) {
             cbuilder.addCommands(new TwitchCommand());
             twitchTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new TwitchCheck(), 1, 5, TimeUnit.MINUTES);
@@ -161,6 +165,7 @@ public class Main {
             // - - - - TASKS - - - - -
 
             redditTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new RedditGrab(), 1, 10, TimeUnit.MINUTES);
+            cbTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new CBCheck(), 1, 5, TimeUnit.MINUTES);
             rewardTask = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
                 LocalTime today = LocalTime.now();
                 int hour = today.getHour();
@@ -323,6 +328,11 @@ public class Main {
                     + " Subreddit VARCHAR(32) NOT NULL," + " GuildId VARCHAR(64) NOT NULL,"
                     + " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
                     + " PRIMARY KEY (ChannelId, Subreddit));");
+
+            Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Chaturbate" + " (ChannelId VARCHAR(64) NOT NULL,"
+                    + " Username VARCHAR(32) NOT NULL," + " GuildId VARCHAR(64) NOT NULL,"
+                    + " FOREIGN KEY (GuildId) REFERENCES Guilds(GuildId) ON DELETE CASCADE ON UPDATE CASCADE,"
+                    + " PRIMARY KEY (ChannelId, Username));");
 
             Methods.mySQLQuery("CREATE TABLE IF NOT EXISTS Reddit_Posts" + " (Url VARCHAR(191) PRIMARY KEY);");
 
