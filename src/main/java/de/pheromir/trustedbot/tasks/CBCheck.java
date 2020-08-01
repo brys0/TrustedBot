@@ -38,7 +38,7 @@ public class CBCheck implements Runnable {
                                 eb.setImage("https://roomimg.stream.highwebmedia.com/ri/" + username + ".jpg?" + System.currentTimeMillis());
 
                                 for (Long chId : GuildConfig.getCBList().get(username)) {
-                                    Main.jda.getTextChannelById(chId).sendMessage(eb.build()).complete();
+                                    Main.jda.getTextChannelById(chId).sendMessage("Hey @here! " + username + " is now online!").embed(eb.build()).complete();
                                 }
                             }
                         }
