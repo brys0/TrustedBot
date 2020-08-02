@@ -68,7 +68,7 @@ public class TwitchCheck implements Runnable {
                                 return;
                             String gameId = stream.getString("game_id");
                             int viewers = stream.getInt("viewer_count");
-                            String preview = stream.getString("thumbnail_url").replace("{width}", "500").replace("{height}", "300");
+                            String preview = stream.getString("thumbnail_url").replace("{width}", "500").replace("{height}", "300") + "?c=" + System.currentTimeMillis();
                             String status = stream.getString("title");
                             String displayname = stream.getString("user_name");
 
