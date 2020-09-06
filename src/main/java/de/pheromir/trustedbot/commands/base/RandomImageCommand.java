@@ -37,6 +37,7 @@ public abstract class RandomImageCommand extends TrustedCommand {
     protected String jsonKey;
     protected String interactText = null;
     protected String interactSelfText = null;
+    protected boolean isOnlyArray;
 
     public RandomImageCommand() {
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
@@ -46,6 +47,7 @@ public abstract class RandomImageCommand extends TrustedCommand {
         this.cooldown = 5;
         this.cooldownScope = CooldownScope.USER_GUILD;
         this.nsfw = false;
+        this.isOnlyArray = false;
     }
 
     @Override
@@ -60,7 +62,7 @@ public abstract class RandomImageCommand extends TrustedCommand {
                     e.reply("An error occurred while getting a random Image");
                     return;
                 }
-                String imgUrl = response.getBody().getObject().getString(jsonKey);
+                String imgUrl = isOnlyArray ? response.getBody().getArray().getString(0) : response.getBody().getObject().getString(jsonKey);
                 EmbedBuilder emb = new EmbedBuilder().setImage(imgUrl).setColor(e.getChannelType() == ChannelType.TEXT
                         ? e.getSelfMember().getColor()
                         : Color.BLUE);
