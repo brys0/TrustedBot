@@ -58,9 +58,24 @@ public class RedditGrab implements Runnable {
 
                             @Override
                             public void completed(HttpResponse<JsonNode> response) {
-                                if (response.getStatus() < 200 || response.getStatus() > 299) {
+                                if (!response.isSuccess()) {
                                     Main.LOG.error("RedditGrabber received HTTP Code " + response.getStatus()
                                             + " for subreddit " + subreddit + " (" + sortType.name() + ")");
+                                    if (response.getStatus() == 403 || response.getStatus() == 404) {
+                                        for (Long chId : GuildConfig.getRedditList().get(subreddit).getChannels(sortType)) {
+                                            if (Thread.interrupted()) {
+                                                break;
+                                            }
+                                            TextChannel c = Main.jda.getTextChannelById(chId);
+                                            if (c == null) {
+                                                continue;
+                                            }
+
+                                            c.sendMessage(String.format("**Warning: Subreddit %s is no longer available and will no longer be checked.**", subreddit)).queue();
+                                            GuildConfig.removeSubreddit(subreddit, c.getIdLong());
+                                        }
+                                        Main.LOG.info("Subreddit " + subreddit + " removed from database.");
+                                    }
                                     return;
                                 }
                                 JSONObject res = response.getBody().getObject();
