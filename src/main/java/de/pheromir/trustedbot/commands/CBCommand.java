@@ -8,12 +8,14 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.Methods;
+import de.pheromir.trustedbot.commands.base.TrustedCommand;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.tasks.CBCheck;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
+import org.jetbrains.annotations.Nullable;
 
-public class CBCommand extends Command {
+public class CBCommand extends TrustedCommand {
 
     public CBCommand() {
         this.name = "cb";
@@ -26,12 +28,11 @@ public class CBCommand extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent e) {
+    protected boolean exec(CommandEvent e, @Nullable GuildConfig gc, String[] args, String usage) {
         if(e.getChannelType() == ChannelType.TEXT && Main.getGuildConfig(e.getGuild()).isCommandDisabled(this.name)) {
             e.reply(Main.COMMAND_DISABLED);
-            return;
+            return false;
         }
-        String[] args = e.getArgs().split(" ");
         if ((args[0].equals("") || args[0].isEmpty()) && args.length == 1)
             args = new String[0];
 
@@ -39,7 +40,7 @@ public class CBCommand extends Command {
             ArrayList<String> streams = (ArrayList<String>) GuildConfig.getCBList().keySet().stream().filter(k -> GuildConfig.getCBList().get(k).contains(e.getChannel().getIdLong())).collect(Collectors.toList());
             if (streams.isEmpty()) {
                 e.reply("There are currently no notifications active for this channel.");
-                return;
+                return false;
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (String str : streams) {
@@ -47,12 +48,12 @@ public class CBCommand extends Command {
                 }
                 String msg = sb.substring(0, sb.length() - 2);
                 e.reply("There are currently the following notifications active: " + msg);
-                return;
+                return false;
             }
         }
         if (args.length != 1) {
             e.reply("Syntaxerror. Usage: `!" + this.name + " [username]`");
-            return;
+            return false;
         } else {
             if (GuildConfig.getCBList().containsKey(e.getArgs().toLowerCase())
                     && GuildConfig.getCBList().get(e.getArgs().toLowerCase()).contains(e.getChannel().getIdLong())) {
@@ -62,14 +63,18 @@ public class CBCommand extends Command {
             } else {
                 if (!CBCheck.doesCBUserExist(e.getArgs())) {
                     e.reply("There doesn't seem to be a user with this name (or an error occurred)");
-                    return;
+                    return false;
                 }
                 GuildConfig.addCBStream(e.getArgs().toLowerCase(), e.getChannel().getIdLong(), e.getGuild().getIdLong());
                 e.reply("CB-notifications for " + e.getArgs().toLowerCase()
                         + " have been enabled in this channel.");
             }
-            return;
+            return false;
         }
+    }
+
+    protected void exec(CommandEvent e) {
+
     }
 
 }
