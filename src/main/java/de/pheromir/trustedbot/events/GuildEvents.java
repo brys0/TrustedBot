@@ -57,10 +57,10 @@ public class GuildEvents extends ListenerAdapter {
         GuildConfig.getCBList().entrySet().stream().filter(ent -> ent.getValue().contains(channelId)).forEach(ent -> GuildConfig.removeCBStream(ent.getKey(), channelId));
     }
 
-    @Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent e) {
-        Main.getGuildConfig(e.getGuild()).setUserCredits(e.getMember().getUser().getIdLong(), 0L);
-    }
+//    @Override
+//    public void onGuildMemberJoin(GuildMemberJoinEvent e) {
+//        Main.getGuildConfig(e.getGuild()).setUserCredits(e.getMember().getUser().getIdLong(), 0L);
+//    }
 
     // @Override
     // public void onGuildMemberLeave(GuildMemberLeaveEvent e) {

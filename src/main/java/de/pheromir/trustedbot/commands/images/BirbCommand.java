@@ -23,13 +23,13 @@ package de.pheromir.trustedbot.commands.images;
 
 import de.pheromir.trustedbot.commands.base.RandomImageCommand;
 
-public class DogeCommand extends RandomImageCommand {
+public class BirbCommand extends RandomImageCommand {
 
-    public DogeCommand() {
-        this.name = "shiba";
-        this.aliases = new String[]{"doge", "dogeliebhaber"};
-        this.help = "Shows a random shiba picture.";
-        this.BASE_URL = "https://shibe.online/api/shibes?count=1";
-        this.isOnlyArray = true;
+    public BirbCommand() {
+        this.name = "birb";
+        this.aliases = new String[] {"bird"};
+        this.help = "Shows a random birb picture.";
+        this.BASE_URL = "https://some-random-api.ml/img/birb";
+        this.jsonKey = "link";
     }
 }

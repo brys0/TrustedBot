@@ -49,6 +49,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +140,7 @@ public class Main {
         // Minigames and Gambling
         cbuilder.addCommands(new CoinflipCommand());
         // Fun
-        cbuilder.addCommands(new DogeCommand(), new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
+        cbuilder.addCommands(new RedPandaCommand(), new BirbCommand(), new RacoonCommand(), new FoxCommand(), new DogeCommand(), new NekoCommand(), new NekoGifCommand(), new KemoCommand(), new TickleCommand(), new PokeCommand(), new CuddleCommand(), new PatCommand(), new LizardCommand(), new GooseCommand(), new CatCommand(), new DogCommand(), new KissCommand(), new HugCommand(), new LewdCommand(), new LewdGifCommand(), new EroKemoCommand(), new LoliCommand(), new LewdKemoCommand(), new LewdYuriCommand(), new YuriCommand());
         // Misc
         cbuilder.addCommands(new RandomServerIconCommand(), new GoogleCommand(), new NumberFactCommand(), new UrbanDictionaryCommand(), new ColorCommand(
                 waiter), new R6ChallengeCommand());
@@ -158,7 +160,7 @@ public class Main {
         commandClient = cbuilder.build();
         try {
             /* - - - - - - - - - - - BOT STARTEN - - - - - - - - - - - - - - */
-            jda = JDABuilder.createDefault(token).addEventListeners(new GuildEvents(), new Shutdown(), commandClient, waiter).build();
+            jda = JDABuilder.createLight(token).setMemberCachePolicy(MemberCachePolicy.VOICE).disableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_INVITES).addEventListeners(new GuildEvents(), new Shutdown(), commandClient, waiter).build();
             jda.awaitReady();
             jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 
