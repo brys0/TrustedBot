@@ -45,8 +45,6 @@ try {
     props.scp_user= "user"
     props.scp_pass = "pass"
     props.scp_host = "host"
-    props.pd_id = "id"
-    props.pd_key = "key"
     // CI will pass those
     props.mvn_user_fetch = System.getenv("MVN_USER")
     props.mvn_pass_fetch = System.getenv("MVN_PASS")
@@ -55,15 +53,15 @@ try {
 remotes {
     prod {
         host = "${props.scp_host}"
-        port = 2022
+        port = 1933
         user = props.scp_user
         password = props.scp_pass
     }
 }
 
-ssh.settings {
-    knownHosts = allowAnyHosts
-}
+//ssh.settings {
+//    knownHosts = allowAnyHosts
+//}
 
 props.each { prop ->
     project.ext.set(prop.key, prop.value)
@@ -76,57 +74,46 @@ task renameJar(dependsOn: shadowJar, type: Copy) {
     rename "${projName}-$project.version-all.jar", "${projName}.jar"
 }
 
+// Copy built jar into home/trustedbot/ (relative to ftp start directory)
 task copyProd(dependsOn: renameJar) {
     doLast {
         ssh.run {
             session(remotes.prod) {
-                put from: fileTree(dir: "$project.projectDir/build/libs", includes: ["${projName}.jar"]), into: "/"
+                put from: fileTree(dir: "$project.projectDir/build/libs", includes: ["${projName}.jar"]), into: "home/trustedbot/"
             }
         }
     }
 }
 
-// Only for own Server instance, mostly not usable for you
-import io.github.httpbuilderng.http.HttpTask
-task killBot(type:HttpTask){
-    config {
-        request.uri = "https://${props.scp_host}"
-    }
-    post {
-        request.uri.path = "/api/client/servers/${props.pd_id}/power"
-        HashMap<String, CharSequence> headers = new HashMap<>()
-        headers.put("Authorization", "Bearer ${props.pd_key}")
-        headers.put("Accept", "application/json")
-        request.contentType = "application/json"
-        request.headers = headers
-        request.body = '{"signal":"kill"}'
-        response.success {
-            println 'Killing bot successful'
+// kill the bot (I dont have systemctl on my NAS, so i have to use a helper-script)
+task killBot() {
+    doLast {
+        ssh.run {
+            session(remotes.prod) {
+                execute '/var/services/homes/Pheromir/bin/manage-trustedbot stop'
+            }
         }
-        response.failure {
-            println 'Killing bot failed.'
-        }
-        sleep(3000)
     }
 }
 
-task startBot(type:HttpTask){
-    config {
-        request.uri = "https://${props.scp_host}"
-    }
-    post {
-        request.uri.path = "/api/client/servers/${props.pd_id}/power"
-        HashMap<String, CharSequence> headers = new HashMap<>()
-        headers.put("Authorization", "Bearer ${props.pd_key}")
-        headers.put("Accept", "application/json")
-        request.contentType = "application/json"
-        request.headers = headers
-        request.body = '{"signal":"start"}'
-        response.success {
-            println 'Starting bot successful'
+// start the bot (I dont have systemctl on my NAS, so i have to use a helper-script)
+task startBot() {
+    doLast {
+        ssh.run {
+            session(remotes.prod) {
+                execute '/var/services/homes/Pheromir/bin/manage-trustedbot start'
+            }
         }
-        response.failure {
-            println 'Starting bot failed.'
+    }
+}
+
+// check if the but is running (I dont have systemctl on my NAS, so i have to use a helper-script)
+task checkBot() {
+    doLast {
+        ssh.runInOrder {
+            session(remotes.prod) {
+                execute '/var/services/homes/Pheromir/bin/manage-trustedbot status'
+            }
         }
     }
 }
@@ -136,9 +123,11 @@ task uploadAndRestart() {
     dependsOn 'copyProd'
     dependsOn 'killBot'
     dependsOn 'startBot'
+    dependsOn 'checkBot'
     tasks.findByName("copyProd").mustRunAfter("clean")
     tasks.findByName("killBot").mustRunAfter("copyProd")
-    tasks.findByName("startBot").mustRunAfter("copyProd")
+    tasks.findByName("startBot").mustRunAfter("killBot")
+    tasks.findByName("checkBot").mustRunAfter("startBot")
 }
 
 java {
