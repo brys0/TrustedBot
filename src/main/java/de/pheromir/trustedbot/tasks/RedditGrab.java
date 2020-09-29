@@ -21,7 +21,6 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.tasks;
 
-import com.google.gson.internal.bind.util.ISO8601Utils;
 import de.pheromir.trustedbot.Main;
 import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.misc.RedditSubscription.SortType;
@@ -31,6 +30,7 @@ import kong.unirest.json.JSONObject;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 import java.time.Instant;
 
@@ -123,25 +123,28 @@ public class RedditGrab implements Runnable {
                                         if (c == null) {
                                             continue;
                                         }
-
-                                        if (!GuildConfig.RedditPosthistoryContains(contentUrl)) {
-                                            if (contentUrl.contains(".jpg") || contentUrl.contains(".png")
-                                                    || contentUrl.contains(".jpeg") || contentUrl.contains(".gif")) {
-                                                emb.setImage(contentUrl);
-                                                c.sendMessage(emb.build()).queue();
-                                            } else if (contentUrl.contains("v.redd.it")) {
-                                                if (thumbUrl.contains(".")) {
-                                                    emb.setImage(thumbUrl);
+                                        try {
+                                            if (!GuildConfig.RedditPosthistoryContains(contentUrl)) {
+                                                if (contentUrl.contains(".jpg") || contentUrl.contains(".png")
+                                                        || contentUrl.contains(".jpeg") || contentUrl.contains(".gif")) {
+                                                    emb.setImage(contentUrl);
+                                                    c.sendMessage(emb.build()).queue();
+                                                } else if (contentUrl.contains("v.redd.it")) {
+                                                    if (thumbUrl.contains(".")) {
+                                                        emb.setImage(thumbUrl);
+                                                    }
+                                                    emb.setTitle("VIDEO: "
+                                                            + (title.length() > 249 ? title.substring(0, 249) : title), link);
+                                                    c.sendMessage(emb.build()).queue();
+                                                } else if (contentUrl.contains("/comments/")) {
+                                                    c.sendMessage(emb.build()).queue();
+                                                } else {
+                                                    c.sendMessage(emb.build()).queue();
+                                                    c.sendMessage(contentUrl).queue();
                                                 }
-                                                emb.setTitle("VIDEO: "
-                                                        + (title.length() > 249 ? title.substring(0, 249) : title), link);
-                                                c.sendMessage(emb.build()).queue();
-                                            } else if (contentUrl.contains("/comments/")) {
-                                                c.sendMessage(emb.build()).queue();
-                                            } else {
-                                                c.sendMessage(emb.build()).queue();
-                                                c.sendMessage(contentUrl).queue();
                                             }
+                                        } catch (InsufficientPermissionException e) {
+                                            continue;
                                         }
                                     }
                                     GuildConfig.addSubredditPostHistory(contentUrl);

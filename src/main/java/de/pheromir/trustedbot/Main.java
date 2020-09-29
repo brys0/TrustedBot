@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -160,7 +159,7 @@ public class Main {
         commandClient = cbuilder.build();
         try {
             /* - - - - - - - - - - - BOT STARTEN - - - - - - - - - - - - - - */
-            jda = JDABuilder.createLight(token).setMemberCachePolicy(MemberCachePolicy.VOICE).disableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_INVITES).addEventListeners(new GuildEvents(), new Shutdown(), commandClient, waiter).build();
+            jda = JDABuilder.createDefault(token).disableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_INVITES).addEventListeners(new GuildEvents(), new Shutdown(), commandClient, waiter).build();
             jda.awaitReady();
             jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 
@@ -272,11 +271,7 @@ public class Main {
             // - - - - - - -
 
         } catch (LoginException | InterruptedException | IllegalStateException e) {
-            if (e instanceof InterruptedException) {
-                LOG.error("Error while starting the bot:", e);
-            } else {
-                LOG.error("Error while starting the bot: Bot-Token invalid");
-            }
+            LOG.error("Error while starting the bot:", e);
             return;
         }
         LOG.info("Bot startup complete.");
