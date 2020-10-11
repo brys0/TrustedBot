@@ -21,8 +21,6 @@
  ******************************************************************************/
 package de.pheromir.trustedbot.commands;
 
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
@@ -40,13 +38,13 @@ import de.pheromir.trustedbot.config.GuildConfig;
 import de.pheromir.trustedbot.music.Suggestion;
 import de.pheromir.trustedbot.tasks.RemoveUserSuggestion;
 import kong.unirest.*;
+import kong.unirest.json.JSONObject;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,7 +56,7 @@ import java.util.regex.Pattern;
 
 public class PlayCommand extends TrustedCommand {
 
-    String pattern = "^^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+    String pattern = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
     Pattern compiledPattern = Pattern.compile(pattern);
 
     public PlayCommand() {
@@ -80,6 +78,12 @@ public class PlayCommand extends TrustedCommand {
             return false;
         }
 
+        if (e.getMember().getVoiceState().getChannel() != null && e.getSelfMember().getVoiceState().getChannel() != null
+        && e.getMember().getVoiceState().getChannel() != e.getSelfMember().getVoiceState().getChannel()) {
+            e.reply("You have to be in the same channel as the the music bot!");
+            return false;
+        }
+
         // Load a suggestion
         if (gc.getSuggestions().containsKey(user) && args.length == 1
                 && args[0].matches(String.format("^([1-%s]{1})$", gc.getSuggestions().get(user).size()))) {
@@ -95,14 +99,22 @@ public class PlayCommand extends TrustedCommand {
             }
         }
 
+        if (e.getArgs().toLowerCase().contains("youtube.com") && e.getArgs().toLowerCase().contains("list") && !e.getArgs().toLowerCase().contains("watch")) {
+            e.reply("The YT playlist url needs to contain an active video due to a bug in the player.");
+            return false;
+        }
+
         // Check if argument is spotify url
         if (!Main.spotifyToken.equals("none")) {
             if (e.getArgs().toLowerCase().contains("spotify.com/track/")) {
-                Pattern p = Pattern.compile("track\\/(?<trackid>[0-9A-z]+)");
+                System.out.println("its a spotify lünk");
+                Pattern p = Pattern.compile("track/(?<trackid>[0-9A-z]+)");
                 Matcher m = p.matcher(e.getArgs());
                 if (m.find()) {
                     String id = m.group("trackid");
+                    System.out.println("1");
                     if (id != null && !id.isEmpty()) {
+                        System.out.println("2");
                         Unirest.get("https://api.spotify.com/v1/tracks/{id}").routeParam("id", id).header("Authorization", "Bearer "
                                 + Main.spotifyToken).asJsonAsync(new Callback<JsonNode>() {
 
@@ -113,7 +125,9 @@ public class PlayCommand extends TrustedCommand {
 
                             @Override
                             public void completed(HttpResponse<JsonNode> arg0) {
+                                System.out.println("3");
                                 String title = arg0.getBody().getObject().getString("name");
+                                System.out.println(title);
                                 String artist = ((JSONObject) arg0.getBody().getObject().getJSONArray("artists").get(0)).getString("name");
 
                                 try {
@@ -122,7 +136,6 @@ public class PlayCommand extends TrustedCommand {
                                     Main.LOG.error("", e1);
                                     e.reply("An error occurred while getting track information from spotify.");
                                 }
-                                return;
                             }
 
                             @Override
@@ -194,8 +207,7 @@ public class PlayCommand extends TrustedCommand {
                     StringBuilder sb = new StringBuilder();
                     playlist.getTracks().forEach(track -> {
                         musicManager.scheduler.queue(track, e.getAuthor());
-                        sb.append("`" + track.getInfo().title + "` [" + Methods.getTimeString(track.getDuration(), true)
-                                + "] has been added to the queue.\n");
+                        sb.append("`").append(track.getInfo().title).append("` [").append(Methods.getTimeString(track.getDuration(), true)).append("] has been added to the queue.\n");
                     });
                     e.reply(sb.toString());
                 } else {
@@ -221,11 +233,7 @@ public class PlayCommand extends TrustedCommand {
 
     public static List<SearchResult> getVideoSuggestions(String search) throws IOException {
         YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
-                new HttpRequestInitializer() {
-
-                    @Override
-                    public void initialize(HttpRequest request) throws IOException {
-                    }
+                request -> {
                 }).setApplicationName("TrustedBot").build();
 
         YouTube.Search.List searchRequest;
@@ -235,8 +243,7 @@ public class PlayCommand extends TrustedCommand {
         searchRequest.setQ(search);
         searchRequest.setKey(Main.youtubeKey);
         SearchListResponse listResponse = searchRequest.execute();
-        List<SearchResult> videoList = listResponse.getItems();
-        return videoList;
+        return listResponse.getItems();
     }
 
     public static void printAndAddSuggestions(List<SearchResult> videoList, CommandEvent e) {
@@ -246,7 +253,7 @@ public class PlayCommand extends TrustedCommand {
         m.setTitle("Suggestions for " + e.getMember().getEffectiveName() + ":");
         m.setColor(e.getGuild().getSelfMember().getColor());
         ArrayList<Suggestion> suggests = new ArrayList<>();
-        for (int i = 0; i < (videoList.size() >= 5 ? 5 : videoList.size()); i++) {
+        for (int i = 0; i < (Math.min(videoList.size(), 5)); i++) {
             suggests.add(new Suggestion(videoList.get(i).getSnippet().getTitle(),
                     videoList.get(i).getId().getVideoId()));
             m.appendDescription("**[" + (i + 1) + "]** " + videoList.get(i).getSnippet().getTitle() + " *["
